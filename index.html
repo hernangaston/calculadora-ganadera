@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¿Vendo ahora o espero?</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1>¿VENDO AHORA O ESPERO?</h1>
+            <p class="subtitle">
+                Una cuenta simple para no vender barato ni esperar de más
+            </p>
+        </header>
+
+        <!-- TARJETA DATOS -->
+        <section class="card">
+            <h2>Cargá los datos</h2>
+
+            <div class="field">
+                <label>Peso del animal hoy (kg)</label>
+                <input type="number" placeholder="Ej: 300">
+            </div>
+
+            <div class="field">
+                <label>Precio del kilo hoy ($)</label>
+                <input type="number" placeholder="Ej: 2500">
+            </div>
+
+            <div class="field">
+                <label>Cuánto engorda por día (kg)</label>
+                <input type="number" step="0.01" placeholder="Ej: 0,8">
+            </div>
+
+            <div class="field">
+                <label>Cuánto te cuesta por día ($)</label>
+                <input type="number" placeholder="Ej: 800">
+            </div>
+
+            <div class="field">
+                <label>Cuántos días pensás esperar</label>
+                <input type="number" placeholder="Ej: 30">
+            </div>
+        </section>
+
+        <!-- BOTÓN -->
+        <button class="btn-primary">
+            👉 HACER LA CUENTA
+        </button>
+
+        <!-- RESULTADOS (placeholder visual) -->
+        <section class="card hidden">
+            <h2>Resultado</h2>
+
+            <p class="result-main">
+                Si vendés hoy:<br>
+                <span>$XXX.XXX</span>
+            </p>
+        </section>
+
+        <!-- ESCENARIOS (placeholder visual) -->
+        <section class="card hidden">
+            <h2>¿Qué pasa si esperás?</h2>
+
+            <div class="scenario bad">
+                <h3>Precio baja un poco (–5%)</h3>
+                <p>Plata si esperás: $XXX</p>
+                <strong>Mejor vender ahora</strong>
+            </div>
+
+            <div class="scenario neutral">
+                <h3>Precio igual</h3>
+                <p>Plata si esperás: $XXX</p>
+                <strong>Conviene esperar</strong>
+            </div>
+
+            <div class="scenario good">
+                <h3>Precio sube un poco (+5%)</h3>
+                <p>Plata si esperás: $XXX</p>
+                <strong>Conviene esperar</strong>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p>
+                Esta cuenta es orientativa. Sirve para comparar decisiones, no para adivinar el precio.
+            </p>
+        </footer>
+
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>

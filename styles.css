@@ -1,0 +1,166 @@
+/* RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* COLORES CAMPO */
+:root {
+    --verde: #2E7D32;
+    --rojo: #C62828;
+    --marron: #6D4C41;
+    --gris-fondo: #F5F5F5;
+    --gris-texto: #555;
+    --blanco: #FFFFFF;
+}
+
+/* BASE */
+body {
+    background-color: var(--gris-fondo);
+    color: #222;
+}
+
+.container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* HEADER */
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: var(--gris-texto);
+    font-size: 0.95rem;
+}
+
+/* CARDS */
+.card {
+    background-color: var(--blanco);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+/* CAMPOS */
+.field {
+    margin-bottom: 12px;
+}
+
+.field label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.field input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* BOTÓN */
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background-color: var(--verde);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* RESULTADOS */
+.result-main {
+    font-size: 1rem;
+}
+
+.result-main span {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+/* ESCENARIOS */
+.scenario {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.scenario h3 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.scenario p {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.scenario strong {
+    font-size: 0.95rem;
+}
+
+/* COLORES ESCENARIOS */
+.scenario.good {
+    background-color: #E8F5E9;
+    color: var(--verde);
+}
+
+.scenario.neutral {
+    background-color: #FFFDE7;
+    color: #8D6E63;
+}
+
+.scenario.bad {
+    background-color: #FDECEA;
+    color: var(--rojo);
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--gris-texto);
+}
+
+/* UTIL */
+.hidden {
+    display: none;
+}
+
+/* RESPONSIVE (pantallas grandes) */
+@media (min-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+}
