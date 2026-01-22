@@ -164,3 +164,34 @@ body {
         font-size: 2rem;
     }
 }
+
+/* RESULTADO BALANCE FORRAJERO */
+#bf_resultado {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+}
+
+#bf_resultado.ok {
+    background-color: #E8F5E9;
+    color: var(--verde);
+}
+
+#bf_resultado.warn {
+    background-color: #FFFDE7;
+    color: #8D6E63;
+}
+
+#bf_resultado.danger {
+    background-color: #FDECEA;
+    color: var(--rojo);
+}
+
+/* INFO BALANCE FORRAJERO */
+.bf-info {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--gris-texto);
+    line-height: 1.4;
+}

@@ -88,6 +88,61 @@
             </div>
         </section>
 
+        <!-- BALANCE FORRAJERO -->
+        <section class="card">
+            <h2>🌱 Balance forrajero</h2>
+            <p class="subtitle">
+                Una cuenta simple para saber si el pasto alcanza
+            </p>
+
+            <div class="field">
+                <label>Cantidad de animales</label>
+                <input type="number" id="bf_animales" placeholder="Ej: 50">
+            </div>
+
+            <div class="field">
+                <label>Peso promedio por animal (kg)</label>
+                <input type="number" id="bf_peso" placeholder="Ej: 350">
+            </div>
+
+            <div class="field">
+                <label>Hectáreas disponibles</label>
+                <input type="number" id="bf_hectareas" placeholder="Ej: 20">
+            </div>
+
+            <div class="field">
+                <label>Tipo de forraje</label>
+                <select id="bf_forraje">
+                    <option value="campo_natural">Campo natural</option>
+                    <option value="pastura_implantada">Pastura implantada</option>
+                    <option value="verdeo">Verdeo</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Estado del forraje</label>
+                <select id="bf_estado">
+                    <option value="bueno">Bueno</option>
+                    <option value="regular">Regular</option>
+                    <option value="malo">Malo</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" id="bf_button">
+                👉 HACER LA CUENTA
+            </button>
+
+            <div id="bf_resultado" class="hidden"></div>
+            <p id="bf_info" class="bf-info hidden">
+                Este cálculo utiliza valores promedio de consumo animal y producción de pasto
+                usados en planificación forrajera en Argentina. Es una herramienta orientativa
+                para comparar decisiones, no un análisis técnico detallado.
+            </p>
+
+        </section>
+
+
+
         <!-- FOOTER -->
         <footer class="footer">
             <p>

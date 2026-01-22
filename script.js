@@ -80,4 +80,84 @@ document.addEventListener("DOMContentLoaded", () => {
         resultCard.scrollIntoView({ behavior: "smooth" });
     });
 
+
+    function calcularBalanceForrajero() {
+        const animales = Number(document.getElementById("bf_animales").value);
+        const peso = Number(document.getElementById("bf_peso").value);
+        const hectareas = Number(document.getElementById("bf_hectareas").value);
+        const tipoForraje = document.getElementById("bf_forraje").value;
+        const estado = document.getElementById("bf_estado").value;
+        const resultado = document.getElementById("bf_resultado");
+
+        if (!animales || !peso || !hectareas) {
+            resultado.innerHTML = "⚠️ Completá todos los datos.";
+            return;
+        }
+
+        // Consumo diario estimado (2,5% del peso vivo)
+        const consumoDiarioPorAnimal = peso * 0.025;
+
+        // Producción de MS por tipo de forraje (kg MS/ha)
+        const produccionForraje = {
+            campo_natural: 2500,
+            pastura_implantada: 4500,
+            verdeo: 3500
+        };
+
+        // Ajuste por estado del forraje
+        const factorEstado = {
+            bueno: 1,
+            regular: 0.8,
+            malo: 0.6
+        };
+
+        // Oferta total de MS
+        const ofertaMS =
+            hectareas *
+            produccionForraje[tipoForraje] *
+            factorEstado[estado];
+
+        // Demanda diaria total
+        const demandaDiaria =
+            animales *
+            consumoDiarioPorAnimal;
+
+        // Días de autonomía
+        const diasAutonomia = ofertaMS / demandaDiaria;
+
+        resultado.className = ""; // reset
+        resultado.classList.remove("hidden");
+
+        if (diasAutonomia > 90) {
+            resultado.classList.add("ok");
+            resultado.innerHTML = `
+        <strong>🟢 Tranquilo</strong><br>
+        Tenés pasto para aproximadamente
+        <strong>${diasAutonomia.toFixed(0)} días</strong>.
+    `;
+        } else if (diasAutonomia > 45) {
+            resultado.classList.add("warn");
+            resultado.innerHTML = `
+        <strong>🟡 Atención</strong><br>
+        El pasto alcanzaría unos
+        <strong>${diasAutonomia.toFixed(0)} días</strong>.
+        Evaluá ajustes.
+    `;
+        } else {
+            resultado.classList.add("danger");
+            resultado.innerHTML = `
+        <strong>🔴 Riesgo</strong><br>
+        Podrías quedarte sin pasto en
+        <strong>${diasAutonomia.toFixed(0)} días</strong>.
+        Considerá vender o suplementar.
+    `;
+        }
+        document.getElementById("bf_info").classList.remove("hidden");
+    }
+    const buttonBalance = document.getElementById("bf_button");
+    buttonBalance.addEventListener("click", () => {
+        calcularBalanceForrajero();
+    });
+
+
 });
