@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carga animal</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1>¿CÓMO ESTOY DE CARGA?</h1>
+            <p class="subtitle">
+                Una cuenta rápida para chequear si el campo banca el rodeo actual
+            </p>
+        </header>
+
+        <!-- INPUTS -->
+        <section class="card">
+            <h2>Cargá los datos</h2>
+
+            <div class="field">
+                <label>Hectáreas disponibles</label>
+                <input type="number" id="hectareas" placeholder="Ej: 120">
+            </div>
+
+            <div class="field">
+                <label>Tipo de campo</label>
+                <select id="tipoCampo">
+                    <option value="">Seleccionar</option>
+                    <option value="natural">Campo natural</option>
+                    <option value="pastura">Pastura implantada</option>
+                    <option value="verdeo">Verdeo</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Estado del pasto</label>
+                <select id="estadoPasto">
+                    <option value="">Seleccionar</option>
+                    <option value="bueno">Bueno</option>
+                    <option value="regular">Regular</option>
+                    <option value="malo">Malo</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Cantidad de animales</label>
+                <input type="number" id="animales" placeholder="Ej: 180">
+            </div>
+
+            <div class="field">
+                <label>Peso promedio por animal (kg)</label>
+                <input type="number" id="peso" placeholder="Ej: 320">
+            </div>
+        </section>
+
+        <!-- BOTÓN -->
+        <button class="btn-primary">
+            👉 CALCULAR CARGA
+        </button>
+
+        <!-- RESULTADOS -->
+        <section class="card hidden" id="resultado">
+            <h2>Resultado</h2>
+
+            <p class="result-main">
+                Tu carga actual:<br>
+                <span id="cargaActual">X,XX EV/ha</span>
+            </p>
+
+            <p id="cargaReferencia"></p>
+
+            <div id="decision" class="scenario"></div>
+
+            <p class="footer">
+                1 EV ≈ animal de 400 kg. Valores orientativos según tipo y estado del pasto.
+            </p>
+        </section>
+
+    </main>
+
+    <script src="carga.js"></script>
+</body>
+
+</html>

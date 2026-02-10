@@ -226,3 +226,38 @@ body {
     outline: none;
     border-color: #2E7D32;
 }
+
+.link-calculadora {
+    display: inline-block;
+    padding: 10px 14px;
+    background-color: var(--blanco);
+    color: var(--verde);
+    font-weight: 700;
+    text-decoration: none;
+    /* 🔴 saca el subrayado */
+    border-radius: 10px;
+    border: 2px solid var(--verde);
+    font-size: 0.95rem;
+}
+
+.link-calculadora:active {
+    transform: scale(0.97);
+}
+
+.tool-link {
+    display: block;
+    margin-top: 12px;
+    padding: 14px;
+    text-align: center;
+    background-color: var(--verde);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    /* sin subrayado */
+    border-radius: 10px;
+}
+
+.tool-link:active {
+    transform: scale(0.98);
+}
