@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizador de Flete</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header class="header">
+            <h1>OPTIMIZADOR DE FLETE</h1>
+            <p class="subtitle">
+                Encontrá la combinación de camiones más barata
+            </p>
+        </header>
+
+        <section class="card">
+
+            <h2>Datos del traslado</h2>
+
+            <div class="field">
+                <label>Cantidad de animales</label>
+                <input type="number" id="animales" placeholder="Ej: 200">
+            </div>
+
+            <div class="field">
+                <label>Distancia (km)</label>
+                <input type="number" id="km" placeholder="Ej: 450">
+            </div>
+
+        </section>
+
+        <button class="btn-primary">
+            👉 CALCULAR MEJOR OPCIÓN
+        </button>
+
+        <section class="card hidden" id="resultado">
+
+            <h2>Mejor combinación</h2>
+
+            <p id="camiones"></p>
+
+            <p class="result-main">
+                Costo por animal:<br>
+                <span id="costoAnimal"></span>
+            </p>
+
+            <p id="detalle"></p>
+
+        </section>
+
+    </main>
+
+    <script src="opti-flete.js"></script>
+    <script src="ui.js"></script>
+</body>
+
+</html>

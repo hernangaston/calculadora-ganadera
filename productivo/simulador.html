@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador recría + corral</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header class="header">
+            <h1>Simulador de compra</h1>
+            <p class="subtitle">
+                Recría a campo + terminación a corral
+            </p>
+        </header>
+
+
+        <!-- COMPRA -->
+
+        <section class="card">
+
+            <h2>Compra</h2>
+
+            <div class="field">
+                <label>Cantidad animales</label>
+                <input id="cantidad" type="number">
+            </div>
+
+            <div class="field">
+                <label>Peso compra (kg)</label>
+                <input id="pesoCompra" type="number">
+            </div>
+
+            <div class="field">
+                <label>Precio compra ($/kg)</label>
+                <input id="precioCompra" type="number">
+            </div>
+
+        </section>
+
+
+        <!-- RECRIA -->
+
+        <section class="card">
+
+            <h2>Recría a campo</h2>
+
+            <div class="field">
+                <label>ADPV campo (kg/día)</label>
+                <input id="adpvCampo" type="number" step="0.01">
+            </div>
+
+            <div class="field">
+                <label>Días de recría</label>
+                <input id="diasCampo" type="number">
+            </div>
+
+            <div class="field">
+                <label>Costo campo ($/animal/día)</label>
+                <input id="costoCampo" type="number">
+            </div>
+
+        </section>
+
+
+        <!-- CORRAL -->
+
+        <section class="card">
+
+            <h2>Terminación a corral</h2>
+
+            <div class="field">
+                <label>ADPV corral (kg/día)</label>
+                <input id="adpvCorral" type="number" step="0.01">
+            </div>
+
+            <div class="field">
+                <label>Días corral</label>
+                <input id="diasCorral" type="number">
+            </div>
+
+            <div class="field">
+                <label>Costo corral ($/animal/día)</label>
+                <input id="costoCorral" type="number">
+            </div>
+
+        </section>
+
+
+        <!-- VENTA -->
+
+        <section class="card">
+
+            <h2>Venta</h2>
+
+            <div class="field">
+                <label>Precio venta esperado ($/kg)</label>
+                <input id="precioVenta" type="number">
+            </div>
+
+            <div class="field">
+                <label>Flete total ($)</label>
+                <input id="flete" type="number">
+            </div>
+
+        </section>
+
+
+        <button class="btn-primary" onclick="simular()">
+            👉 HACER LA CUENTA
+        </button>
+
+
+        <!-- RESULTADOS -->
+
+        <section class="card hidden" id="resultadoCard">
+
+            <h2>Resultado</h2>
+
+            <p id="pesoRecria"></p>
+            <p id="pesoFinal"></p>
+
+            <p id="costoTotal"></p>
+            <p id="ingreso"></p>
+
+            <p class="result-main">
+                Resultado del negocio<br>
+                <span id="resultado"></span>
+            </p>
+
+        </section>
+
+
+    </main>
+
+    <script src="simulador.js"></script>
+    <script src="../ui.js"></script>
+
+</body>
+
+</html>
