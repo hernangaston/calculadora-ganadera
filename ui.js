@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const boton = document.createElement("a");
-
-    boton.href = "../index.html";
+    boton.href = "/";
+    //boton.href = "../index.html";
     boton.className = "btn-primary";
     boton.innerHTML = "← Volver al inicio";
 
