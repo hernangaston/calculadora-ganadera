@@ -1,3 +1,12 @@
+function formatoAR(numero, decimales = 0) {
+
+    return numero.toLocaleString("es-AR", {
+        minimumFractionDigits: decimales,
+        maximumFractionDigits: decimales
+    });
+
+}
+
 const sliders = document.querySelectorAll("input[type=range]");
 
 sliders.forEach(slider => {
@@ -50,18 +59,24 @@ function actualizar() {
 
     const margenCabeza = margen / animales;
 
+    document.getElementById("pesoFinal").textContent = formatoAR(pesoFinal, 1);
+    document.getElementById("kgProducidos").textContent = formatoAR(kgProducidos, 1);
 
-    document.getElementById("pesoFinal").textContent = pesoFinal.toFixed(1);
-    document.getElementById("kgProducidos").textContent = kgProducidos.toFixed(1);
-
-    document.getElementById("costoTotal").textContent = Math.round(costoTotal);
-    document.getElementById("margenCabeza").textContent = Math.round(margenCabeza);
-    document.getElementById("margenTotal").textContent = Math.round(margen);
-
+    document.getElementById("costoTotal").textContent = formatoAR(costoTotal);
+    document.getElementById("margenCabeza").textContent = formatoAR(margenCabeza);
+    document.getElementById("margenTotal").textContent = formatoAR(margen);
 
 }
-
 function calcularFlete(animales, distancia) {
+
+    if (distancia === 0) {
+
+        document.getElementById("camiones").textContent = "0";
+        document.getElementById("costoFlete").textContent = 0;
+        document.getElementById("seguroFlete").textContent = 0;
+
+        return 0;
+    }
 
     let doble = Math.floor(animales / 110);
 
@@ -72,7 +87,6 @@ function calcularFlete(animales, distancia) {
     resto = resto % 70;
 
     let chasis = Math.ceil(resto / 20);
-
 
     let costo = 0;
 
@@ -90,18 +104,14 @@ function calcularFlete(animales, distancia) {
 
     }
 
-
     document.getElementById("camiones").textContent =
         doble + " Jaula doble, " + simple + " Jaula simple, " + chasis + " Chasis";
 
-    document.getElementById("costoFlete").textContent = Math.round(costo);
-
-    document.getElementById("seguroFlete").textContent = Math.round(costo * 0.05);
-
+    document.getElementById("costoFlete").textContent = formatoAR(costo);
+    document.getElementById("seguroFlete").textContent = formatoAR(costo * 0.05);
 
     return costo;
 
 }
-
 
 actualizar();
