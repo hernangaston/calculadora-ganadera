@@ -2,144 +2,100 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador recría + corral</title>
-    <link rel="stylesheet" href="../styles.css">
+    <title>Simulador de Invernada</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/productivo/simulador.css">
+
 </head>
 
 <body>
+    <main class="simulador-layout">
 
-    <main class="container">
+        <!-- IZQUIERDA -->
+        <section class="resultados">
 
-        <header class="header">
-            <h1>Simulador de compra</h1>
-            <p class="subtitle">
-                Recría a campo + terminación a corral
-            </p>
-        </header>
+            <h2>Resultados</h2>
+
+            <p>Peso final: <span id="pesoFinal">0</span> kg</p>
+            <p>Kg producidos: <span id="kgProducidos">0</span></p>
+            <p>Costo total: $<span id="costoTotal">0</span></p>
+            <p>Margen cabeza: $<span id="margenCabeza">0</span></p>
+            <p>Margen total: $<span id="margenTotal">0</span></p>
+
+            <h2>Logística</h2>
+
+            <p>Camiones: <span id="camiones"></span></p>
+            <p>Costo flete: $<span id="costoFlete"></span></p>
+            <p>Seguro: $<span id="seguroFlete"></span></p>
+
+        </section>
 
 
-        <!-- COMPRA -->
+        <!-- CENTRO -->
+        <section class="graficos">
 
-        <section class="card">
-
-            <h2>Compra</h2>
-
-            <div class="field">
-                <label>Cantidad animales</label>
-                <input id="cantidad" type="number">
-            </div>
-
-            <div class="field">
-                <label>Peso compra (kg)</label>
-                <input id="pesoCompra" type="number">
-            </div>
-
-            <div class="field">
-                <label>Precio compra ($/kg)</label>
-                <input id="precioCompra" type="number">
+            <h2>Visualización</h2>
+            <div class="placeholder-grafico">
+                espacio para gráficos
             </div>
 
         </section>
 
 
-        <!-- RECRIA -->
+        <!-- DERECHA -->
+        <section class="variables">
 
-        <section class="card">
+            <h2>Variables</h2>
 
-            <h2>Recría a campo</h2>
+            <!-- TODOS TUS SLIDERS VAN AQUÍ -->
 
-            <div class="field">
-                <label>ADPV campo (kg/día)</label>
-                <input id="adpvCampo" type="number" step="0.01">
-            </div>
+            <label>
+                Animales: <span id="animalesValor">150</span>
+            </label>
+            <input type="range" id="animales" min="50" max="10000" value="150">
 
-            <div class="field">
-                <label>Días de recría</label>
-                <input id="diasCampo" type="number">
-            </div>
+            <label>
+                Peso compra (kg): <span id="pesoCompraValor">200</span>
+            </label>
+            <input type="range" id="pesoCompra" min="160" max="240" value="200">
 
-            <div class="field">
-                <label>Costo campo ($/animal/día)</label>
-                <input id="costoCampo" type="number">
-            </div>
+            <label>
+                Precio compra ($/kg): <span id="precioCompraValor">2800</span>
+            </label>
+            <input type="range" id="precioCompra" min="2000" max="10000" value="2800">
 
-        </section>
+            <label>
+                Aumento diario (kg/día): <span id="adpvValor">0.8</span>
+            </label>
+            <input type="range" id="adpv" min="0.4" max="1.4" step="0.1" value="0.8">
 
+            <label>
+                Días: <span id="recriaValor">120</span>
+            </label>
+            <input type="range" id="recria" min="0" max="1000" value="120">
 
-        <!-- CORRAL -->
+            <label>
+                Días corral: <span id="corralValor">60</span>
+            </label>
+            <input type="range" id="corral" min="0" max="1000" value="60">
 
-        <section class="card">
+            <label>
+                Precio venta ($/kg): <span id="precioVentaValor">3200</span>
+            </label>
+            <input type="range" id="precioVenta" min="2500" max="10000" value="3200">
 
-            <h2>Terminación a corral</h2>
-
-            <div class="field">
-                <label>ADPV corral (kg/día)</label>
-                <input id="adpvCorral" type="number" step="0.01">
-            </div>
-
-            <div class="field">
-                <label>Días corral</label>
-                <input id="diasCorral" type="number">
-            </div>
-
-            <div class="field">
-                <label>Costo corral ($/animal/día)</label>
-                <input id="costoCorral" type="number">
-            </div>
-
-        </section>
-
-
-        <!-- VENTA -->
-
-        <section class="card">
-
-            <h2>Venta</h2>
-
-            <div class="field">
-                <label>Precio venta esperado ($/kg)</label>
-                <input id="precioVenta" type="number">
-            </div>
-
-            <div class="field">
-                <label>Flete total ($)</label>
-                <input id="flete" type="number">
-            </div>
+            <label>
+                Distancia (km): <span id="distanciaValor">300</span>
+            </label>
+            <input type="range" id="distancia" min="0" max="800" value="300">
 
         </section>
-
-
-        <button class="btn-primary" onclick="simular()">
-            👉 HACER LA CUENTA
-        </button>
-
-
-        <!-- RESULTADOS -->
-
-        <section class="card hidden" id="resultadoCard">
-
-            <h2>Resultado</h2>
-
-            <p id="pesoRecria"></p>
-            <p id="pesoFinal"></p>
-
-            <p id="costoTotal"></p>
-            <p id="ingreso"></p>
-
-            <p class="result-main">
-                Resultado del negocio<br>
-                <span id="resultado"></span>
-            </p>
-
-        </section>
-
 
     </main>
-
-    <script src="simulador.js"></script>
-    <script src="../ui.js"></script>
+    <a href="../index.html" class="btn-primary">← Volver</a>
+    <script src="/productivo/simulador.js"></script>
 
 </body>
 

@@ -261,3 +261,24 @@ body {
 .tool-link:active {
     transform: scale(0.98);
 }
+
+input[type="range"] {
+
+    width: 100%;
+    margin-bottom: 20px;
+
+}
+
+label {
+
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+
+}
+
+h2 {
+
+    margin-top: 35px;
+
+}
