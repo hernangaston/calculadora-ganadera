@@ -1,57 +1,79 @@
+/* ===== LAYOUT GENERAL ===== */
+
 .simulador-layout {
 
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 300px 1fr 320px;
+
     gap: 40px;
 
+    max-width: 1200px;
+    margin: auto;
     padding: 30px;
+
+    align-items: start;
 
 }
 
-/* columnas */
+
+/* ===== COLUMNAS ===== */
 
 .resultados {
 
-    order: 1;
+    position: sticky;
+    top: 20px;
 
 }
 
 .graficos {
 
-    order: 2;
+    min-height: 500px;
 
 }
 
-.variables {
-
-    order: 3;
-
-}
+.variables {}
 
 
-/* sliders */
-
-input[type="range"] {
-
-    width: 100%;
-    margin-bottom: 18px;
-
-}
+/* ===== SLIDERS ===== */
 
 label {
 
     display: block;
-    margin-top: 15px;
-    font-weight: bold;
+    margin-top: 18px;
+    font-weight: 600;
+
+}
+
+input[type="range"] {
+
+    width: 100%;
+    margin-bottom: 15px;
 
 }
 
 
-/* placeholder grafico */
+/* ===== RESULTADOS ===== */
+
+.resultados p {
+
+    margin: 6px 0;
+    font-size: 15px;
+
+}
+
+.resultados h2 {
+
+    margin-top: 25px;
+
+}
+
+
+/* ===== AREA DE GRAFICOS ===== */
 
 .placeholder-grafico {
 
-    height: 400px;
+    height: 420px;
+
     border: 2px dashed #ccc;
 
     display: flex;
@@ -59,19 +81,55 @@ label {
     justify-content: center;
 
     color: #888;
+    font-size: 14px;
 
 }
 
-@media (max-width: 900px) {
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width:700px) {
 
     .simulador-layout {
 
         grid-template-columns: 1fr;
-        gap: 10px;
+        gap: 15px;
 
     }
 
-    /* orden celular */
+    /* orden mobile */
+
+    .variables {
+
+        order: 1;
+
+    }
+
+    .resultados {
+
+        order: 2;
+
+        position: static;
+
+    }
+
+    .graficos {
+
+        display: none;
+
+    }
+
+}
+
+/* ===== MOBILE ===== */
+
+@media screen and (max-width: 700px) {
+
+    .simulador-layout {
+        grid-template-columns: 1fr;
+    }
+
+    /* orden en celular */
 
     .variables {
         order: 1;
@@ -79,11 +137,11 @@ label {
 
     .resultados {
         order: 2;
+        position: static;
     }
 
     .graficos {
         order: 3;
-        display: none;
     }
 
 }
