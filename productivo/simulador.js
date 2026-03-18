@@ -1,3 +1,5 @@
+let chartMargen = null;
+
 function formatoAR(numero, decimales = 0) {
 
     return numero.toLocaleString("es-AR", {
@@ -15,58 +17,6 @@ sliders.forEach(slider => {
 
 });
 
-function actualizar() {
-
-    const animales = Number(document.getElementById("animales").value);
-    const pesoCompra = Number(document.getElementById("pesoCompra").value);
-    const precioCompra = Number(document.getElementById("precioCompra").value);
-    const adpv = Number(document.getElementById("adpv").value);
-    const recria = Number(document.getElementById("recria").value);
-    const corral = Number(document.getElementById("corral").value);
-    const precioVenta = Number(document.getElementById("precioVenta").value);
-    const distancia = Number(document.getElementById("distancia").value);
-
-
-    document.getElementById("animalesValor").textContent = animales;
-    document.getElementById("pesoCompraValor").textContent = pesoCompra;
-    document.getElementById("precioCompraValor").textContent = precioCompra;
-    document.getElementById("adpvValor").textContent = adpv;
-    document.getElementById("recriaValor").textContent = recria;
-    document.getElementById("corralValor").textContent = corral;
-    document.getElementById("precioVentaValor").textContent = precioVenta;
-    document.getElementById("distanciaValor").textContent = distancia;
-
-
-    const diasTotales = recria + corral;
-
-    const pesoFinal = pesoCompra + (adpv * diasTotales);
-
-    const kgProducidos = pesoFinal - pesoCompra;
-
-
-    const costoCompra = pesoCompra * precioCompra * animales;
-
-    const ingresoVenta = pesoFinal * precioVenta * animales;
-
-
-    const costoFlete = calcularFlete(animales, distancia);
-
-    const seguro = costoFlete * 0.05;
-
-    const costoTotal = costoCompra + costoFlete + seguro;
-
-    const margen = ingresoVenta - costoTotal;
-
-    const margenCabeza = margen / animales;
-
-    document.getElementById("pesoFinal").textContent = formatoAR(pesoFinal, 1);
-    document.getElementById("kgProducidos").textContent = formatoAR(kgProducidos, 1);
-
-    document.getElementById("costoTotal").textContent = formatoAR(costoTotal);
-    document.getElementById("margenCabeza").textContent = formatoAR(margenCabeza);
-    document.getElementById("margenTotal").textContent = formatoAR(margen);
-
-}
 function calcularFlete(animales, distancia) {
 
     if (distancia === 0) {
@@ -111,6 +61,190 @@ function calcularFlete(animales, distancia) {
     document.getElementById("seguroFlete").textContent = formatoAR(costo * 0.05);
 
     return costo;
+
+}
+
+function calcularMargen(precioCompraSimulado) {
+
+    const animales = Number(document.getElementById("animales").value);
+    const pesoCompra = Number(document.getElementById("pesoCompra").value);
+    const adpv = Number(document.getElementById("adpv").value);
+    const recria = Number(document.getElementById("recria").value);
+    const corral = Number(document.getElementById("corral").value);
+    const precioVenta = Number(document.getElementById("precioVenta").value);
+    const distancia = Number(document.getElementById("distancia").value);
+
+    const diasTotales = recria + corral;
+    const pesoFinal = pesoCompra + (adpv * diasTotales);
+
+    const costoCompra = pesoCompra * precioCompraSimulado * animales;
+    const ingresoVenta = pesoFinal * precioVenta * animales;
+
+    const costoFlete = calcularFlete(animales, distancia);
+    const seguro = costoFlete * 0.05;
+
+    const costoTotal = costoCompra + costoFlete + seguro;
+
+    return ingresoVenta - costoTotal;
+}
+
+
+function generarCurvaMargen() {
+
+    const precios = [];
+    const margenes = [];
+
+    let puntoEquilibrio = 0;
+    let margenAnterior = null;
+
+    const precioActual = Number(document.getElementById("precioCompra").value);
+
+    const min = precioActual * 0.7;
+    const max = precioActual * 1.3;
+
+    let mejorPrecio = 0;
+    let menorDiferencia = Infinity;
+
+    for (let precio = min; precio <= max; precio += 50) {
+
+        const margen = calcularMargen(precio);
+
+        precios.push(precio);
+        margenes.push(margen);
+
+        const diferencia = Math.abs(margen);
+
+        if (diferencia < menorDiferencia) {
+            menorDiferencia = diferencia;
+            mejorPrecio = precio;
+        }
+    }
+
+    document.getElementById("precioEquilibrio").textContent =
+        formatoAR(mejorPrecio);
+
+    return { precios, margenes };
+}
+
+function actualizarGraficoMargen() {
+
+    const { precios, margenes } = generarCurvaMargen();
+
+    if (chartMargen) {
+        chartMargen.data.labels = precios;
+        chartMargen.data.datasets[0].data = margenes;
+        chartMargen.update();
+        return;
+    }
+
+    const ctx = document.getElementById("graficoMargen").getContext("2d");
+
+    chartMargen = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: precios,
+            datasets: [
+                {
+                    label: "Margen ($)",
+                    data: margenes,
+                    tension: 0.2
+                },
+                {
+                    label: "Precio actual",
+                    data: precios.map(() => 0),
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Precio compra ($/kg)"
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "Margen ($)"
+                    }
+                }
+            }
+        }
+    });
+}
+
+function actualizar() {
+
+    const animales = Number(document.getElementById("animales").value);
+    const pesoCompra = Number(document.getElementById("pesoCompra").value);
+    const precioCompra = Number(document.getElementById("precioCompra").value);
+    const adpv = Number(document.getElementById("adpv").value);
+    const recria = Number(document.getElementById("recria").value);
+    const corral = Number(document.getElementById("corral").value);
+    const precioVenta = Number(document.getElementById("precioVenta").value);
+    const distancia = Number(document.getElementById("distancia").value);
+
+
+    document.getElementById("animalesValor").textContent = animales;
+    document.getElementById("pesoCompraValor").textContent = pesoCompra;
+    document.getElementById("precioCompraValor").textContent = precioCompra;
+    document.getElementById("adpvValor").textContent = adpv;
+    document.getElementById("recriaValor").textContent = recria;
+    document.getElementById("corralValor").textContent = corral;
+    document.getElementById("precioVentaValor").textContent = precioVenta;
+    document.getElementById("distanciaValor").textContent = distancia;
+
+
+    const diasTotales = recria + corral;
+
+    const pesoFinal = pesoCompra + (adpv * diasTotales);
+
+    const kgProducidos = pesoFinal - pesoCompra;
+
+
+    const costoCompra = pesoCompra * precioCompra * animales;
+
+    const ingresoVenta = pesoFinal * precioVenta * animales;
+
+
+    const costoFlete = calcularFlete(animales, distancia);
+
+    const seguro = costoFlete * 0.05;
+
+    const costoTotal = costoCompra + costoFlete + seguro;
+
+    const margen = ingresoVenta - costoTotal;
+
+    const margenCabeza = margen / animales;
+    const estado = document.getElementById("estadoRentabilidad");
+
+    if (margenCabeza > 0) {
+
+        estado.textContent = "✔ Rentable: +" + formatoAR(margenCabeza) + " por cabeza";
+        estado.style.color = "green";
+
+    } else {
+
+        estado.textContent = "❌ No rentable: " + formatoAR(margenCabeza) + " por cabeza";
+        estado.style.color = "red";
+
+    }
+
+    actualizarGraficoMargen();
+
+    document.getElementById("pesoFinal").textContent = formatoAR(pesoFinal, 1);
+    document.getElementById("kgProducidos").textContent = formatoAR(kgProducidos, 1);
+
+    document.getElementById("costoTotal").textContent = formatoAR(costoTotal);
+    document.getElementById("margenCabeza").textContent = formatoAR(margenCabeza);
+    document.getElementById("margenTotal").textContent = formatoAR(margen);
 
 }
 

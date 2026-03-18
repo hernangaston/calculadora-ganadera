@@ -39,10 +39,9 @@
         <section class="graficos">
 
             <h2>Visualización</h2>
-            <div class="placeholder-grafico">
-                espacio para gráficos
-            </div>
-
+            <canvas id="graficoMargen"></canvas>
+            <p id="estadoRentabilidad"></p>
+            <p>Precio máximo rentable: $<span id="precioEquilibrio">0</span></p>
         </section>
 
 
@@ -96,6 +95,7 @@
         </section>
 
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="simulador.js"></script>
     <script src="../ui.js"></script>
 
