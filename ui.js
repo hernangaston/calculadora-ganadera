@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const boton = document.createElement("a");
 
-    boton.className = "btn-primary";
+    boton.className = "btn-primary btn-back";
     boton.innerHTML = "← Volver al inicio";
     boton.style.textDecoration = "none";
 

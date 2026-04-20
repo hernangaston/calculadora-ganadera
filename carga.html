@@ -25,13 +25,13 @@
             <h2>Cargá los datos</h2>
 
             <div class="field">
-                <label>Hectáreas disponibles</label>
-                <input type="number" id="hectareas" placeholder="Ej: 120">
+                <label for="hectareas">Hectáreas disponibles</label>
+                <input type="number" id="hectareas" name="hectareas" placeholder="Ej: 120" min="0" step="0.01">
             </div>
 
             <div class="field">
-                <label>Tipo de campo</label>
-                <select id="tipoCampo">
+                <label for="tipoCampo">Tipo de campo</label>
+                <select id="tipoCampo" name="tipoCampo">
                     <option value="">Seleccionar</option>
                     <option value="natural">Campo natural</option>
                     <option value="pastura">Pastura implantada</option>
@@ -40,8 +40,8 @@
             </div>
 
             <div class="field">
-                <label>Estado del pasto</label>
-                <select id="estadoPasto">
+                <label for="estadoPasto">Estado del pasto</label>
+                <select id="estadoPasto" name="estadoPasto">
                     <option value="">Seleccionar</option>
                     <option value="bueno">Bueno</option>
                     <option value="regular">Regular</option>
@@ -50,18 +50,18 @@
             </div>
 
             <div class="field">
-                <label>Cantidad de animales</label>
-                <input type="number" id="animales" placeholder="Ej: 180">
+                <label for="animales">Cantidad de animales</label>
+                <input type="number" id="animales" name="animales" placeholder="Ej: 180" min="0" step="1">
             </div>
 
             <div class="field">
-                <label>Peso promedio por animal (kg)</label>
-                <input type="number" id="peso" placeholder="Ej: 320">
+                <label for="peso">Peso promedio por animal (kg)</label>
+                <input type="number" id="peso" name="peso" placeholder="Ej: 320" min="0" step="0.1">
             </div>
         </section>
 
         <!-- BOTÓN -->
-        <button class="btn-primary">
+        <button id="btnCalcular" class="btn-primary" type="button">
             👉 CALCULAR CARGA
         </button>
 

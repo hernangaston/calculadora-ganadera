@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const btn = document.querySelector(".btn-primary");
+    const btn = document.getElementById("btnCalcular");
 
     const hectareas = document.getElementById("hectareas");
     const tipoCampo = document.getElementById("tipoCampo");
@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
         pastura: { bueno: 1.4, regular: 1.0, malo: 0.7 },
         verdeo: { bueno: 2.0, regular: 1.5, malo: 1.1 }
     };
+
+    if (!btn) return;
 
     btn.addEventListener("click", () => {
 
