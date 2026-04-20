@@ -9,6 +9,58 @@ function formatoAR(numero, decimales = 0) {
 
 }
 
+const precioActualPlugin = {
+    id: "precioActualPlugin",
+    afterDraw(chart, args, pluginOptions) {
+        const xValue = pluginOptions?.xValue;
+        if (xValue === null || xValue === undefined) return;
+
+        const xScale = chart.scales?.x;
+        const yScale = chart.scales?.y;
+        if (!xScale || !yScale) return;
+
+        const x = xScale.getPixelForValue(xValue);
+        if (!Number.isFinite(x)) return;
+
+        const { ctx, chartArea } = chart;
+        if (!chartArea) return;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = "#6D4C41";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = "#6D4C41";
+        ctx.font = "12px system-ui, -apple-system, Segoe UI, sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+
+        const label = "Precio actual";
+        const padding = 6;
+        const textWidth = ctx.measureText(label).width;
+        const boxWidth = textWidth + padding * 2;
+        const boxHeight = 18;
+
+        const xClamped = Math.min(
+            chartArea.right - boxWidth - 2,
+            Math.max(chartArea.left + 2, x + 6)
+        );
+        const yBox = chartArea.top + 6;
+
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fillRect(xClamped, yBox, boxWidth, boxHeight);
+
+        ctx.fillStyle = "#6D4C41";
+        ctx.fillText(label, xClamped + padding, yBox + 3);
+        ctx.restore();
+    }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const sliders = document.querySelectorAll("input[type=range]");
     sliders.forEach((slider) => slider.addEventListener("input", actualizar));
@@ -138,10 +190,12 @@ function generarCurvaMargen() {
 function actualizarGraficoMargen() {
 
     const { precios, margenes } = generarCurvaMargen();
+    const precioActual = Number(document.getElementById("precioCompra").value);
 
     if (chartMargen) {
         chartMargen.data.labels = precios;
         chartMargen.data.datasets[0].data = margenes;
+        chartMargen.options.plugins.precioActualPlugin.xValue = precioActual;
         chartMargen.update();
         return;
     }
@@ -149,6 +203,7 @@ function actualizarGraficoMargen() {
     const ctx = document.getElementById("graficoMargen").getContext("2d");
 
     chartMargen = new Chart(ctx, {
+        plugins: [precioActualPlugin],
         type: "line",
         data: {
             labels: precios,
@@ -174,6 +229,9 @@ function actualizarGraficoMargen() {
             plugins: {
                 legend: {
                     display: true
+                },
+                precioActualPlugin: {
+                    xValue: precioActual
                 }
             },
             scales: {
@@ -217,6 +275,19 @@ function actualizar() {
 
 
     const diasTotales = recria + corral;
+    const diasWarning = document.getElementById("diasWarning");
+    if (diasWarning) {
+        if (diasTotales > 450) {
+            diasWarning.innerHTML =
+                `<strong>Atención:</strong> estás simulando <strong>${formatoAR(diasTotales)}</strong> días totales. ` +
+                `Revisá si es realista para tu planteo (y si el ADPV se sostiene tanto tiempo).`;
+        } else if (diasTotales > 365) {
+            diasWarning.innerHTML =
+                `<strong>Ojo:</strong> <strong>${formatoAR(diasTotales)}</strong> días totales suele ser un ciclo largo.`;
+        } else {
+            diasWarning.textContent = "";
+        }
+    }
 
     const pesoFinal = pesoCompra + (adpv * diasTotales);
 
