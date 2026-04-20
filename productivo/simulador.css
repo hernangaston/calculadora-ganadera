@@ -56,6 +56,43 @@
     margin-top: 10px;
 }
 
+.manual-override {
+    margin: 6px 0 12px;
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 10px;
+    align-items: center;
+}
+
+.manual-toggle {
+    font-size: 0.85rem;
+    color: #555;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    user-select: none;
+}
+
+.manual-input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.manual-input:disabled {
+    opacity: 0.6;
+}
+
+.manual-override.is-manual .manual-input {
+    border-color: #2E7D32;
+}
+
+input[type="range"]:disabled {
+    opacity: 0.55;
+}
+
 .btn-secondary {
     width: 100%;
     padding: 12px;

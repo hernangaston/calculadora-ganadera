@@ -9,6 +9,74 @@ function formatoAR(numero, decimales = 0) {
 
 }
 
+function getManualElements(fieldId) {
+    const wrap = document.querySelector(`.manual-override[data-field="${fieldId}"]`);
+    if (!wrap) return null;
+    const check = wrap.querySelector(".manual-check");
+    const manual = document.getElementById(`${fieldId}_manual`);
+    const slider = document.getElementById(fieldId);
+    if (!check || !manual || !slider) return null;
+    return { wrap, check, manual, slider };
+}
+
+function getFieldValue(fieldId) {
+    const els = getManualElements(fieldId);
+    if (!els) {
+        const el = document.getElementById(fieldId);
+        return Number(el?.value ?? 0);
+    }
+    const { check, manual, slider } = els;
+    return check.checked ? Number(manual.value) : Number(slider.value);
+}
+
+function setManualState(fieldId, enabled, { syncManualFromSlider = true } = {}) {
+    const els = getManualElements(fieldId);
+    if (!els) return;
+    const { wrap, check, manual, slider } = els;
+
+    check.checked = enabled;
+    manual.disabled = !enabled;
+    slider.disabled = enabled;
+    wrap.classList.toggle("is-manual", enabled);
+
+    if (enabled && syncManualFromSlider) {
+        manual.value = slider.value;
+    }
+}
+
+function bindManualOverrides(onChange) {
+    const wrappers = document.querySelectorAll(".manual-override[data-field]");
+    wrappers.forEach((wrap) => {
+        const fieldId = wrap.getAttribute("data-field");
+        const els = getManualElements(fieldId);
+        if (!els) return;
+
+        const { check, manual, slider } = els;
+
+        // Copiar constraints del slider al input manual
+        if (slider.min !== "") manual.min = slider.min;
+        if (slider.max !== "") manual.max = slider.max;
+        if (slider.step !== "") manual.step = slider.step;
+
+        const handleToggle = () => {
+            setManualState(fieldId, check.checked, { syncManualFromSlider: true });
+            onChange();
+        };
+
+        check.addEventListener("change", handleToggle);
+        manual.addEventListener("input", onChange);
+
+        // Si el slider cambia y está en auto, mantenemos manual “listo” si luego activa
+        slider.addEventListener("input", () => {
+            if (!check.checked) manual.value = slider.value;
+            onChange();
+        });
+
+        // Estado inicial
+        setManualState(fieldId, check.checked, { syncManualFromSlider: false });
+    });
+}
+
 const precioActualPlugin = {
     id: "precioActualPlugin",
     afterDraw(chart, args, pluginOptions) {
@@ -65,11 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const sliders = document.querySelectorAll("input[type=range]");
     sliders.forEach((slider) => slider.addEventListener("input", actualizar));
 
+    bindManualOverrides(actualizar);
+
     const btnReset = document.getElementById("btnResetSimulador");
     const form = document.getElementById("simuladorForm");
     if (btnReset && form) {
         btnReset.addEventListener("click", () => {
             form.reset();
+            ["precioCompra", "precioVenta", "adpv"].forEach((id) => setManualState(id, false));
             if (chartMargen) {
                 chartMargen.destroy();
                 chartMargen = null;
@@ -130,13 +201,13 @@ function calcularFlete(animales, distancia) {
 
 function calcularMargen(precioCompraSimulado) {
 
-    const animales = Number(document.getElementById("animales").value);
-    const pesoCompra = Number(document.getElementById("pesoCompra").value);
-    const adpv = Number(document.getElementById("adpv").value);
-    const recria = Number(document.getElementById("recria").value);
-    const corral = Number(document.getElementById("corral").value);
-    const precioVenta = Number(document.getElementById("precioVenta").value);
-    const distancia = Number(document.getElementById("distancia").value);
+    const animales = getFieldValue("animales");
+    const pesoCompra = getFieldValue("pesoCompra");
+    const adpv = getFieldValue("adpv");
+    const recria = getFieldValue("recria");
+    const corral = getFieldValue("corral");
+    const precioVenta = getFieldValue("precioVenta");
+    const distancia = getFieldValue("distancia");
 
     const diasTotales = recria + corral;
     const pesoFinal = pesoCompra + (adpv * diasTotales);
@@ -158,7 +229,7 @@ function generarCurvaMargen() {
     const precios = [];
     const margenes = [];
 
-    const precioActual = Number(document.getElementById("precioCompra").value);
+    const precioActual = getFieldValue("precioCompra");
 
     const min = precioActual * 0.7;
     const max = precioActual * 1.3;
@@ -190,7 +261,7 @@ function generarCurvaMargen() {
 function actualizarGraficoMargen() {
 
     const { precios, margenes } = generarCurvaMargen();
-    const precioActual = Number(document.getElementById("precioCompra").value);
+    const precioActual = getFieldValue("precioCompra");
 
     if (chartMargen) {
         chartMargen.data.labels = precios;
@@ -254,14 +325,14 @@ function actualizarGraficoMargen() {
 
 function actualizar() {
 
-    const animales = Number(document.getElementById("animales").value);
-    const pesoCompra = Number(document.getElementById("pesoCompra").value);
-    const precioCompra = Number(document.getElementById("precioCompra").value);
-    const adpv = Number(document.getElementById("adpv").value);
-    const recria = Number(document.getElementById("recria").value);
-    const corral = Number(document.getElementById("corral").value);
-    const precioVenta = Number(document.getElementById("precioVenta").value);
-    const distancia = Number(document.getElementById("distancia").value);
+    const animales = getFieldValue("animales");
+    const pesoCompra = getFieldValue("pesoCompra");
+    const precioCompra = getFieldValue("precioCompra");
+    const adpv = getFieldValue("adpv");
+    const recria = getFieldValue("recria");
+    const corral = getFieldValue("corral");
+    const precioVenta = getFieldValue("precioVenta");
+    const distancia = getFieldValue("distancia");
 
 
     document.getElementById("animalesValor").textContent = formatoAR(animales);

@@ -76,11 +76,27 @@
                     Precio compra ($/kg): <output id="precioCompraValor" for="precioCompra">2800</output>
                 </label>
                 <input type="range" id="precioCompra" min="2000" max="10000" value="2800" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="precioCompra">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="precioCompra_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="precioCompra_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="2800" disabled>
+                </div>
 
                 <label for="adpv">
                     Aumento diario (kg/día): <output id="adpvValor" for="adpv">0.8</output>
                 </label>
                 <input type="range" id="adpv" min="0.4" max="1.4" step="0.1" value="0.8" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="adpv">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="adpv_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="adpv_manual" class="manual-input" type="number" inputmode="decimal" step="0.01" min="0"
+                        value="0.8" disabled>
+                </div>
 
                 <label for="recria">
                     Días recría: <output id="recriaValor" for="recria">120</output>
@@ -96,6 +112,14 @@
                     Precio venta ($/kg): <output id="precioVentaValor" for="precioVenta">3200</output>
                 </label>
                 <input type="range" id="precioVenta" min="2500" max="10000" value="3200" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="precioVenta">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="precioVenta_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="precioVenta_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="3200" disabled>
+                </div>
 
                 <label for="distancia">
                     Distancia (km): <output id="distanciaValor" for="distancia">300</output>
