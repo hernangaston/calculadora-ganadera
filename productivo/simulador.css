@@ -15,6 +15,51 @@
 
 }
 
+/* ===== HEADER ===== */
+.simulador-header {
+    max-width: 1200px;
+    margin: 20px auto 0;
+    padding: 0 30px;
+}
+
+.simulador-header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.simulador-subtitle {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.simulador-help {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.simulador-actions {
+    margin-top: 10px;
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    background: transparent;
+    color: #2E7D32;
+    border: 2px solid #2E7D32;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-secondary:active {
+    transform: scale(0.98);
+}
 
 /* ===== COLUMNAS ===== */
 
@@ -36,7 +81,7 @@
 
 /* ===== SLIDERS ===== */
 
-label {
+.variables label {
 
     display: block;
     margin-top: 18px;

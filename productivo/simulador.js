@@ -9,12 +9,24 @@ function formatoAR(numero, decimales = 0) {
 
 }
 
-const sliders = document.querySelectorAll("input[type=range]");
+document.addEventListener("DOMContentLoaded", () => {
+    const sliders = document.querySelectorAll("input[type=range]");
+    sliders.forEach((slider) => slider.addEventListener("input", actualizar));
 
-sliders.forEach(slider => {
+    const btnReset = document.getElementById("btnResetSimulador");
+    const form = document.getElementById("simuladorForm");
+    if (btnReset && form) {
+        btnReset.addEventListener("click", () => {
+            form.reset();
+            if (chartMargen) {
+                chartMargen.destroy();
+                chartMargen = null;
+            }
+            actualizar();
+        });
+    }
 
-    slider.addEventListener("input", actualizar);
-
+    actualizar();
 });
 
 function calcularFlete(animales, distancia) {
@@ -94,9 +106,6 @@ function generarCurvaMargen() {
     const precios = [];
     const margenes = [];
 
-    let puntoEquilibrio = 0;
-    let margenAnterior = null;
-
     const precioActual = Number(document.getElementById("precioCompra").value);
 
     const min = precioActual * 0.7;
@@ -147,11 +156,16 @@ function actualizarGraficoMargen() {
                 {
                     label: "Margen ($)",
                     data: margenes,
-                    tension: 0.2
+                    tension: 0.2,
+                    borderColor: "#2E7D32",
+                    pointRadius: 0
                 },
                 {
-                    label: "Precio actual",
+                    label: "Equilibrio (margen = 0)",
                     data: precios.map(() => 0),
+                    borderColor: "#888",
+                    borderDash: [6, 6],
+                    pointRadius: 0
                 }
             ]
         },
@@ -192,14 +206,14 @@ function actualizar() {
     const distancia = Number(document.getElementById("distancia").value);
 
 
-    document.getElementById("animalesValor").textContent = animales;
-    document.getElementById("pesoCompraValor").textContent = pesoCompra;
-    document.getElementById("precioCompraValor").textContent = precioCompra;
-    document.getElementById("adpvValor").textContent = adpv;
-    document.getElementById("recriaValor").textContent = recria;
-    document.getElementById("corralValor").textContent = corral;
-    document.getElementById("precioVentaValor").textContent = precioVenta;
-    document.getElementById("distanciaValor").textContent = distancia;
+    document.getElementById("animalesValor").textContent = formatoAR(animales);
+    document.getElementById("pesoCompraValor").textContent = formatoAR(pesoCompra);
+    document.getElementById("precioCompraValor").textContent = formatoAR(precioCompra);
+    document.getElementById("adpvValor").textContent = formatoAR(adpv, 1);
+    document.getElementById("recriaValor").textContent = formatoAR(recria);
+    document.getElementById("corralValor").textContent = formatoAR(corral);
+    document.getElementById("precioVentaValor").textContent = formatoAR(precioVenta);
+    document.getElementById("distanciaValor").textContent = formatoAR(distancia);
 
 
     const diasTotales = recria + corral;
@@ -247,5 +261,3 @@ function actualizar() {
     document.getElementById("margenTotal").textContent = formatoAR(margen);
 
 }
-
-actualizar();

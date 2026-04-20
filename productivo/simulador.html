@@ -13,6 +13,12 @@
 </head>
 
 <body>
+    <header class="simulador-header">
+        <h1>Simulador de Invernada</h1>
+        <p class="simulador-subtitle">
+            Ajustá las variables y mirá cómo cambia el margen. Valores orientativos; no reemplaza asesoramiento profesional.
+        </p>
+    </header>
     <main class="simulador-layout">
 
         <!-- IZQUIERDA -->
@@ -21,16 +27,16 @@
             <h2>Resultados</h2>
 
             <p>Peso final: <span id="pesoFinal">0</span> kg</p>
-            <p>Kg producidos: <span id="kgProducidos">0</span></p>
+            <p>Kg producidos: <span id="kgProducidos">0</span> kg</p>
             <p>Costo total: $<span id="costoTotal">0</span></p>
             <p>Margen cabeza: $<span id="margenCabeza">0</span></p>
             <p>Margen total: $<span id="margenTotal">0</span></p>
 
             <h2>Logística</h2>
 
-            <p>Camiones: <span id="camiones"></span></p>
-            <p>Costo flete: $<span id="costoFlete"></span></p>
-            <p>Seguro: $<span id="seguroFlete"></span></p>
+            <p>Camiones: <span id="camiones">0</span></p>
+            <p>Costo flete: $<span id="costoFlete">0</span></p>
+            <p>Seguro: $<span id="seguroFlete">0</span></p>
 
         </section>
 
@@ -50,47 +56,55 @@
 
             <h2>Variables</h2>
 
-            <!-- TODOS TUS SLIDERS VAN AQUÍ -->
+            <form id="simuladorForm" class="simulador-form" autocomplete="off">
+                <p id="slidersHelp" class="simulador-help">
+                    Tip: podés usar flechas del teclado para ajustar fino cada slider.
+                </p>
 
-            <label>
-                Animales: <span id="animalesValor">150</span>
-            </label>
-            <input type="range" id="animales" min="50" max="1000" value="150">
+                <label for="animales">
+                    Animales: <output id="animalesValor" for="animales">150</output>
+                </label>
+                <input type="range" id="animales" min="50" max="1000" value="150" aria-describedby="slidersHelp">
 
-            <label>
-                Peso compra (kg): <span id="pesoCompraValor">200</span>
-            </label>
-            <input type="range" id="pesoCompra" min="160" max="240" value="200">
+                <label for="pesoCompra">
+                    Peso compra (kg): <output id="pesoCompraValor" for="pesoCompra">200</output>
+                </label>
+                <input type="range" id="pesoCompra" min="160" max="240" value="200" aria-describedby="slidersHelp">
 
-            <label>
-                Precio compra ($/kg): <span id="precioCompraValor">2800</span>
-            </label>
-            <input type="range" id="precioCompra" min="2000" max="10000" value="2800">
+                <label for="precioCompra">
+                    Precio compra ($/kg): <output id="precioCompraValor" for="precioCompra">2800</output>
+                </label>
+                <input type="range" id="precioCompra" min="2000" max="10000" value="2800" aria-describedby="slidersHelp">
 
-            <label>
-                Aumento diario (kg/día): <span id="adpvValor">0.8</span>
-            </label>
-            <input type="range" id="adpv" min="0.4" max="1.4" step="0.1" value="0.8">
+                <label for="adpv">
+                    Aumento diario (kg/día): <output id="adpvValor" for="adpv">0.8</output>
+                </label>
+                <input type="range" id="adpv" min="0.4" max="1.4" step="0.1" value="0.8" aria-describedby="slidersHelp">
 
-            <label>
-                Días: <span id="recriaValor">120</span>
-            </label>
-            <input type="range" id="recria" min="0" max="1000" value="120">
+                <label for="recria">
+                    Días recría: <output id="recriaValor" for="recria">120</output>
+                </label>
+                <input type="range" id="recria" min="0" max="1000" value="120" aria-describedby="slidersHelp">
 
-            <label>
-                Días corral: <span id="corralValor">60</span>
-            </label>
-            <input type="range" id="corral" min="0" max="1000" value="60">
+                <label for="corral">
+                    Días corral: <output id="corralValor" for="corral">60</output>
+                </label>
+                <input type="range" id="corral" min="0" max="1000" value="60" aria-describedby="slidersHelp">
 
-            <label>
-                Precio venta ($/kg): <span id="precioVentaValor">3200</span>
-            </label>
-            <input type="range" id="precioVenta" min="2500" max="10000" value="3200">
+                <label for="precioVenta">
+                    Precio venta ($/kg): <output id="precioVentaValor" for="precioVenta">3200</output>
+                </label>
+                <input type="range" id="precioVenta" min="2500" max="10000" value="3200" aria-describedby="slidersHelp">
 
-            <label>
-                Distancia (km): <span id="distanciaValor">300</span>
-            </label>
-            <input type="range" id="distancia" min="0" max="800" value="300">
+                <label for="distancia">
+                    Distancia (km): <output id="distanciaValor" for="distancia">300</output>
+                </label>
+                <input type="range" id="distancia" min="0" max="800" value="300" aria-describedby="slidersHelp">
+
+                <div class="simulador-actions">
+                    <button id="btnResetSimulador" class="btn-secondary" type="button">Reset</button>
+                </div>
+            </form>
 
         </section>
 
