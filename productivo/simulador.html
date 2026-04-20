@@ -45,6 +45,34 @@
         <section class="graficos">
 
             <h2>Visualización</h2>
+            <section class="api-summary" aria-label="Variables de mercado (API)">
+                <div class="api-summary-head">
+                    <h3>Mercado (API)</h3>
+                    <p class="api-updated">
+                        Última actualización: <span id="apiUltimaActualizacion">-</span>
+                    </p>
+                </div>
+
+                <div class="api-summary-grid">
+                    <div class="api-summary-item">
+                        <p class="api-k">Dólar</p>
+                        <p class="api-v">$<span id="apiDolarVenta">-</span> <span class="market-pill" id="apiDolarModo">-</span></p>
+                        <p class="api-meta"><span id="apiFuenteDolar">-</span> · <span id="apiFechaDolar">-</span></p>
+                    </div>
+
+                    <div class="api-summary-item">
+                        <p class="api-k">Ganado</p>
+                        <p class="api-v"><span id="apiGanadoUsdKg">-</span> USD/kg</p>
+                        <p class="api-meta"><span id="apiFuenteGanado">-</span> · <span id="apiFechaGanado">-</span></p>
+                    </div>
+
+                    <div class="api-summary-item">
+                        <p class="api-k">Precio referencia</p>
+                        <p class="api-v"><span id="apiPrecioMercadoArs">-</span> $/kg</p>
+                        <p class="api-meta">USD/kg × dólar seleccionado</p>
+                    </div>
+                </div>
+            </section>
             <canvas id="graficoMargen"></canvas>
             <p id="estadoRentabilidad"></p>
             <p>Precio máximo rentable: $<span id="precioEquilibrio">0</span></p>
@@ -60,6 +88,43 @@
                 <p id="slidersHelp" class="simulador-help">
                     Tip: podés usar flechas del teclado para ajustar fino cada slider.
                 </p>
+                <section class="market-box" aria-label="Datos de mercado">
+                    <h3>Datos de mercado</h3>
+
+                    <div class="market-row">
+                        <div class="market-col">
+                            <p class="market-label">Dólar</p>
+                            <div class="segmented" id="dolarMode" role="radiogroup" aria-label="Tipo de dólar">
+                                <label class="segmented-item">
+                                    <input type="radio" name="dolar_mode" value="blue" checked>
+                                    Blue
+                                </label>
+                                <label class="segmented-item">
+                                    <input type="radio" name="dolar_mode" value="oficial">
+                                    Oficial
+                                </label>
+                                <label class="segmented-item">
+                                    <input type="radio" name="dolar_mode" value="mep">
+                                    MEP
+                                </label>
+                                <label class="segmented-item">
+                                    <input type="radio" name="dolar_mode" value="manual">
+                                    Manual
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="market-col market-right">
+                            <p class="market-label">Cotización</p>
+                            <p class="market-value">
+                                $<span id="dolarValor">0</span> <span class="market-pill" id="dolarModo">BLUE</span>
+                            </p>
+                            <input id="dolarManual" class="market-input" type="number" inputmode="numeric" step="1"
+                                min="0" value="0" disabled aria-label="Dólar manual">
+                            <p id="marketStatus" class="market-status" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </section>
                 <p id="diasWarning" class="simulador-warning" role="status" aria-live="polite"></p>
 
                 <label for="animales">
@@ -76,6 +141,7 @@
                     Precio compra ($/kg): <output id="precioCompraValor" for="precioCompra">2800</output>
                 </label>
                 <input type="range" id="precioCompra" min="2000" max="10000" value="2800" aria-describedby="slidersHelp">
+                <p class="market-hint" id="precioCompraHint"></p>
                 <div class="manual-override" data-field="precioCompra">
                     <label class="manual-toggle">
                         <input type="checkbox" class="manual-check" aria-controls="precioCompra_manual">
@@ -135,7 +201,7 @@
 
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="simulador.js"></script>
+    <script type="module" src="../public/js/app-simulador.js"></script>
     <script src="../ui.js"></script>
 
 </body>

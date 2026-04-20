@@ -1,0 +1,132 @@
+const express = require("express");
+const router = express.Router();
+
+async function fetchJson(url, options = {}) {
+  if (typeof fetch !== "function") {
+    const err = new Error("Este servidor requiere fetch nativo (Node 18+).");
+    err.status = 500;
+    throw err;
+  }
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      "accept": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    const err = new Error(`HTTP ${res.status} al pedir ${url}`);
+    err.status = res.status;
+    err.body = text;
+    throw err;
+  }
+
+  return await res.json();
+}
+
+function pickDolarRates(payload) {
+  // DolarAPI suele devolver objetos por endpoint.
+  // Normalizamos a { oficial, blue, mep } con { venta, compra, fechaActualizacion? }
+  const normalize = (p) => ({
+    compra: typeof p?.compra === "number" ? p.compra : null,
+    venta: typeof p?.venta === "number" ? p.venta : null,
+    fechaActualizacion: p?.fechaActualizacion || p?.fecha || null,
+    fuente: p?.casa || p?.nombre || null,
+  });
+
+  return {
+    oficial: normalize(payload.oficial),
+    blue: normalize(payload.blue),
+    mep: normalize(payload.mep),
+  };
+}
+
+router.get("/dolar", async (req, res) => {
+  try {
+    // DolarAPI: endpoints comunes
+    // - https://dolarapi.com/v1/dolares/oficial
+    // - https://dolarapi.com/v1/dolares/blue
+    // - https://dolarapi.com/v1/dolares/bolsa (MEP)
+    const [oficial, blue, mep] = await Promise.all([
+      fetchJson("https://dolarapi.com/v1/dolares/oficial"),
+      fetchJson("https://dolarapi.com/v1/dolares/blue"),
+      fetchJson("https://dolarapi.com/v1/dolares/bolsa"),
+    ]);
+
+    res.json({
+      ok: true,
+      dolar: pickDolarRates({ oficial, blue, mep }),
+    });
+  } catch (err) {
+    res.status(502).json({
+      ok: false,
+      error: "No se pudo obtener el dólar desde la API",
+      details: {
+        status: err.status || null,
+      },
+      fallback: {
+        oficial: { compra: null, venta: 0, fechaActualizacion: null, fuente: "fallback" },
+        blue: { compra: null, venta: 0, fechaActualizacion: null, fuente: "fallback" },
+        mep: { compra: null, venta: 0, fechaActualizacion: null, fuente: "fallback" },
+      },
+    });
+  }
+});
+
+router.get("/ganado", async (req, res) => {
+  // Preparado para ROSGAN/MAG. Por ahora mock estable.
+  // Nota: usamos USD/kg para que el selector de dólar tenga impacto directo.
+  res.json({
+    ok: true,
+    fuente: "mock",
+    mercado: "invernada",
+    unidad: "USD/kg",
+    precioUsdKg: 2.55,
+    fecha: new Date().toISOString(),
+    notas: "Mock inicial. Preparado para integrar ROSGAN/MAG.",
+  });
+});
+
+router.get("/precios", async (req, res) => {
+  try {
+    const [dolarResp, ganadoResp] = await Promise.all([
+      (async () => {
+        const [oficial, blue, mep] = await Promise.all([
+          fetchJson("https://dolarapi.com/v1/dolares/oficial"),
+          fetchJson("https://dolarapi.com/v1/dolares/blue"),
+          fetchJson("https://dolarapi.com/v1/dolares/bolsa"),
+        ]);
+        return { ok: true, dolar: pickDolarRates({ oficial, blue, mep }) };
+      })(),
+      (async () => ({
+        ok: true,
+        fuente: "mock",
+        mercado: "invernada",
+        unidad: "USD/kg",
+        precioUsdKg: 2.55,
+        fecha: new Date().toISOString(),
+      }))(),
+    ]);
+
+    res.json({
+      ok: true,
+      dolar: dolarResp.dolar,
+      ganado: {
+        fuente: ganadoResp.fuente,
+        unidad: ganadoResp.unidad,
+        precioUsdKg: ganadoResp.precioUsdKg,
+        fecha: ganadoResp.fecha,
+      },
+    });
+  } catch (err) {
+    res.status(502).json({
+      ok: false,
+      error: "No se pudieron obtener precios",
+    });
+  }
+});
+
+module.exports = router;
+
