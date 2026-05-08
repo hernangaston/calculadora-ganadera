@@ -1,5 +1,17 @@
-export function calcularFlete({ animales, distancia }) {
-  if (!distancia) {
+function sanitizar(val) {
+  const n = Number(val);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function sanitizarPositivo(val) {
+  return Math.max(0, sanitizar(val));
+}
+
+export function calcularFlete({ animales, distancia } = {}) {
+  animales = sanitizarPositivo(animales);
+  distancia = sanitizarPositivo(distancia);
+
+  if (distancia === 0) {
     return { descripcion: "", costoFlete: 0, seguroFlete: 0 };
   }
 
@@ -27,7 +39,25 @@ export function calcularFlete({ animales, distancia }) {
   };
 }
 
-export function calcularResultado({ animales, pesoCompra, adpv, recria, corral, precioCompra, precioVenta, distancia }) {
+export function calcularResultado({
+  animales,
+  pesoCompra,
+  adpv,
+  recria,
+  corral,
+  precioCompra,
+  precioVenta,
+  distancia,
+} = {}) {
+  animales = sanitizarPositivo(animales);
+  pesoCompra = sanitizarPositivo(pesoCompra);
+  adpv = sanitizar(adpv);
+  recria = sanitizarPositivo(recria);
+  corral = sanitizarPositivo(corral);
+  precioCompra = sanitizarPositivo(precioCompra);
+  precioVenta = sanitizarPositivo(precioVenta);
+  distancia = sanitizarPositivo(distancia);
+
   const diasTotales = recria + corral;
   const pesoFinal = pesoCompra + adpv * diasTotales;
   const kgProducidos = pesoFinal - pesoCompra;
@@ -39,7 +69,7 @@ export function calcularResultado({ animales, pesoCompra, adpv, recria, corral, 
   const costoTotal = costoCompra + flete.costoFlete + flete.seguroFlete;
 
   const margen = ingresoVenta - costoTotal;
-  const margenCabeza = margen / Math.max(animales, 1);
+  const margenCabeza = animales > 0 ? margen / animales : 0;
 
   return { diasTotales, pesoFinal, kgProducidos, costoTotal, margen, margenCabeza, flete };
 }
