@@ -30,22 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function costoCamion(tipo, km) {
 
         const c = camiones[tipo];
-
-        let flete;
-
-        if (km <= c.limite) {
-
-            flete = c.arranque;
-
-        } else {
-
-            flete = c.arranque + ((km - c.limite) * c.tarifa);
-
-        }
-
-        const seguro = flete * 0.05;
-
-        return flete + seguro;
+        const flete = km <= c.limite ? c.arranque + c.tarifa * km : c.tarifa * km;
+        return flete * 1.05;
 
     }
 
@@ -94,6 +80,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
 
+        }
+
+        if (mejorCombo === null) {
+            alert("No se encontró combinación válida para esa cantidad de animales.");
+            return;
         }
 
         const costoAnimal = mejorCosto / animales;

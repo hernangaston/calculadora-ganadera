@@ -7,6 +7,10 @@ function sanitizarPositivo(val) {
   return Math.max(0, sanitizar(val));
 }
 
+function fleteCamion(arranque, tarifa, km) {
+  return km <= 300 ? arranque + tarifa * km : tarifa * km;
+}
+
 export function calcularFlete({ animales, distancia } = {}) {
   animales = sanitizarPositivo(animales);
   distancia = sanitizarPositivo(distancia);
@@ -19,18 +23,12 @@ export function calcularFlete({ animales, distancia } = {}) {
   let resto = animales % 110;
   const simple = Math.floor(resto / 70);
   resto = resto % 70;
-  const chasis = Math.ceil(resto / 20);
+  const chasis = resto > 0 ? Math.ceil(resto / 20) : 0;
 
-  let costoFlete = 0;
-  if (distancia < 300) {
-    costoFlete += doble * 250000;
-    costoFlete += simple * 160000;
-    costoFlete += chasis * 90000;
-  } else {
-    costoFlete += doble * distancia * 3300;
-    costoFlete += simple * distancia * 2900;
-    costoFlete += chasis * distancia * 2100;
-  }
+  const costoFlete =
+    doble  * fleteCamion(250000, 3300, distancia) +
+    simple * fleteCamion(160000, 2900, distancia) +
+    chasis * fleteCamion( 90000, 2100, distancia);
 
   return {
     descripcion: `${doble} Jaula doble, ${simple} Jaula simple, ${chasis} Chasis`,

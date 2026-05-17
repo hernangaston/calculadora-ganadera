@@ -39,17 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const camion = camiones[tipo];
 
-        let flete;
-
-        if (km <= camion.limite) {
-
-            flete = camion.arranque;
-
-        } else {
-
-            flete = camion.arranque + ((km - camion.limite) * camion.tarifa);
-
-        }
+        const flete = km <= camion.limite
+            ? camion.arranque + camion.tarifa * km
+            : camion.tarifa * km;
 
         const seguro = flete * 0.05;
         const total = flete + seguro;
