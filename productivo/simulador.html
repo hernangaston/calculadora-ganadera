@@ -26,8 +26,12 @@
 
             <h2>Resultados</h2>
 
+            <p>Peso entrada corral: <span id="pesoDespuesRecria">0</span> kg</p>
             <p>Peso final: <span id="pesoFinal">0</span> kg</p>
             <p>Kg producidos: <span id="kgProducidos">0</span> kg</p>
+            <p>Costo producción: $<span id="costoProduccion">0</span></p>
+            <p>Comisión compra: $<span id="comisionCompraTotal">0</span></p>
+            <p>Comisión venta: $<span id="comisionVentaTotal">0</span></p>
             <p>Costo total: $<span id="costoTotal">0</span></p>
             <p>Margen cabeza: $<span id="margenCabeza">0</span></p>
             <p>Margen total: $<span id="margenTotal">0</span></p>
@@ -151,28 +155,82 @@
                         min="0" value="2800" disabled>
                 </div>
 
-                <label for="adpv">
-                    Aumento diario (kg/día): <output id="adpvValor" for="adpv">0.8</output>
+                <label for="comisionCompra">
+                    Comisión compra (%): <output id="comisionCompraValor" for="comisionCompra">3,0</output>
                 </label>
-                <input type="range" id="adpv" min="0.4" max="1.4" step="0.1" value="0.8" aria-describedby="slidersHelp">
-                <div class="manual-override" data-field="adpv">
+                <input type="range" id="comisionCompra" min="0" max="10" step="0.5" value="3" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="comisionCompra">
                     <label class="manual-toggle">
-                        <input type="checkbox" class="manual-check" aria-controls="adpv_manual">
+                        <input type="checkbox" class="manual-check" aria-controls="comisionCompra_manual">
                         Editar manualmente
                     </label>
-                    <input id="adpv_manual" class="manual-input" type="number" inputmode="decimal" step="0.01" min="0"
-                        value="0.8" disabled>
+                    <input id="comisionCompra_manual" class="manual-input" type="number" inputmode="decimal" step="0.1"
+                        min="0" max="10" value="3" disabled>
                 </div>
 
+                <!-- RECRÍA A CAMPO -->
                 <label for="recria">
-                    Días recría: <output id="recriaValor" for="recria">120</output>
+                    Días recría (campo): <output id="recriaValor" for="recria">120</output>
                 </label>
                 <input type="range" id="recria" min="0" max="1000" value="120" aria-describedby="slidersHelp">
 
+                <label for="adpvCampo">
+                    ADPV recría (kg/día): <output id="adpvCampoValor" for="adpvCampo">0.55</output>
+                </label>
+                <input type="range" id="adpvCampo" min="0.3" max="0.9" step="0.05" value="0.55" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="adpvCampo">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="adpvCampo_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="adpvCampo_manual" class="manual-input" type="number" inputmode="decimal" step="0.01"
+                        min="0" value="0.55" disabled>
+                </div>
+
+                <label for="costoCampo">
+                    Costo campo ($/cab/día): <output id="costoCampoValor" for="costoCampo">150</output>
+                </label>
+                <input type="range" id="costoCampo" min="0" max="500" step="10" value="150" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="costoCampo">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="costoCampo_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="costoCampo_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="150" disabled>
+                </div>
+
+                <!-- TERMINACIÓN EN CORRAL -->
                 <label for="corral">
                     Días corral: <output id="corralValor" for="corral">60</output>
                 </label>
                 <input type="range" id="corral" min="0" max="1000" value="60" aria-describedby="slidersHelp">
+
+                <label for="adpvCorral">
+                    ADPV corral (kg/día): <output id="adpvCorralValor" for="adpvCorral">1.0</output>
+                </label>
+                <input type="range" id="adpvCorral" min="0.7" max="1.5" step="0.05" value="1.0" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="adpvCorral">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="adpvCorral_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="adpvCorral_manual" class="manual-input" type="number" inputmode="decimal" step="0.01"
+                        min="0" value="1.0" disabled>
+                </div>
+
+                <label for="costoCorral">
+                    Costo corral ($/cab/día): <output id="costoCorralValor" for="costoCorral">600</output>
+                </label>
+                <input type="range" id="costoCorral" min="0" max="1500" step="50" value="600" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="costoCorral">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="costoCorral_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="costoCorral_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="600" disabled>
+                </div>
 
                 <label for="precioVenta">
                     Precio venta ($/kg): <output id="precioVentaValor" for="precioVenta">3200</output>
@@ -185,6 +243,19 @@
                     </label>
                     <input id="precioVenta_manual" class="manual-input" type="number" inputmode="numeric" step="1"
                         min="0" value="3200" disabled>
+                </div>
+
+                <label for="comisionVenta">
+                    Comisión venta (%): <output id="comisionVentaValor" for="comisionVenta">3,0</output>
+                </label>
+                <input type="range" id="comisionVenta" min="0" max="10" step="0.5" value="3" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="comisionVenta">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="comisionVenta_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="comisionVenta_manual" class="manual-input" type="number" inputmode="decimal" step="0.1"
+                        min="0" max="10" value="3" disabled>
                 </div>
 
                 <label for="distancia">

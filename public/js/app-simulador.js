@@ -9,12 +9,17 @@ const state = {
   inputs: {
     animales: 0,
     pesoCompra: 0,
-    adpv: 0,
+    adpvCampo: 0,
+    adpvCorral: 0,
     recria: 0,
     corral: 0,
+    costoCampo: 0,
+    costoCorral: 0,
     precioCompra: 0,
     precioVenta: 0,
     distancia: 0,
+    comisionCompra: 0,
+    comisionVenta: 0,
   },
 };
 
@@ -32,14 +37,19 @@ function getRadioValue(name) {
 // ── Lee el DOM y actualiza state.inputs ───────────────────────────────────────
 function leerInputs(overrides) {
   state.inputs = {
-    animales: Number($("animales").value),
-    pesoCompra: Number($("pesoCompra").value),
-    recria: Number($("recria").value),
-    corral: Number($("corral").value),
-    distancia: Number($("distancia").value),
-    adpv: overrides.adpv.getValue(),
-    precioCompra: overrides.precioCompra.getValue(),
-    precioVenta: overrides.precioVenta.getValue(),
+    animales:       Number($("animales").value),
+    pesoCompra:     Number($("pesoCompra").value),
+    recria:         Number($("recria").value),
+    corral:         Number($("corral").value),
+    distancia:      Number($("distancia").value),
+    adpvCampo:      overrides.adpvCampo.getValue(),
+    adpvCorral:     overrides.adpvCorral.getValue(),
+    costoCampo:     overrides.costoCampo.getValue(),
+    costoCorral:    overrides.costoCorral.getValue(),
+    precioCompra:   overrides.precioCompra.getValue(),
+    precioVenta:    overrides.precioVenta.getValue(),
+    comisionCompra: overrides.comisionCompra.getValue(),
+    comisionVenta:  overrides.comisionVenta.getValue(),
   };
 }
 
@@ -62,14 +72,19 @@ function formatFecha(value) {
 
 // ── Render: valores visibles de sliders ───────────────────────────────────────
 function renderValoresVisibles() {
-  $("animalesValor").textContent = formatoAR(state.inputs.animales);
-  $("pesoCompraValor").textContent = formatoAR(state.inputs.pesoCompra);
-  $("precioCompraValor").textContent = formatoAR(state.inputs.precioCompra);
-  $("adpvValor").textContent = formatoAR(state.inputs.adpv, 2);
-  $("recriaValor").textContent = formatoAR(state.inputs.recria);
-  $("corralValor").textContent = formatoAR(state.inputs.corral);
-  $("precioVentaValor").textContent = formatoAR(state.inputs.precioVenta);
-  $("distanciaValor").textContent = formatoAR(state.inputs.distancia);
+  $("animalesValor").textContent        = formatoAR(state.inputs.animales);
+  $("pesoCompraValor").textContent      = formatoAR(state.inputs.pesoCompra);
+  $("precioCompraValor").textContent    = formatoAR(state.inputs.precioCompra);
+  $("comisionCompraValor").textContent  = formatoAR(state.inputs.comisionCompra, 1);
+  $("adpvCampoValor").textContent       = formatoAR(state.inputs.adpvCampo, 2);
+  $("adpvCorralValor").textContent      = formatoAR(state.inputs.adpvCorral, 2);
+  $("costoCampoValor").textContent      = formatoAR(state.inputs.costoCampo);
+  $("costoCorralValor").textContent     = formatoAR(state.inputs.costoCorral);
+  $("recriaValor").textContent          = formatoAR(state.inputs.recria);
+  $("corralValor").textContent          = formatoAR(state.inputs.corral);
+  $("precioVentaValor").textContent     = formatoAR(state.inputs.precioVenta);
+  $("comisionVentaValor").textContent   = formatoAR(state.inputs.comisionVenta, 1);
+  $("distanciaValor").textContent       = formatoAR(state.inputs.distancia);
 }
 
 // ── Render: warning de días totales ──────────────────────────────────────────
@@ -81,7 +96,7 @@ function renderDiasWarning() {
   if (diasTotales > 450) {
     diasWarning.innerHTML =
       `<strong>Atención:</strong> estás simulando <strong>${formatoAR(diasTotales)}</strong> días totales. ` +
-      `Revisá si es realista para tu planteo (y si el ADPV se sostiene tanto tiempo).`;
+      `Revisá si es realista para tu planteo.`;
   } else if (diasTotales > 365) {
     diasWarning.innerHTML =
       `<strong>Ojo:</strong> <strong>${formatoAR(diasTotales)}</strong> días totales suele ser un ciclo largo.`;
@@ -92,17 +107,21 @@ function renderDiasWarning() {
 
 // ── Render: resultados del cálculo ────────────────────────────────────────────
 function renderResultados(res, ui) {
-  ui.pesoFinal.textContent = formatoAR(res.pesoFinal, 1);
-  ui.kgProducidos.textContent = formatoAR(res.kgProducidos, 1);
-  ui.costoTotal.textContent = formatoAR(res.costoTotal);
-  ui.margenCabeza.textContent = formatoAR(res.margenCabeza);
-  ui.margenTotal.textContent = formatoAR(res.margen);
+  ui.pesoDespuesRecria.textContent   = formatoAR(res.pesoDespuesRecria, 1);
+  ui.pesoFinal.textContent           = formatoAR(res.pesoFinal, 1);
+  ui.kgProducidos.textContent        = formatoAR(res.kgProducidos, 1);
+  ui.costoProduccion.textContent     = formatoAR(res.costoProduccion);
+  ui.comisionCompraTotal.textContent = formatoAR(res.comisionCompraTotal);
+  ui.comisionVentaTotal.textContent  = formatoAR(res.comisionVentaTotal);
+  ui.costoTotal.textContent          = formatoAR(res.costoTotal);
+  ui.margenCabeza.textContent        = formatoAR(res.margenCabeza);
+  ui.margenTotal.textContent         = formatoAR(res.margen);
 }
 
 // ── Render: flete ─────────────────────────────────────────────────────────────
 function renderFlete(flete, ui) {
-  ui.camiones.textContent = flete.descripcion || "0";
-  ui.costoFlete.textContent = formatoAR(flete.costoFlete);
+  ui.camiones.textContent    = flete.descripcion || "0";
+  ui.costoFlete.textContent  = formatoAR(flete.costoFlete);
   ui.seguroFlete.textContent = formatoAR(flete.seguroFlete);
 }
 
@@ -119,18 +138,18 @@ function renderRentabilidad(margenCabeza, ui) {
 
 // ── Render: panel de mercado ──────────────────────────────────────────────────
 function renderMarket(ui) {
-  const dolarMode = getRadioValue("dolar_mode") || "blue";
+  const dolarMode   = getRadioValue("dolar_mode") || "blue";
   const manualDolar = Number(ui.dolarManual.value) || 0;
-  const dolarVenta = getDolarVentaFromMode(dolarMode, manualDolar);
+  const dolarVenta  = getDolarVentaFromMode(dolarMode, manualDolar);
 
   ui.dolarManual.disabled = dolarMode !== "manual";
   setDolarUI({ dolarVenta, mode: dolarMode, ui });
 
   const usdKg = state.preciosCache?.ganado?.precioUsdKg;
-  const ref = typeof usdKg === "number" ? usdKg * dolarVenta : null;
+  const ref   = typeof usdKg === "number" ? usdKg * dolarVenta : null;
 
   if (ui.apiDolarVenta) ui.apiDolarVenta.textContent = dolarVenta > 0 ? formatoAR(dolarVenta) : "-";
-  if (ui.apiDolarModo) ui.apiDolarModo.textContent = dolarMode.toUpperCase();
+  if (ui.apiDolarModo)  ui.apiDolarModo.textContent  = dolarMode.toUpperCase();
   if (ui.apiFuenteDolar) ui.apiFuenteDolar.textContent = "DolarAPI";
   if (ui.apiFechaDolar) {
     ui.apiFechaDolar.textContent = formatFecha(state.preciosCache?.dolar?.[dolarMode]?.fechaActualizacion || null);
@@ -184,11 +203,11 @@ const precioActualPlugin = {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    const label = "Precio actual";
-    const padding = 6;
+    const label    = "Precio actual";
+    const padding  = 6;
     ctx.font = "12px system-ui, -apple-system, Segoe UI, sans-serif";
     const textWidth = ctx.measureText(label).width;
-    const boxWidth = textWidth + padding * 2;
+    const boxWidth  = textWidth + padding * 2;
     const boxHeight = 18;
 
     const xClamped = Math.min(
@@ -212,9 +231,9 @@ function renderCurvaMargen(ui) {
   const min = precioCompra * 0.7;
   const max = precioCompra * 1.3;
 
-  const precios = [];
+  const precios  = [];
   const margenes = [];
-  let mejorPrecio = 0;
+  let mejorPrecio     = 0;
   let menorDiferencia = Infinity;
 
   for (let precio = min; precio <= max; precio += 50) {
@@ -278,9 +297,9 @@ function renderCurvaMargen(ui) {
 
 // ── Ciclo central de actualización ────────────────────────────────────────────
 function actualizar(ui, overrides) {
-  leerInputs(overrides);        // DOM → state.inputs
-  renderValoresVisibles();       // muestra valores de sliders
-  renderDiasWarning();           // aviso días totales
+  leerInputs(overrides);
+  renderValoresVisibles();
+  renderDiasWarning();
 
   if (state.preciosCache) renderMarket(ui);
 
@@ -308,30 +327,34 @@ async function loadMarket(ui) {
 // ── Init ──────────────────────────────────────────────────────────────────────
 function buildUIRefs() {
   return {
-    pesoFinal: $("pesoFinal"),
-    kgProducidos: $("kgProducidos"),
-    costoTotal: $("costoTotal"),
-    margenCabeza: $("margenCabeza"),
-    margenTotal: $("margenTotal"),
-    camiones: $("camiones"),
-    costoFlete: $("costoFlete"),
-    seguroFlete: $("seguroFlete"),
-    estadoRentabilidad: $("estadoRentabilidad"),
-    precioEquilibrio: $("precioEquilibrio"),
-    dolarValor: $("dolarValor"),
-    dolarModo: $("dolarModo"),
-    dolarManual: $("dolarManual"),
-    marketStatus: $("marketStatus"),
-    precioCompraHint: $("precioCompraHint"),
+    pesoDespuesRecria:    $("pesoDespuesRecria"),
+    pesoFinal:            $("pesoFinal"),
+    kgProducidos:         $("kgProducidos"),
+    costoProduccion:      $("costoProduccion"),
+    comisionCompraTotal:  $("comisionCompraTotal"),
+    comisionVentaTotal:   $("comisionVentaTotal"),
+    costoTotal:           $("costoTotal"),
+    margenCabeza:         $("margenCabeza"),
+    margenTotal:          $("margenTotal"),
+    camiones:             $("camiones"),
+    costoFlete:           $("costoFlete"),
+    seguroFlete:          $("seguroFlete"),
+    estadoRentabilidad:   $("estadoRentabilidad"),
+    precioEquilibrio:     $("precioEquilibrio"),
+    dolarValor:           $("dolarValor"),
+    dolarModo:            $("dolarModo"),
+    dolarManual:          $("dolarManual"),
+    marketStatus:         $("marketStatus"),
+    precioCompraHint:     $("precioCompraHint"),
     apiUltimaActualizacion: $("apiUltimaActualizacion"),
-    apiDolarVenta: $("apiDolarVenta"),
-    apiDolarModo: $("apiDolarModo"),
-    apiFuenteDolar: $("apiFuenteDolar"),
-    apiFechaDolar: $("apiFechaDolar"),
-    apiGanadoUsdKg: $("apiGanadoUsdKg"),
-    apiFuenteGanado: $("apiFuenteGanado"),
-    apiFechaGanado: $("apiFechaGanado"),
-    apiPrecioMercadoArs: $("apiPrecioMercadoArs"),
+    apiDolarVenta:        $("apiDolarVenta"),
+    apiDolarModo:         $("apiDolarModo"),
+    apiFuenteDolar:       $("apiFuenteDolar"),
+    apiFechaDolar:        $("apiFechaDolar"),
+    apiGanadoUsdKg:       $("apiGanadoUsdKg"),
+    apiFuenteGanado:      $("apiFuenteGanado"),
+    apiFechaGanado:       $("apiFechaGanado"),
+    apiPrecioMercadoArs:  $("apiPrecioMercadoArs"),
   };
 }
 
@@ -339,9 +362,14 @@ function main() {
   const ui = buildUIRefs();
 
   const overrides = {
-    precioCompra: wireManualOverride({ fieldId: "precioCompra", onChange: () => actualizar(ui, overrides) }),
-    precioVenta: wireManualOverride({ fieldId: "precioVenta", onChange: () => actualizar(ui, overrides) }),
-    adpv: wireManualOverride({ fieldId: "adpv", onChange: () => actualizar(ui, overrides) }),
+    precioCompra:   wireManualOverride({ fieldId: "precioCompra",   onChange: () => actualizar(ui, overrides) }),
+    comisionCompra: wireManualOverride({ fieldId: "comisionCompra", onChange: () => actualizar(ui, overrides) }),
+    adpvCampo:      wireManualOverride({ fieldId: "adpvCampo",      onChange: () => actualizar(ui, overrides) }),
+    costoCampo:     wireManualOverride({ fieldId: "costoCampo",     onChange: () => actualizar(ui, overrides) }),
+    adpvCorral:     wireManualOverride({ fieldId: "adpvCorral",     onChange: () => actualizar(ui, overrides) }),
+    costoCorral:    wireManualOverride({ fieldId: "costoCorral",    onChange: () => actualizar(ui, overrides) }),
+    precioVenta:    wireManualOverride({ fieldId: "precioVenta",    onChange: () => actualizar(ui, overrides) }),
+    comisionVenta:  wireManualOverride({ fieldId: "comisionVenta",  onChange: () => actualizar(ui, overrides) }),
   };
 
   document.querySelectorAll('input[type="range"]').forEach((el) =>

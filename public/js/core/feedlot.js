@@ -40,34 +40,64 @@ export function calcularFlete({ animales, distancia } = {}) {
 export function calcularResultado({
   animales,
   pesoCompra,
-  adpv,
+  adpvCampo,
+  adpvCorral,
   recria,
   corral,
+  costoCampo,
+  costoCorral,
   precioCompra,
   precioVenta,
   distancia,
+  comisionCompra,
+  comisionVenta,
 } = {}) {
-  animales = sanitizarPositivo(animales);
-  pesoCompra = sanitizarPositivo(pesoCompra);
-  adpv = sanitizar(adpv);
-  recria = sanitizarPositivo(recria);
-  corral = sanitizarPositivo(corral);
-  precioCompra = sanitizarPositivo(precioCompra);
-  precioVenta = sanitizarPositivo(precioVenta);
-  distancia = sanitizarPositivo(distancia);
+  animales       = sanitizarPositivo(animales);
+  pesoCompra     = sanitizarPositivo(pesoCompra);
+  adpvCampo      = sanitizar(adpvCampo);
+  adpvCorral     = sanitizar(adpvCorral);
+  recria         = sanitizarPositivo(recria);
+  corral         = sanitizarPositivo(corral);
+  costoCampo     = sanitizarPositivo(costoCampo);
+  costoCorral    = sanitizarPositivo(costoCorral);
+  precioCompra   = sanitizarPositivo(precioCompra);
+  precioVenta    = sanitizarPositivo(precioVenta);
+  distancia      = sanitizarPositivo(distancia);
+  comisionCompra = sanitizarPositivo(comisionCompra);
+  comisionVenta  = sanitizarPositivo(comisionVenta);
 
-  const diasTotales = recria + corral;
-  const pesoFinal = pesoCompra + adpv * diasTotales;
-  const kgProducidos = pesoFinal - pesoCompra;
+  const diasTotales       = recria + corral;
+  const pesoDespuesRecria = pesoCompra + adpvCampo * recria;
+  const pesoFinal         = pesoDespuesRecria + adpvCorral * corral;
+  const kgProducidos      = pesoFinal - pesoCompra;
 
-  const costoCompra = pesoCompra * precioCompra * animales;
-  const ingresoVenta = pesoFinal * precioVenta * animales;
+  const precioCompraEfectivo = precioCompra * (1 + comisionCompra / 100);
+  const precioVentaEfectivo  = precioVenta  * (1 - comisionVenta  / 100);
 
-  const flete = calcularFlete({ animales, distancia });
-  const costoTotal = costoCompra + flete.costoFlete + flete.seguroFlete;
+  const costoCompra        = pesoCompra * precioCompraEfectivo * animales;
+  const costoProduccion    = (costoCampo * recria + costoCorral * corral) * animales;
+  const ingresoVenta       = pesoFinal  * precioVentaEfectivo  * animales;
 
-  const margen = ingresoVenta - costoTotal;
+  const comisionCompraTotal = pesoCompra * precioCompra * (comisionCompra / 100) * animales;
+  const comisionVentaTotal  = pesoFinal  * precioVenta  * (comisionVenta  / 100) * animales;
+
+  const flete    = calcularFlete({ animales, distancia });
+  const costoTotal = costoCompra + costoProduccion + flete.costoFlete + flete.seguroFlete;
+
+  const margen       = ingresoVenta - costoTotal;
   const margenCabeza = animales > 0 ? margen / animales : 0;
 
-  return { diasTotales, pesoFinal, kgProducidos, costoTotal, margen, margenCabeza, flete };
+  return {
+    diasTotales,
+    pesoDespuesRecria,
+    pesoFinal,
+    kgProducidos,
+    costoTotal,
+    costoProduccion,
+    comisionCompraTotal,
+    comisionVentaTotal,
+    margen,
+    margenCabeza,
+    flete,
+  };
 }
