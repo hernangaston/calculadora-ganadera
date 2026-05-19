@@ -54,6 +54,18 @@ function leerInputs(overrides) {
 }
 
 // ── Helpers de mercado ────────────────────────────────────────────────────────
+function getDolarOficial() {
+  const v = state.preciosCache?.dolar?.oficial?.venta;
+  return typeof v === "number" && v > 0 ? v : 0;
+}
+
+function formatUSD(ars) {
+  const d = getDolarOficial();
+  if (!d) return "";
+  const usd = ars / d;
+  return `(USD ${usd.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
+}
+
 function getDolarVentaFromMode(mode, manualValue) {
   if (mode === "manual") return Number(manualValue) || 0;
   const venta = state.preciosCache?.dolar?.[mode]?.venta;
@@ -80,6 +92,10 @@ function renderValoresVisibles() {
   $("adpvCorralValor").textContent      = formatoAR(state.inputs.adpvCorral, 2);
   $("costoCampoValor").textContent      = formatoAR(state.inputs.costoCampo);
   $("costoCorralValor").textContent     = formatoAR(state.inputs.costoCorral);
+  const usdCampo = $("costoCampoUsd");
+  if (usdCampo) usdCampo.textContent   = formatUSD(state.inputs.costoCampo);
+  const usdCorral = $("costoCorralUsd");
+  if (usdCorral) usdCorral.textContent = formatUSD(state.inputs.costoCorral);
   $("recriaValor").textContent          = formatoAR(state.inputs.recria);
   $("corralValor").textContent          = formatoAR(state.inputs.corral);
   $("precioVentaValor").textContent     = formatoAR(state.inputs.precioVenta);
@@ -116,6 +132,8 @@ function renderResultados(res, ui) {
   ui.costoTotal.textContent          = formatoAR(res.costoTotal);
   ui.margenCabeza.textContent        = formatoAR(res.margenCabeza);
   ui.margenTotal.textContent         = formatoAR(res.margen);
+  if (ui.margenCabezaUsd) ui.margenCabezaUsd.textContent = formatUSD(res.margenCabeza);
+  if (ui.margenTotalUsd)  ui.margenTotalUsd.textContent  = formatUSD(res.margen);
 }
 
 // ── Render: flete ─────────────────────────────────────────────────────────────
@@ -336,6 +354,8 @@ function buildUIRefs() {
     costoTotal:           $("costoTotal"),
     margenCabeza:         $("margenCabeza"),
     margenTotal:          $("margenTotal"),
+    margenCabezaUsd:      $("margenCabezaUsd"),
+    margenTotalUsd:       $("margenTotalUsd"),
     camiones:             $("camiones"),
     costoFlete:           $("costoFlete"),
     seguroFlete:          $("seguroFlete"),

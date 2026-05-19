@@ -246,6 +246,13 @@
     margin-top: 10px;
 }
 
+.usd-equiv {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1565C0;
+    margin-left: 4px;
+}
+
 .manual-override {
     margin: 6px 0 12px;
     display: grid;

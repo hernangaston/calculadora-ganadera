@@ -33,8 +33,8 @@
             <p>Comisión compra: $<span id="comisionCompraTotal">0</span></p>
             <p>Comisión venta: $<span id="comisionVentaTotal">0</span></p>
             <p>Costo total: $<span id="costoTotal">0</span></p>
-            <p>Margen cabeza: $<span id="margenCabeza">0</span></p>
-            <p>Margen total: $<span id="margenTotal">0</span></p>
+            <p>Margen cabeza: $<span id="margenCabeza">0</span> <span class="usd-equiv" id="margenCabezaUsd"></span></p>
+            <p>Margen total: $<span id="margenTotal">0</span> <span class="usd-equiv" id="margenTotalUsd"></span></p>
 
             <h2>Logística</h2>
 
@@ -188,7 +188,7 @@
                 </div>
 
                 <label for="costoCampo">
-                    Costo campo ($/cab/día): <output id="costoCampoValor" for="costoCampo">150</output>
+                    Costo campo ($/cab/día): <output id="costoCampoValor" for="costoCampo">150</output> <span class="usd-equiv" id="costoCampoUsd"></span>
                 </label>
                 <input type="range" id="costoCampo" min="0" max="500" step="10" value="150" aria-describedby="slidersHelp">
                 <div class="manual-override" data-field="costoCampo">
@@ -220,7 +220,7 @@
                 </div>
 
                 <label for="costoCorral">
-                    Costo corral ($/cab/día): <output id="costoCorralValor" for="costoCorral">600</output>
+                    Costo corral ($/cab/día): <output id="costoCorralValor" for="costoCorral">600</output> <span class="usd-equiv" id="costoCorralUsd"></span>
                 </label>
                 <input type="range" id="costoCorral" min="0" max="1500" step="50" value="600" aria-describedby="slidersHelp">
                 <div class="manual-override" data-field="costoCorral">
