@@ -68,31 +68,28 @@
         <section class="graficos">
 
             <h2>Visualización</h2>
-            <section class="api-summary" aria-label="Variables de mercado (API)">
+            <section class="api-summary" aria-label="Tipos de cambio">
                 <div class="api-summary-head">
-                    <h3>Mercado (API)</h3>
+                    <h3>Tipos de cambio</h3>
                     <p class="api-updated">
-                        Última actualización: <span id="apiUltimaActualizacion">-</span>
+                        Actualizado: <span id="apiUltimaActualizacion">-</span>
                     </p>
                 </div>
-
                 <div class="api-summary-grid">
                     <div class="api-summary-item">
-                        <p class="api-k">Dólar</p>
-                        <p class="api-v">$<span id="apiDolarVenta">-</span> <span class="market-pill" id="apiDolarModo">-</span></p>
-                        <p class="api-meta"><span id="apiFuenteDolar">-</span> · <span id="apiFechaDolar">-</span></p>
+                        <p class="api-k">Blue</p>
+                        <p class="api-v">$<span id="apiDolarBlue">-</span></p>
+                        <p class="api-meta"><span id="apiFechaDolarBlue">-</span></p>
                     </div>
-
                     <div class="api-summary-item">
-                        <p class="api-k">Ganado</p>
-                        <p class="api-v"><span id="apiGanadoUsdKg">-</span> USD/kg</p>
-                        <p class="api-meta"><span id="apiFuenteGanado">-</span> · <span id="apiFechaGanado">-</span></p>
+                        <p class="api-k">Oficial</p>
+                        <p class="api-v">$<span id="apiDolarOficial">-</span></p>
+                        <p class="api-meta"><span id="apiFechaDolarOficial">-</span></p>
                     </div>
-
                     <div class="api-summary-item">
-                        <p class="api-k">Precio referencia</p>
-                        <p class="api-v"><span id="apiPrecioMercadoArs">-</span> $/kg</p>
-                        <p class="api-meta">USD/kg × dólar seleccionado</p>
+                        <p class="api-k">MEP</p>
+                        <p class="api-v">$<span id="apiDolarMep">-</span></p>
+                        <p class="api-meta"><span id="apiFechaDolarMep">-</span></p>
                     </div>
                 </div>
             </section>
@@ -111,43 +108,6 @@
                 <p id="slidersHelp" class="simulador-help">
                     Tip: podés usar flechas del teclado para ajustar fino cada slider.
                 </p>
-                <section class="market-box" aria-label="Datos de mercado">
-                    <h3>Datos de mercado</h3>
-
-                    <div class="market-row">
-                        <div class="market-col">
-                            <p class="market-label">Dólar</p>
-                            <div class="segmented" id="dolarMode" role="radiogroup" aria-label="Tipo de dólar">
-                                <label class="segmented-item">
-                                    <input type="radio" name="dolar_mode" value="blue" checked>
-                                    Blue
-                                </label>
-                                <label class="segmented-item">
-                                    <input type="radio" name="dolar_mode" value="oficial">
-                                    Oficial
-                                </label>
-                                <label class="segmented-item">
-                                    <input type="radio" name="dolar_mode" value="mep">
-                                    MEP
-                                </label>
-                                <label class="segmented-item">
-                                    <input type="radio" name="dolar_mode" value="manual">
-                                    Manual
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="market-col market-right">
-                            <p class="market-label">Cotización</p>
-                            <p class="market-value">
-                                $<span id="dolarValor">0</span> <span class="market-pill" id="dolarModo">BLUE</span>
-                            </p>
-                            <input id="dolarManual" class="market-input" type="number" inputmode="numeric" step="1"
-                                min="0" value="0" disabled aria-label="Dólar manual">
-                            <p id="marketStatus" class="market-status" aria-live="polite"></p>
-                        </div>
-                    </div>
-                </section>
                 <p id="diasWarning" class="simulador-warning" role="status" aria-live="polite"></p>
 
                 <label for="animales">

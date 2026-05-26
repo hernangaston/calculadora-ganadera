@@ -1,7 +1,7 @@
 import { getPrecios, getRosgan } from "./api.js";
 import { calcularResultado } from "./core/feedlot.js";
 import { formatoAR } from "./calculator.js";
-import { wireManualOverride, setLoading, setDolarUI } from "./ui.js";
+import { wireManualOverride, setLoading } from "./ui.js";
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const state = {
@@ -28,10 +28,6 @@ let chartMargen = null;
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 function $(id) {
   return document.getElementById(id);
-}
-
-function getRadioValue(name) {
-  return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
 }
 
 // ── Lee el DOM y actualiza state.inputs ───────────────────────────────────────
@@ -66,11 +62,6 @@ function formatUSD(ars) {
   return `(USD ${usd.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
 }
 
-function getDolarVentaFromMode(mode, manualValue) {
-  if (mode === "manual") return Number(manualValue) || 0;
-  const venta = state.preciosCache?.dolar?.[mode]?.venta;
-  return typeof venta === "number" ? venta : 0;
-}
 
 function formatFecha(value) {
   if (!value) return "-";
@@ -156,42 +147,27 @@ function renderRentabilidad(margenCabeza, ui) {
 
 // ── Render: panel de mercado ──────────────────────────────────────────────────
 function renderMarket(ui) {
-  const dolarMode   = getRadioValue("dolar_mode") || "blue";
-  const manualDolar = Number(ui.dolarManual.value) || 0;
-  const dolarVenta  = getDolarVentaFromMode(dolarMode, manualDolar);
+  const blue    = state.preciosCache?.dolar?.blue;
+  const oficial = state.preciosCache?.dolar?.oficial;
+  const mep     = state.preciosCache?.dolar?.mep;
 
-  ui.dolarManual.disabled = dolarMode !== "manual";
-  setDolarUI({ dolarVenta, mode: dolarMode, ui });
+  if (ui.apiDolarBlue)         ui.apiDolarBlue.textContent         = blue?.venta    ? formatoAR(blue.venta)    : "-";
+  if (ui.apiDolarOficial)      ui.apiDolarOficial.textContent      = oficial?.venta ? formatoAR(oficial.venta) : "-";
+  if (ui.apiDolarMep)          ui.apiDolarMep.textContent          = mep?.venta     ? formatoAR(mep.venta)     : "-";
+  if (ui.apiFechaDolarBlue)    ui.apiFechaDolarBlue.textContent    = formatFecha(blue?.fechaActualizacion);
+  if (ui.apiFechaDolarOficial) ui.apiFechaDolarOficial.textContent = formatFecha(oficial?.fechaActualizacion);
+  if (ui.apiFechaDolarMep)     ui.apiFechaDolarMep.textContent     = formatFecha(mep?.fechaActualizacion);
 
-  const usdKg = state.preciosCache?.ganado?.precioUsdKg;
-  const ref   = typeof usdKg === "number" ? usdKg * dolarVenta : null;
-
-  if (ui.apiDolarVenta) ui.apiDolarVenta.textContent = dolarVenta > 0 ? formatoAR(dolarVenta) : "-";
-  if (ui.apiDolarModo)  ui.apiDolarModo.textContent  = dolarMode.toUpperCase();
-  if (ui.apiFuenteDolar) ui.apiFuenteDolar.textContent = "DolarAPI";
-  if (ui.apiFechaDolar) {
-    ui.apiFechaDolar.textContent = formatFecha(state.preciosCache?.dolar?.[dolarMode]?.fechaActualizacion || null);
-  }
-  if (ui.apiGanadoUsdKg) ui.apiGanadoUsdKg.textContent = typeof usdKg === "number" ? usdKg.toFixed(2) : "-";
-  if (ui.apiFuenteGanado) {
-    const fuente = state.preciosCache?.ganado?.fuente || "desconocida";
-    ui.apiFuenteGanado.textContent = fuente === "mock" ? "Mock (ROSGAN/MAG pendiente)" : fuente;
-  }
-  if (ui.apiFechaGanado) ui.apiFechaGanado.textContent = formatFecha(state.preciosCache?.ganado?.fecha || null);
-  if (ui.apiPrecioMercadoArs) {
-    ui.apiPrecioMercadoArs.textContent = (typeof ref === "number" && ref > 0) ? `$${formatoAR(ref)}` : "-";
-  }
   if (ui.apiUltimaActualizacion) {
-    const f1 = new Date(state.preciosCache?.dolar?.[dolarMode]?.fechaActualizacion || 0).getTime() || 0;
-    const f2 = new Date(state.preciosCache?.ganado?.fecha || 0).getTime() || 0;
-    const maxTs = Math.max(f1, f2);
-    ui.apiUltimaActualizacion.textContent = maxTs ? new Date(maxTs).toLocaleString("es-AR") : "-";
+    const ts = Math.max(
+      new Date(blue?.fechaActualizacion    || 0).getTime() || 0,
+      new Date(oficial?.fechaActualizacion || 0).getTime() || 0,
+      new Date(mep?.fechaActualizacion     || 0).getTime() || 0
+    );
+    ui.apiUltimaActualizacion.textContent = ts ? new Date(ts).toLocaleString("es-AR") : "-";
   }
 
-  ui.precioCompraHint.textContent =
-    (typeof ref === "number" && ref > 0)
-      ? `Referencia mercado: ${usdKg.toFixed(2)} USD/kg × dólar ${dolarMode.toUpperCase()} = $${formatoAR(ref)}/kg`
-      : "Referencia mercado no disponible";
+  if (ui.precioCompraHint) ui.precioCompraHint.textContent = "";
 }
 
 // ── Render: gráfico de curva de margen ────────────────────────────────────────
@@ -434,20 +410,14 @@ function buildUIRefs() {
     seguroFlete:          $("seguroFlete"),
     estadoRentabilidad:   $("estadoRentabilidad"),
     precioEquilibrio:     $("precioEquilibrio"),
-    dolarValor:           $("dolarValor"),
-    dolarModo:            $("dolarModo"),
-    dolarManual:          $("dolarManual"),
-    marketStatus:         $("marketStatus"),
-    precioCompraHint:     $("precioCompraHint"),
-    apiUltimaActualizacion: $("apiUltimaActualizacion"),
-    apiDolarVenta:        $("apiDolarVenta"),
-    apiDolarModo:         $("apiDolarModo"),
-    apiFuenteDolar:       $("apiFuenteDolar"),
-    apiFechaDolar:        $("apiFechaDolar"),
-    apiGanadoUsdKg:       $("apiGanadoUsdKg"),
-    apiFuenteGanado:      $("apiFuenteGanado"),
-    apiFechaGanado:       $("apiFechaGanado"),
-    apiPrecioMercadoArs:  $("apiPrecioMercadoArs"),
+    precioCompraHint:        $("precioCompraHint"),
+    apiUltimaActualizacion:  $("apiUltimaActualizacion"),
+    apiDolarBlue:            $("apiDolarBlue"),
+    apiDolarOficial:         $("apiDolarOficial"),
+    apiDolarMep:             $("apiDolarMep"),
+    apiFechaDolarBlue:       $("apiFechaDolarBlue"),
+    apiFechaDolarOficial:    $("apiFechaDolarOficial"),
+    apiFechaDolarMep:        $("apiFechaDolarMep"),
     rosganFecha:          $("rosganFecha"),
     rosganStatus:         $("rosganStatus"),
     rosganBody:           $("rosganBody"),
@@ -473,12 +443,6 @@ function main() {
   document.querySelectorAll('input[type="range"]').forEach((el) =>
     el.addEventListener("input", () => actualizar(ui, overrides))
   );
-
-  document.querySelectorAll('input[name="dolar_mode"]').forEach((el) =>
-    el.addEventListener("change", () => actualizar(ui, overrides))
-  );
-
-  ui.dolarManual.addEventListener("input", () => actualizar(ui, overrides));
 
   $("btnResetSimulador")?.addEventListener("click", () => {
     $("simuladorForm")?.reset();
