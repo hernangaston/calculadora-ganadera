@@ -606,6 +606,11 @@ input[type="range"] {
     text-decoration: underline;
 }
 
+/* Botón volver (nav.js) insertado en el grid — ocupa toda la fila */
+.simulador-layout > div {
+    grid-column: 1 / -1;
+}
+
 .rosgan-set-badge {
     display: inline-block;
     font-size: 0.68rem;

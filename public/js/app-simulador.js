@@ -86,7 +86,7 @@ function formatFecha(value) {
 function renderValoresVisibles() {
   $("animalesValor").textContent        = formatoAR(state.inputs.animales);
   $("pesoCompraValor").textContent      = formatoAR(state.inputs.pesoCompra);
-  $("precioCompraValor").textContent    = formatoAR(state.inputs.precioCompra);
+  $("precioCompraValor").textContent    = formatoAR(state.inputs.precioCompra, 2);
   $("comisionCompraValor").textContent  = formatoAR(state.inputs.comisionCompra, 1);
   $("adpvCampoValor").textContent       = formatoAR(state.inputs.adpvCampo, 2);
   $("adpvCorralValor").textContent      = formatoAR(state.inputs.adpvCorral, 2);
@@ -384,7 +384,7 @@ function renderRosgan(data, ui, overrides) {
     if (slider && piri > Number(slider.max)) {
       slider.max = String(Math.ceil(piri * 1.5 / 1000) * 1000);
     }
-    overrides.precioCompra.setAutoValue(Math.round(piri));
+    overrides.precioCompra.setAutoValue(piri);
     const badge = $("precioCompraBadge");
     if (badge) badge.hidden = false;
   }
