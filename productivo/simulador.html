@@ -24,6 +24,25 @@
         <!-- IZQUIERDA -->
         <section class="resultados">
 
+            <!-- ROSGAN -->
+            <section id="rosganSection" class="rosgan-section">
+                <div class="rosgan-header">
+                    <h2>Índice ROSGAN</h2>
+                    <span id="rosganFecha" class="api-updated">-</span>
+                </div>
+                <p id="rosganStatus" class="market-status">Cargando…</p>
+                <div id="rosganBody" class="rosgan-hidden">
+                    <div class="rosgan-total">
+                        <span class="rosgan-total-label">Invernada</span>
+                        <span id="rosganPiri" class="rosgan-total-price"></span>
+                    </div>
+                    <div id="rosganCategorias"></div>
+                    <p class="rosgan-fuente">
+                        Fuente: <a href="https://www.rosgan.com.ar/indices" target="_blank" rel="noopener">ROSGAN – Mercado Ganadero BCR</a>
+                    </p>
+                </div>
+            </section>
+
             <h2>Resultados</h2>
 
             <p>Peso entrada corral: <span id="pesoDespuesRecria">0</span> kg</p>
@@ -143,6 +162,7 @@
 
                 <label for="precioCompra">
                     Precio compra ($/kg): <output id="precioCompraValor" for="precioCompra">2800</output>
+                    <span id="precioCompraBadge" class="rosgan-set-badge" hidden>↑ ROSGAN</span>
                 </label>
                 <input type="range" id="precioCompra" min="2000" max="10000" value="2800" aria-describedby="slidersHelp">
                 <p class="market-hint" id="precioCompraHint"></p>

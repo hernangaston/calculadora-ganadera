@@ -65,6 +65,10 @@ export async function getPrecios() {
   }
 }
 
+export async function getRosgan() {
+  return fetchJSON("/api/rosgan");
+}
+
 export async function getDolar() {
   try {
     return await fetchJSON("/api/dolar");

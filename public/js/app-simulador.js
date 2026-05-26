@@ -1,4 +1,4 @@
-import { getPrecios } from "./api.js";
+import { getPrecios, getRosgan } from "./api.js";
 import { calcularResultado } from "./core/feedlot.js";
 import { formatoAR } from "./calculator.js";
 import { wireManualOverride, setLoading, setDolarUI } from "./ui.js";
@@ -328,6 +328,62 @@ function actualizar(ui, overrides) {
   renderCurvaMargen(ui);
 }
 
+// ── ROSGAN ────────────────────────────────────────────────────────────────────
+const MESES_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+function renderRosgan(data, ui, overrides) {
+  const { mes, anio, piri, invernada } = data;
+
+  if (ui.rosganFecha) ui.rosganFecha.textContent = `${MESES_ES[mes - 1] ?? mes} ${anio}`;
+  if (ui.rosganStatus) ui.rosganStatus.textContent = "";
+  if (ui.rosganBody) ui.rosganBody.classList.remove("rosgan-hidden");
+  if (ui.rosganPiri) ui.rosganPiri.textContent = `$${formatoAR(piri)}`;
+
+  if (ui.rosganCategorias && invernada?.categorias) {
+    const cats = invernada.categorias.filter((c) => c.precio > 0);
+    ui.rosganCategorias.innerHTML = cats.map((cat) => {
+      const razas = (cat.razas || []).filter((r) => r.precio > 0);
+      const razasHTML = razas.length
+        ? `<table class="rosgan-razas">${razas.map((r) =>
+            `<tr>
+              <td>${r.titulo}${r.observacion ? `<span class="rosgan-obs">${r.observacion}</span>` : ""}</td>
+              <td>$${formatoAR(r.precio)}</td>
+            </tr>`
+          ).join("")}</table>`
+        : "";
+      return `<div class="rosgan-cat">
+        <div class="rosgan-cat-header">
+          <span>${cat.titulo}</span>
+          <span class="rosgan-cat-price">$${formatoAR(cat.precio)}</span>
+        </div>
+        ${razasHTML}
+      </div>`;
+    }).join("");
+  }
+
+  // Auto-set precioCompra al PIRI
+  if (piri > 0 && overrides?.precioCompra) {
+    const slider = $("precioCompra");
+    if (slider && piri > Number(slider.max)) {
+      slider.max = String(Math.ceil(piri * 1.5 / 1000) * 1000);
+    }
+    overrides.precioCompra.setAutoValue(Math.round(piri));
+    const badge = $("precioCompraBadge");
+    if (badge) badge.hidden = false;
+  }
+}
+
+async function loadRosgan(ui, overrides) {
+  try {
+    const data = await getRosgan();
+    if (!data?.ok) throw new Error("Sin datos");
+    renderRosgan(data, ui, overrides);
+    actualizar(ui, overrides);
+  } catch {
+    if (ui.rosganStatus) ui.rosganStatus.textContent = "No se pudo cargar ROSGAN.";
+  }
+}
+
 // ── Carga de mercado ──────────────────────────────────────────────────────────
 async function loadMarket(ui) {
   setLoading(ui.marketStatus, true, "Cargando datos de mercado…");
@@ -375,6 +431,11 @@ function buildUIRefs() {
     apiFuenteGanado:      $("apiFuenteGanado"),
     apiFechaGanado:       $("apiFechaGanado"),
     apiPrecioMercadoArs:  $("apiPrecioMercadoArs"),
+    rosganFecha:          $("rosganFecha"),
+    rosganStatus:         $("rosganStatus"),
+    rosganBody:           $("rosganBody"),
+    rosganPiri:           $("rosganPiri"),
+    rosganCategorias:     $("rosganCategorias"),
   };
 }
 
@@ -412,6 +473,7 @@ function main() {
   });
 
   loadMarket(ui).finally(() => actualizar(ui, overrides));
+  loadRosgan(ui, overrides);
 }
 
 document.addEventListener("DOMContentLoaded", main);
