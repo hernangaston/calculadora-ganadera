@@ -2,34 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const btn = document.querySelector(".btn-primary");
 
-    const camiones = {
-
-        chasis: {
-            capacidad: 20,
-            tarifa: 2100,
-            arranque: 90000,
-            limite: 300
-        },
-
-        simple: {
-            capacidad: 70,
-            tarifa: 2900,
-            arranque: 160000,
-            limite: 300
-        },
-
-        doble: {
-            capacidad: 110,
-            tarifa: 3300,
-            arranque: 250000,
-            limite: 300
-        }
-
-    };
-
     function costoCamion(tipo, km) {
 
-        const c = camiones[tipo];
+        const c = CAMIONES[tipo];
         const flete = km <= c.limite ? c.arranque + c.tarifa * km : c.tarifa * km;
         return flete * 1.05;
 
@@ -57,9 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (chasis + simple + doble === 0) continue;
 
                     const capacidad =
-                        (chasis * camiones.chasis.capacidad) +
-                        (simple * camiones.simple.capacidad) +
-                        (doble * camiones.doble.capacidad);
+                        (chasis * CAMIONES.chasis.capacidad) +
+                        (simple * CAMIONES.simple.capacidad) +
+                        (doble * CAMIONES.doble.capacidad);
 
                     if (capacidad < animales) continue;
 
