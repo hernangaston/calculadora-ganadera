@@ -331,34 +331,51 @@ function actualizar(ui, overrides) {
 // ── ROSGAN ────────────────────────────────────────────────────────────────────
 const MESES_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
+function precioStr(n) {
+  return `$${formatoAR(n, 2)}`;
+}
+
+function renderTipo(tipo) {
+  if (!tipo) return "";
+  const cats = (tipo.categorias || []).filter((c) => c.precio > 0);
+  return cats.map((cat) => {
+    const razas = (cat.razas || []).filter((r) => r.precio > 0);
+    const razasHTML = razas.length
+      ? `<table class="rosgan-razas">${razas.map((r) =>
+          `<tr>
+            <td>${r.titulo}${r.observacion ? `<span class="rosgan-obs">${r.observacion}</span>` : ""}</td>
+            <td>${precioStr(r.precio)}</td>
+          </tr>`
+        ).join("")}</table>`
+      : "";
+    return `<div class="rosgan-cat">
+      <div class="rosgan-cat-header">
+        <span>${cat.titulo}</span>
+        <span class="rosgan-cat-price">${precioStr(cat.precio)}</span>
+      </div>
+      ${razasHTML}
+    </div>`;
+  }).join("");
+}
+
 function renderRosgan(data, ui, overrides) {
-  const { mes, anio, piri, invernada } = data;
+  const { mes, anio, piri, pirc, invernada, cria } = data;
 
   if (ui.rosganFecha) ui.rosganFecha.textContent = `${MESES_ES[mes - 1] ?? mes} ${anio}`;
   if (ui.rosganStatus) ui.rosganStatus.textContent = "";
   if (ui.rosganBody) ui.rosganBody.classList.remove("rosgan-hidden");
-  if (ui.rosganPiri) ui.rosganPiri.textContent = `$${formatoAR(piri)}`;
+  if (ui.rosganPiri) ui.rosganPiri.textContent = precioStr(piri);
 
-  if (ui.rosganCategorias && invernada?.categorias) {
-    const cats = invernada.categorias.filter((c) => c.precio > 0);
-    ui.rosganCategorias.innerHTML = cats.map((cat) => {
-      const razas = (cat.razas || []).filter((r) => r.precio > 0);
-      const razasHTML = razas.length
-        ? `<table class="rosgan-razas">${razas.map((r) =>
-            `<tr>
-              <td>${r.titulo}${r.observacion ? `<span class="rosgan-obs">${r.observacion}</span>` : ""}</td>
-              <td>$${formatoAR(r.precio)}</td>
-            </tr>`
-          ).join("")}</table>`
-        : "";
-      return `<div class="rosgan-cat">
-        <div class="rosgan-cat-header">
-          <span>${cat.titulo}</span>
-          <span class="rosgan-cat-price">$${formatoAR(cat.precio)}</span>
+  if (ui.rosganCategorias) {
+    const criaHTML = (cria && pirc > 0)
+      ? `<div class="rosgan-total rosgan-total-cria">
+          <span class="rosgan-total-label">Cría</span>
+          <span class="rosgan-total-price rosgan-price-cria">${precioStr(pirc)}</span>
         </div>
-        ${razasHTML}
-      </div>`;
-    }).join("");
+        ${renderTipo(cria)}`
+      : "";
+
+    ui.rosganCategorias.innerHTML = renderTipo(invernada) + criaHTML;
   }
 
   // Auto-set precioCompra al PIRI

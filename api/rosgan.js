@@ -31,6 +31,7 @@ module.exports = async function handler(req, res) {
     if (!entry) throw new Error("Sin datos disponibles");
 
     const invernada = entry.tipos?.find((t) => t.titulo === "Invernada") ?? null;
+    const cria      = entry.tipos?.find((t) => t.titulo === "Cria")      ?? null;
 
     const result = {
       ok: true,
@@ -40,7 +41,9 @@ module.exports = async function handler(req, res) {
       mes: entry.mes_remate,
       fecha_remate: entry.fecha_remate,
       piri: entry.piri,
+      pirc: entry.pirc,
       invernada,
+      cria,
     };
 
     cache = result;

@@ -580,6 +580,16 @@ input[type="range"] {
     margin-top: 1px;
 }
 
+.rosgan-total-cria {
+    margin-top: 14px;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+}
+
+.rosgan-price-cria {
+    color: #6D4C41;
+}
+
 .rosgan-fuente {
     margin-top: 10px;
     margin-bottom: 0;
