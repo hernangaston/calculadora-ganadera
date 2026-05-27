@@ -453,6 +453,8 @@ function main() {
     actualizar(ui, overrides);
   });
 
+  actualizar(ui, overrides);
+
   loadMarket(ui).finally(() => actualizar(ui, overrides));
   loadRosgan(ui, overrides);
 }
