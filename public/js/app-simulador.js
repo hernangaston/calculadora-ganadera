@@ -117,7 +117,6 @@ function renderDiasWarning() {
 
 // ── Render: resultados del cálculo ────────────────────────────────────────────
 function renderResultados(res, ui) {
-  if (ui.margenBrutoCabeza) ui.margenBrutoCabeza.textContent = formatoAR(res.margenBrutoCabeza);
   ui.pesoDespuesRecria.textContent   = formatoAR(res.pesoDespuesRecria, 1);
   ui.pesoFinal.textContent           = formatoAR(res.pesoFinal, 1);
   ui.kgProducidos.textContent        = formatoAR(res.kgProducidos, 1);
@@ -415,7 +414,6 @@ function buildUIRefs() {
     camiones:             $("camiones"),
     costoFlete:           $("costoFlete"),
     seguroFlete:          $("seguroFlete"),
-    margenBrutoCabeza:    $("margenBrutoCabeza"),
     camionesVenta:        $("camionesVenta"),
     costoFleteVenta:      $("costoFleteVenta"),
     seguroFleteVenta:     $("seguroFleteVenta"),

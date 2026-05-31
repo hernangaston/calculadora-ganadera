@@ -90,8 +90,7 @@ export function calcularResultado({
     + fleteVenta.costoFlete  + fleteVenta.seguroFlete;
 
   const margen            = ingresoVenta - costoTotal;
-  const margenCabeza      = animales > 0 ? margen / animales : 0;
-  const margenBrutoCabeza = margenCabeza;
+  const margenCabeza = animales > 0 ? margen / animales : 0;
 
   return {
     diasTotales,
@@ -104,7 +103,6 @@ export function calcularResultado({
     comisionVentaTotal,
     margen,
     margenCabeza,
-    margenBrutoCabeza,
     flete: fleteCompra,
     fleteCompra,
     fleteVenta,
