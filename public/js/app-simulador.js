@@ -370,6 +370,19 @@ function renderRosgan(data, ui, overrides) {
     const badge = $("precioCompraBadge");
     if (badge) badge.hidden = false;
   }
+
+  // Auto-set precioVenta al precio Braford y Brangus de Novillos 1 a 2 años
+  const novillos12 = invernada?.categorias?.find(c => c.titulo === "Novillos 1 a 2 años");
+  const precioVentaRosgan = novillos12?.razas?.find(r => r.titulo === "Braford y Brangus")?.precio ?? 0;
+  if (precioVentaRosgan > 0 && overrides?.precioVenta) {
+    const slider = $("precioVenta");
+    if (slider && precioVentaRosgan > Number(slider.max)) {
+      slider.max = String(Math.ceil(precioVentaRosgan * 1.5 / 1000) * 1000);
+    }
+    overrides.precioVenta.setAutoValue(precioVentaRosgan);
+    const badge = $("precioVentaBadge");
+    if (badge) badge.hidden = false;
+  }
 }
 
 async function loadRosgan(ui, overrides) {
