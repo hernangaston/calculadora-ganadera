@@ -1,3 +1,4 @@
+// API routes: /dolar, /ganado, /precios, /rosgan
 const express = require("express");
 const router = express.Router();
 
