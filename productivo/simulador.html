@@ -45,6 +45,7 @@
 
             <h2>Resultados</h2>
 
+            <p>Margen bruto por cabeza: $<span id="margenBrutoCabeza">0</span></p>
             <p>Peso entrada corral: <span id="pesoDespuesRecria">0</span> kg</p>
             <p>Peso final: <span id="pesoFinal">0</span> kg</p>
             <p>Kg producidos: <span id="kgProducidos">0</span> kg</p>
@@ -57,9 +58,15 @@
 
             <h2>Logística</h2>
 
+            <h3>Flete compra</h3>
             <p>Camiones: <span id="camiones">0</span></p>
             <p>Costo flete: $<span id="costoFlete">0</span></p>
             <p>Seguro: $<span id="seguroFlete">0</span></p>
+
+            <h3>Flete venta</h3>
+            <p>Camiones: <span id="camionesVenta">0</span></p>
+            <p>Costo flete: $<span id="costoFleteVenta">0</span></p>
+            <p>Seguro: $<span id="seguroFleteVenta">0</span></p>
 
         </section>
 
@@ -242,6 +249,11 @@
                     Distancia (km): <output id="distanciaValor" for="distancia">300</output>
                 </label>
                 <input type="range" id="distancia" min="0" max="800" value="300" aria-describedby="slidersHelp">
+
+                <label for="distanciaVenta">
+                    Distancia venta (km): <output id="distanciaVentaValor" for="distanciaVenta">300</output>
+                </label>
+                <input type="range" id="distanciaVenta" min="0" max="800" value="300" aria-describedby="slidersHelp">
 
                 <div class="simulador-actions">
                     <button id="btnResetSimulador" class="btn-secondary" type="button">Reset</button>

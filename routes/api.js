@@ -75,6 +75,51 @@ router.get("/dolar", async (req, res) => {
   }
 });
 
+let rosganCache = null;
+let rosganCacheTime = 0;
+const ROSGAN_TTL = 60 * 60 * 1000;
+
+function masReciente(data) {
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return data.slice().sort((a, b) =>
+    b.anio_remate !== a.anio_remate
+      ? b.anio_remate - a.anio_remate
+      : b.mes_remate - a.mes_remate
+  )[0];
+}
+
+router.get("/rosgan", async (req, res) => {
+  const now = Date.now();
+  if (rosganCache && now - rosganCacheTime < ROSGAN_TTL) {
+    return res.json(rosganCache);
+  }
+  try {
+    const year = new Date().getFullYear();
+    let entry = await fetchJson(`https://www.rosgan.com.ar/api/precios-fede/${year}`).then(d => masReciente(d?.data));
+    if (!entry) entry = await fetchJson(`https://www.rosgan.com.ar/api/precios-fede/${year - 1}`).then(d => masReciente(d?.data));
+    if (!entry) throw new Error("Sin datos");
+
+    const result = {
+      ok: true,
+      fuente: "ROSGAN – Mercado Ganadero BCR",
+      url: "https://www.rosgan.com.ar/indices",
+      anio: entry.anio_remate,
+      mes: entry.mes_remate,
+      fecha_remate: entry.fecha_remate,
+      piri: entry.piri,
+      pirc: entry.pirc,
+      invernada: entry.tipos?.find((t) => t.titulo === "Invernada") ?? null,
+      cria:      entry.tipos?.find((t) => t.titulo === "Cria")      ?? null,
+    };
+
+    rosganCache = result;
+    rosganCacheTime = now;
+    res.json(result);
+  } catch {
+    res.status(502).json({ ok: false, error: "No se pudo obtener datos de ROSGAN" });
+  }
+});
+
 router.get("/ganado", async (req, res) => {
   // Preparado para ROSGAN/MAG. Por ahora mock estable.
   // Nota: usamos USD/kg para que el selector de dólar tenga impacto directo.

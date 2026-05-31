@@ -18,6 +18,7 @@ const state = {
     precioCompra: 0,
     precioVenta: 0,
     distancia: 0,
+    distanciaVenta: 0,
     comisionCompra: 0,
     comisionVenta: 0,
   },
@@ -38,6 +39,7 @@ function leerInputs(overrides) {
     recria:         Number($("recria").value),
     corral:         Number($("corral").value),
     distancia:      Number($("distancia").value),
+    distanciaVenta: Number($("distanciaVenta").value),
     adpvCampo:      overrides.adpvCampo.getValue(),
     adpvCorral:     overrides.adpvCorral.getValue(),
     costoCampo:     overrides.costoCampo.getValue(),
@@ -92,6 +94,7 @@ function renderValoresVisibles() {
   $("precioVentaValor").textContent     = formatoAR(state.inputs.precioVenta);
   $("comisionVentaValor").textContent   = formatoAR(state.inputs.comisionVenta, 1);
   $("distanciaValor").textContent       = formatoAR(state.inputs.distancia);
+  $("distanciaVentaValor").textContent  = formatoAR(state.inputs.distanciaVenta);
 }
 
 // ── Render: warning de días totales ──────────────────────────────────────────
@@ -114,6 +117,7 @@ function renderDiasWarning() {
 
 // ── Render: resultados del cálculo ────────────────────────────────────────────
 function renderResultados(res, ui) {
+  if (ui.margenBrutoCabeza) ui.margenBrutoCabeza.textContent = formatoAR(res.margenBrutoCabeza);
   ui.pesoDespuesRecria.textContent   = formatoAR(res.pesoDespuesRecria, 1);
   ui.pesoFinal.textContent           = formatoAR(res.pesoFinal, 1);
   ui.kgProducidos.textContent        = formatoAR(res.kgProducidos, 1);
@@ -128,10 +132,13 @@ function renderResultados(res, ui) {
 }
 
 // ── Render: flete ─────────────────────────────────────────────────────────────
-function renderFlete(flete, ui) {
-  ui.camiones.textContent    = flete.descripcion || "0";
-  ui.costoFlete.textContent  = formatoAR(flete.costoFlete);
-  ui.seguroFlete.textContent = formatoAR(flete.seguroFlete);
+function renderFlete(fleteCompra, fleteVenta, ui) {
+  ui.camiones.textContent    = fleteCompra.descripcion || "0";
+  ui.costoFlete.textContent  = formatoAR(fleteCompra.costoFlete);
+  ui.seguroFlete.textContent = formatoAR(fleteCompra.seguroFlete);
+  if (ui.camionesVenta)    ui.camionesVenta.textContent    = fleteVenta.descripcion || "0";
+  if (ui.costoFleteVenta)  ui.costoFleteVenta.textContent  = formatoAR(fleteVenta.costoFlete);
+  if (ui.seguroFleteVenta) ui.seguroFleteVenta.textContent = formatoAR(fleteVenta.seguroFlete);
 }
 
 // ── Render: estado de rentabilidad ────────────────────────────────────────────
@@ -299,7 +306,7 @@ function actualizar(ui, overrides) {
 
   const res = calcularResultado(state.inputs);
   renderResultados(res, ui);
-  renderFlete(res.flete, ui);
+  renderFlete(res.fleteCompra, res.fleteVenta, ui);
   renderRentabilidad(res.margenCabeza, ui);
   renderCurvaMargen(ui);
 }
@@ -408,6 +415,10 @@ function buildUIRefs() {
     camiones:             $("camiones"),
     costoFlete:           $("costoFlete"),
     seguroFlete:          $("seguroFlete"),
+    margenBrutoCabeza:    $("margenBrutoCabeza"),
+    camionesVenta:        $("camionesVenta"),
+    costoFleteVenta:      $("costoFleteVenta"),
+    seguroFleteVenta:     $("seguroFleteVenta"),
     estadoRentabilidad:   $("estadoRentabilidad"),
     precioEquilibrio:     $("precioEquilibrio"),
     precioCompraHint:        $("precioCompraHint"),

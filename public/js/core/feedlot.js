@@ -19,10 +19,10 @@ export function calcularFlete({ animales, distancia } = {}) {
     return { descripcion: "", costoFlete: 0, seguroFlete: 0 };
   }
 
-  const doble = Math.floor(animales / 110);
-  let resto = animales % 110;
-  const simple = Math.floor(resto / 70);
-  resto = resto % 70;
+  const doble = Math.floor(animales / 50);
+  let resto = animales % 50;
+  const simple = Math.floor(resto / 35);
+  resto = resto % 35;
   const chasis = resto > 0 ? Math.ceil(resto / 20) : 0;
 
   const costoFlete =
@@ -49,6 +49,7 @@ export function calcularResultado({
   precioCompra,
   precioVenta,
   distancia,
+  distanciaVenta = 0,
   comisionCompra,
   comisionVenta,
 } = {}) {
@@ -63,6 +64,7 @@ export function calcularResultado({
   precioCompra   = sanitizarPositivo(precioCompra);
   precioVenta    = sanitizarPositivo(precioVenta);
   distancia      = sanitizarPositivo(distancia);
+  distanciaVenta = sanitizarPositivo(distanciaVenta);
   comisionCompra = sanitizarPositivo(comisionCompra);
   comisionVenta  = sanitizarPositivo(comisionVenta);
 
@@ -81,11 +83,15 @@ export function calcularResultado({
   const comisionCompraTotal = pesoCompra * precioCompra * (comisionCompra / 100) * animales;
   const comisionVentaTotal  = pesoFinal  * precioVenta  * (comisionVenta  / 100) * animales;
 
-  const flete    = calcularFlete({ animales, distancia });
-  const costoTotal = costoCompra + costoProduccion + flete.costoFlete + flete.seguroFlete;
+  const fleteCompra = calcularFlete({ animales, distancia });
+  const fleteVenta  = calcularFlete({ animales, distancia: distanciaVenta });
+  const costoTotal  = costoCompra + costoProduccion
+    + fleteCompra.costoFlete + fleteCompra.seguroFlete
+    + fleteVenta.costoFlete  + fleteVenta.seguroFlete;
 
-  const margen       = ingresoVenta - costoTotal;
-  const margenCabeza = animales > 0 ? margen / animales : 0;
+  const margen            = ingresoVenta - costoTotal;
+  const margenCabeza      = animales > 0 ? margen / animales : 0;
+  const margenBrutoCabeza = margenCabeza;
 
   return {
     diasTotales,
@@ -98,6 +104,9 @@ export function calcularResultado({
     comisionVentaTotal,
     margen,
     margenCabeza,
-    flete,
+    margenBrutoCabeza,
+    flete: fleteCompra,
+    fleteCompra,
+    fleteVenta,
   };
 }

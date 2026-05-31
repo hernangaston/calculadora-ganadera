@@ -98,6 +98,24 @@ body {
     transform: scale(0.98);
 }
 
+.btn-back {
+    width: auto;
+    display: inline-block;
+    margin-top: 32px;
+    margin-bottom: 32px;
+    padding: 12px 24px;
+    font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+    .btn-back {
+        width: 100%;
+        text-align: center;
+        margin-top: 24px;
+        margin-bottom: 24px;
+    }
+}
+
 /* RESULTADOS */
 .result-main {
     font-size: 1rem;
@@ -108,6 +126,10 @@ body {
     font-size: 1.6rem;
     font-weight: 800;
     margin-top: 6px;
+}
+
+.result-main:last-child {
+    margin-bottom: 16px;
 }
 
 /* ESCENARIOS */
