@@ -810,4 +810,20 @@ details.rosgan-section > summary .api-updated {
         padding: 16px;
         margin-bottom: 12px;
     }
+
+    .logistica-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== LOGÍSTICA — texto largo de camiones ===== */
+
+.logistica-card .resultado-row strong {
+    text-align: right;
+    word-break: break-word;
+    hyphens: none;
+    max-width: 60%;
+    display: inline-block;
+    line-height: 1.3;
+    font-size: 0.82rem;
 }

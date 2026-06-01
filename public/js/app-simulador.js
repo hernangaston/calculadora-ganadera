@@ -289,6 +289,7 @@ function renderCurvaMargen(ui) {
           type: "linear",
           ticks: {
             maxTicksLimit: 8,
+            stepSize: 1000,
             callback: (val) => `$${(val / 1000).toFixed(0)}k`,
           },
           title: { display: true, text: "Precio compra ($/kg)" },
