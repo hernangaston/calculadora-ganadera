@@ -132,10 +132,15 @@ function renderResultados(res, ui) {
 
 // ── Render: flete ─────────────────────────────────────────────────────────────
 function renderFlete(fleteCompra, fleteVenta, ui) {
-  ui.camiones.textContent    = fleteCompra.descripcion || "0";
+  if (ui.jaulaDoble)       ui.jaulaDoble.textContent       = fleteCompra.jaulaDoble  ?? 0;
+  if (ui.jaulaSimple)      ui.jaulaSimple.textContent      = fleteCompra.jaulaSimple ?? 0;
+  if (ui.chasisCompra)     ui.chasisCompra.textContent     = fleteCompra.chasis      ?? 0;
   ui.costoFlete.textContent  = formatoAR(fleteCompra.costoFlete);
   ui.seguroFlete.textContent = formatoAR(fleteCompra.seguroFlete);
-  if (ui.camionesVenta)    ui.camionesVenta.textContent    = fleteVenta.descripcion || "0";
+
+  if (ui.jaulaDobleVenta)  ui.jaulaDobleVenta.textContent  = fleteVenta.jaulaDoble  ?? 0;
+  if (ui.jaulaSimpleVenta) ui.jaulaSimpleVenta.textContent = fleteVenta.jaulaSimple ?? 0;
+  if (ui.chasisVenta)      ui.chasisVenta.textContent      = fleteVenta.chasis      ?? 0;
   if (ui.costoFleteVenta)  ui.costoFleteVenta.textContent  = formatoAR(fleteVenta.costoFlete);
   if (ui.seguroFleteVenta) ui.seguroFleteVenta.textContent = formatoAR(fleteVenta.seguroFlete);
 }
@@ -436,10 +441,14 @@ function buildUIRefs() {
     margenTotal:          $("margenTotal"),
     margenCabezaUsd:      $("margenCabezaUsd"),
     margenTotalUsd:       $("margenTotalUsd"),
-    camiones:             $("camiones"),
+    jaulaDoble:           $("jaulaDoble"),
+    jaulaSimple:          $("jaulaSimple"),
+    chasisCompra:         $("chasisCompra"),
     costoFlete:           $("costoFlete"),
     seguroFlete:          $("seguroFlete"),
-    camionesVenta:        $("camionesVenta"),
+    jaulaDobleVenta:      $("jaulaDobleVenta"),
+    jaulaSimpleVenta:     $("jaulaSimpleVenta"),
+    chasisVenta:          $("chasisVenta"),
     costoFleteVenta:      $("costoFleteVenta"),
     seguroFleteVenta:     $("seguroFleteVenta"),
     estadoRentabilidad:   $("estadoRentabilidad"),

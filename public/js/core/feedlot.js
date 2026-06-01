@@ -31,7 +31,10 @@ export function calcularFlete({ animales, distancia } = {}) {
     chasis * fleteCamion( 90000, 2100, distancia);
 
   return {
-    descripcion: `${doble} Jaula doble, ${simple} Jaula simple, ${chasis} Chasis`,
+    descripcion: `${doble}D / ${simple}S / ${chasis}Ch`,
+    jaulaDoble: doble,
+    jaulaSimple: simple,
+    chasis: chasis,
     costoFlete,
     seguroFlete: costoFlete * 0.05,
   };
