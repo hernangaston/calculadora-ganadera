@@ -231,15 +231,13 @@ function renderCurvaMargen(ui) {
   const min = precioCompra * 0.7;
   const max = precioCompra * 1.3;
 
-  const precios  = [];
-  const margenes = [];
+  const puntos = [];
   let mejorPrecio     = 0;
   let menorDiferencia = Infinity;
 
   for (let precio = min; precio <= max; precio += 500) {
     const res = calcularResultado({ ...state.inputs, precioCompra: precio });
-    precios.push(precio);
-    margenes.push(res.margen);
+    puntos.push({ x: precio, y: res.margen });
 
     if (Math.abs(res.margen) < menorDiferencia) {
       menorDiferencia = Math.abs(res.margen);
@@ -252,8 +250,8 @@ function renderCurvaMargen(ui) {
   const ctx = $("graficoMargen").getContext("2d");
 
   if (chartMargen) {
-    chartMargen.data.labels = precios;
-    chartMargen.data.datasets[0].data = margenes;
+    chartMargen.data.datasets[0].data = puntos;
+    chartMargen.data.datasets[1].data = puntos.map(p => ({ x: p.x, y: 0 }));
     chartMargen.options.plugins.precioActualPlugin.xValue = precioCompra;
     chartMargen.update();
     return;
@@ -263,18 +261,17 @@ function renderCurvaMargen(ui) {
     plugins: [precioActualPlugin],
     type: "line",
     data: {
-      labels: precios,
       datasets: [
         {
           label: "Margen ($)",
-          data: margenes,
+          data: puntos,
           tension: 0.2,
           borderColor: "#2E7D32",
           pointRadius: 0,
         },
         {
           label: "Equilibrio (margen = 0)",
-          data: precios.map(() => 0),
+          data: puntos.map(p => ({ x: p.x, y: 0 })),
           borderColor: "#888",
           borderDash: [6, 6],
           pointRadius: 0,
@@ -289,9 +286,10 @@ function renderCurvaMargen(ui) {
       },
       scales: {
         x: {
+          type: "linear",
           ticks: {
             maxTicksLimit: 8,
-            callback: (val) => `$${Math.round(val / 1000)}k`,
+            callback: (val) => `$${(val / 1000).toFixed(0)}k`,
           },
           title: { display: true, text: "Precio compra ($/kg)" },
         },
