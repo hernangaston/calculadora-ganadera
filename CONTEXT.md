@@ -25,8 +25,9 @@
 server.js                   Servidor Express local. Monta routes/api.js en /api, sirve estáticos.
 routes/api.js               Express Router — 4 líneas: router.get("/X", handler) → lib/http-handlers.js.
 lib/cattle-api.js           ★ ÚNICA fuente de verdad de la lógica de API (CommonJS). Exporta:
-                              getDolares(), getRosgan() [caché 1h], getGanadoMock(),
-                              DOLAR_FALLBACK, fetchJson(), normalizeDolar(), masReciente().
+                              getDolares(), getRosgan() [caché 1h], getGanado(),
+                              getGanadoMock() [fallback], DOLAR_FALLBACK, fetchJson(),
+                              normalizeDolar(), masReciente().
 lib/http-handlers.js        Handlers HTTP compartidos (CommonJS). Exporta: dolarHandler,
                               ganadoHandler, preciosHandler, rosganHandler. Usado por
                               routes/api.js (Express) y api/*.js (Vercel) — única fuente
@@ -66,9 +67,10 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Layout desktop:** 3 columnas fijas (`360px | minmax(520px,1fr) | 380px` en ≥1200px). No romper con cambios de CSS que afecten `.simulador-layout`.
 - **Mobile:** variables primero (order:1), resultados segundo (order:2), gráfico tercero (order:3, visible). Sin nav bar — el simulador es la única pantalla.
 - **ROSGAN auto-set:** al cargar, `precioCompra` se setea al PIRI y `precioVenta` al precio Braford/Brangus de Novillos 1-2 años. Los sliders expanden su `max` si el valor ROSGAN lo excede.
+- **`getGanado()`** — precio real desde ROSGAN + dólar oficial. Categoría: `Novillos 1 a 2 años`, raza: `Braford y Brangus` (fallback al precio general de la categoría si la raza es 0). `precioUsdKg = precioArsKg / dolar.oficial.venta`. Si falla cualquier fuente, retorna `getGanadoMock()` y loguea el error. `getGanadoMock()` se mantiene solo como fallback — no eliminar.
 - **Shapes de respuesta de API fijos** (no romper clientes existentes):
   - `/dolar`: `{ ok, dolar:{ oficial, blue, mep } }`
-  - `/ganado`: `{ ok, fuente, mercado, unidad, precioUsdKg, fecha, notas }`
+  - `/ganado`: `{ ok, fuente, mercado, categoria, raza, unidad, precioArsKg, precioUsdKg, dolarOficial, fecha, anio, mes }`
   - `/precios`: `{ ok, dolar, ganado:{ fuente, unidad, precioUsdKg, fecha } }`
   - `/rosgan`: `{ ok, fuente, url, anio, mes, fecha_remate, piri, pirc, invernada, cria }`
 
@@ -88,10 +90,9 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 
 ## 6. Pendientes
 
-1. **Integración real de precios ganado** — `getGanadoMock()` retorna 2.55 USD/kg hardcodeado. Pendiente integrar ROSGAN/MAG como fuente de precio de venta en USD.
-2. **Tests automatizados** — `test/manual.js` requiere correrlo a mano con `node`. No hay CI ni runner automático.
-3. **Linter / formatter** — no hay ESLint ni Prettier configurado.
-4. **Caché de dólar** — `getRosgan()` tiene caché pero `getDolares()` no. Si el volumen lo justifica, agregar TTL corto (5-10 min) en `lib/cattle-api.js`.
+1. **Tests automatizados** — `test/manual.js` requiere correrlo a mano con `node`. No hay CI ni runner automático.
+2. **Linter / formatter** — no hay ESLint ni Prettier configurado.
+3. **Caché de dólar** — `getRosgan()` tiene caché pero `getDolares()` no. Si el volumen lo justifica, agregar TTL corto (5-10 min) en `lib/cattle-api.js`.
 
 ---
 
