@@ -2,50 +2,300 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>¿Vendo ahora o espero?</title>
-    <link rel="stylesheet" href="styles.css" />
+
+    <meta charset="UTF-8">
+    <title>Simulador de Invernada</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>">
+    <meta name="description" content="Simulador de invernada ganadera: calculá márgenes, costos y logística de tu operación.">
+    <meta property="og:title" content="Simulador de Invernada">
+    <meta property="og:description" content="Calculá márgenes, costos y logística de tu invernada.">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./simulador.css">
+
 </head>
 
 <body>
+    <header class="simulador-header">
+        <h1>Simulador de Invernada</h1>
+        <p class="simulador-subtitle">
+            Ajustá las variables y mirá cómo cambia el margen. Valores orientativos; no reemplaza asesoramiento profesional.
+        </p>
+    </header>
+    <main class="simulador-layout">
 
-    <main class="container">
-        <section class="card">
-            <h2>🧮 Herramientas</h2>
+        <!-- IZQUIERDA: Resultados -->
+        <section class="resultados">
 
-            <p class="subtitle">
-                Complementá la decisión con otra cuenta clave del campo
-            </p>
+            <!-- Card resultado principal -->
+            <div class="resultado-principal">
+                <p id="estadoRentabilidad"></p>
+                <div class="resultado-margen-cabeza">$<span id="margenCabeza">0</span> <span class="usd-equiv" id="margenCabezaUsd"></span></div>
+                <div class="resultado-label-small">por cabeza</div>
+                <div class="resultado-margen-total">$<span id="margenTotal">0</span> <span class="usd-equiv" id="margenTotalUsd"></span></div>
+                <div class="resultado-label-small">margen total</div>
+            </div>
 
-            <a href="vender.html" class="tool-link">
-                👉 Venta o espera
-            </a>
+            <!-- ROSGAN colapsable -->
+            <details id="rosganSection" class="rosgan-section">
+                <summary>Índice ROSGAN · <span id="rosganFecha">-</span></summary>
+                <p id="rosganStatus" class="market-status">Cargando…</p>
+                <div id="rosganBody" class="rosgan-hidden">
+                    <div class="rosgan-total">
+                        <span class="rosgan-total-label">Invernada</span>
+                        <span id="rosganPiri" class="rosgan-total-price"></span>
+                    </div>
+                    <div id="rosganCategorias"></div>
+                    <p class="rosgan-fuente">
+                        Fuente: <a href="https://www.rosgan.com.ar/indices" target="_blank" rel="noopener">ROSGAN – Mercado Ganadero BCR</a>
+                    </p>
+                </div>
+            </details>
 
-            <a href="carga.html" class="tool-link">
-                👉 Calculadora de carga animal
-            </a>
-            <a href="productivo.html" class="tool-link">
-                👉 Planificador de invernada
-            </a>
-            <a href="costo.html" class="tool-link">
-                👉 Costo de producción
-            </a>
-            <a href="logistica.html" class="tool-link">
-                👉 Costo de flete
-            </a>
+            <!-- Card desglose costos -->
+            <div class="resultado-costos">
+                <div class="resultado-row"><span>Costo producción</span><strong>$<span id="costoProduccion">0</span></strong></div>
+                <div class="resultado-row"><span>Comisión compra</span><strong>$<span id="comisionCompraTotal">0</span></strong></div>
+                <div class="resultado-row"><span>Comisión venta</span><strong>$<span id="comisionVentaTotal">0</span></strong></div>
+                <div class="resultado-row resultado-total-row"><span>Costo total</span><strong>$<span id="costoTotal">0</span></strong></div>
+            </div>
 
-            <a href="opti-flete.html" class="tool-link">
-                👉 Optimizador de flete
-            </a>
-            <a href="productivo/simulador.html" class="tool-link">
-                👉 Simulador recría + corral
-            </a>
+            <!-- Card pesos -->
+            <div class="resultado-pesos">
+                <div class="resultado-row"><span>Entrada corral</span><strong><span id="pesoDespuesRecria">0</span> kg</strong></div>
+                <div class="resultado-row"><span>Peso final</span><strong><span id="pesoFinal">0</span> kg</strong></div>
+                <div class="resultado-row"><span>Kg producidos</span><strong><span id="kgProducidos">0</span> kg</strong></div>
+            </div>
+
+            <!-- Logística -->
+            <div class="logistica-grid">
+                <div class="logistica-card">
+                    <h3>Flete compra</h3>
+                    <div class="resultado-row"><span>Jaula doble</span><strong><span id="jaulaDoble">0</span></strong></div>
+                    <div class="resultado-row"><span>Jaula simple</span><strong><span id="jaulaSimple">0</span></strong></div>
+                    <div class="resultado-row"><span>Chasis</span><strong><span id="chasisCompra">0</span></strong></div>
+                    <div class="resultado-row"><span>Costo</span><strong>$<span id="costoFlete">0</span></strong></div>
+                    <div class="resultado-row"><span>Seguro</span><strong>$<span id="seguroFlete">0</span></strong></div>
+                </div>
+                <div class="logistica-card">
+                    <h3>Flete venta</h3>
+                    <div class="resultado-row"><span>Jaula doble</span><strong><span id="jaulaDobleVenta">0</span></strong></div>
+                    <div class="resultado-row"><span>Jaula simple</span><strong><span id="jaulaSimpleVenta">0</span></strong></div>
+                    <div class="resultado-row"><span>Chasis</span><strong><span id="chasisVenta">0</span></strong></div>
+                    <div class="resultado-row"><span>Costo</span><strong>$<span id="costoFleteVenta">0</span></strong></div>
+                    <div class="resultado-row"><span>Seguro</span><strong>$<span id="seguroFleteVenta">0</span></strong></div>
+                </div>
+            </div>
+
         </section>
+
+
+        <!-- CENTRO: Gráficos -->
+        <section class="graficos">
+
+            <h2>Visualización</h2>
+            <section class="api-summary" aria-label="Tipos de cambio">
+                <div class="api-summary-head">
+                    <h3>Tipos de cambio</h3>
+                    <p class="api-updated">
+                        Actualizado: <span id="apiUltimaActualizacion">-</span>
+                    </p>
+                </div>
+                <div class="api-summary-grid">
+                    <div class="api-summary-item">
+                        <p class="api-k">Blue</p>
+                        <p class="api-v">$<span id="apiDolarBlue">-</span></p>
+                        <p class="api-meta"><span id="apiFechaDolarBlue">-</span></p>
+                    </div>
+                    <div class="api-summary-item">
+                        <p class="api-k">Oficial</p>
+                        <p class="api-v">$<span id="apiDolarOficial">-</span></p>
+                        <p class="api-meta"><span id="apiFechaDolarOficial">-</span></p>
+                    </div>
+                    <div class="api-summary-item">
+                        <p class="api-k">MEP</p>
+                        <p class="api-v">$<span id="apiDolarMep">-</span></p>
+                        <p class="api-meta"><span id="apiFechaDolarMep">-</span></p>
+                    </div>
+                </div>
+            </section>
+            <canvas id="graficoMargen"></canvas>
+            <p>Precio máximo rentable: $<span id="precioEquilibrio">0</span></p>
+        </section>
+
+
+        <!-- DERECHA: Variables -->
+        <section class="variables">
+
+            <h2>Variables</h2>
+
+            <form id="simuladorForm" class="simulador-form" autocomplete="off">
+                <p id="slidersHelp" class="simulador-help">
+                    Tip: podés usar flechas del teclado para ajustar fino cada slider.
+                </p>
+                <p id="diasWarning" class="simulador-warning" role="status" aria-live="polite"></p>
+
+                <div class="slider-section-header">Compra</div>
+
+                <label for="animales">
+                    Animales: <output id="animalesValor" for="animales">150</output>
+                </label>
+                <input type="range" id="animales" min="0" max="10000" value="150" aria-describedby="slidersHelp">
+
+                <label for="pesoCompra">
+                    Peso compra (kg): <output id="pesoCompraValor" for="pesoCompra">200</output>
+                </label>
+                <input type="range" id="pesoCompra" min="30" max="1000" value="200" aria-describedby="slidersHelp">
+
+                <label for="precioCompra">
+                    Precio compra ($/kg): <output id="precioCompraValor" for="precioCompra">2800</output>
+                    <span id="precioCompraBadge" class="rosgan-set-badge" hidden>↑ ROSGAN</span>
+                </label>
+                <input type="range" id="precioCompra" min="2000" max="10000" step="0.01" value="2800" aria-describedby="slidersHelp">
+                <p class="market-hint" id="precioCompraHint"></p>
+                <div class="manual-override" data-field="precioCompra">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="precioCompra_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="precioCompra_manual" class="manual-input" type="number" inputmode="decimal" step="0.01"
+                        min="0" value="2800" disabled>
+                </div>
+
+                <label for="comisionCompra">
+                    Comisión compra (%): <output id="comisionCompraValor" for="comisionCompra">3,0</output>
+                </label>
+                <input type="range" id="comisionCompra" min="0" max="10" step="0.5" value="3" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="comisionCompra">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="comisionCompra_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="comisionCompra_manual" class="manual-input" type="number" inputmode="decimal" step="0.1"
+                        min="0" max="10" value="3" disabled>
+                </div>
+
+                <div class="slider-section-header">Recría a campo</div>
+
+                <label for="recria">
+                    Días recría (campo): <output id="recriaValor" for="recria">120</output>
+                </label>
+                <input type="range" id="recria" min="0" max="1000" value="120" aria-describedby="slidersHelp">
+
+                <label for="adpvCampo">
+                    ADPV recría (kg/día): <output id="adpvCampoValor" for="adpvCampo">0.55</output>
+                </label>
+                <input type="range" id="adpvCampo" min="0.3" max="0.9" step="0.05" value="0.55" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="adpvCampo">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="adpvCampo_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="adpvCampo_manual" class="manual-input" type="number" inputmode="decimal" step="0.01"
+                        min="0" value="0.55" disabled>
+                </div>
+
+                <label for="costoCampo">
+                    Costo campo ($/cab/día): <output id="costoCampoValor" for="costoCampo">150</output> <span class="usd-equiv" id="costoCampoUsd"></span>
+                </label>
+                <input type="range" id="costoCampo" min="0" max="500" step="10" value="150" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="costoCampo">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="costoCampo_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="costoCampo_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="150" disabled>
+                </div>
+
+                <div class="slider-section-header">Terminación en corral</div>
+
+                <label for="corral">
+                    Días corral: <output id="corralValor" for="corral">60</output>
+                </label>
+                <input type="range" id="corral" min="0" max="1000" value="60" aria-describedby="slidersHelp">
+
+                <label for="adpvCorral">
+                    ADPV corral (kg/día): <output id="adpvCorralValor" for="adpvCorral">1.0</output>
+                </label>
+                <input type="range" id="adpvCorral" min="0.7" max="1.5" step="0.05" value="1.0" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="adpvCorral">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="adpvCorral_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="adpvCorral_manual" class="manual-input" type="number" inputmode="decimal" step="0.01"
+                        min="0" value="1.0" disabled>
+                </div>
+
+                <label for="costoCorral">
+                    Costo corral ($/cab/día): <output id="costoCorralValor" for="costoCorral">600</output> <span class="usd-equiv" id="costoCorralUsd"></span>
+                </label>
+                <input type="range" id="costoCorral" min="0" max="1500" step="50" value="600" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="costoCorral">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="costoCorral_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="costoCorral_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="600" disabled>
+                </div>
+
+                <div class="slider-section-header">Venta</div>
+
+                <label for="precioVenta">
+                    Precio venta ($/kg): <output id="precioVentaValor" for="precioVenta">3200</output>
+                    <span id="precioVentaBadge" class="rosgan-set-badge" hidden>↑ ROSGAN</span>
+                </label>
+                <input type="range" id="precioVenta" min="2500" max="10000" value="3200" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="precioVenta">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="precioVenta_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="precioVenta_manual" class="manual-input" type="number" inputmode="numeric" step="1"
+                        min="0" value="3200" disabled>
+                </div>
+
+                <label for="comisionVenta">
+                    Comisión venta (%): <output id="comisionVentaValor" for="comisionVenta">3,0</output>
+                </label>
+                <input type="range" id="comisionVenta" min="0" max="10" step="0.5" value="3" aria-describedby="slidersHelp">
+                <div class="manual-override" data-field="comisionVenta">
+                    <label class="manual-toggle">
+                        <input type="checkbox" class="manual-check" aria-controls="comisionVenta_manual">
+                        Editar manualmente
+                    </label>
+                    <input id="comisionVenta_manual" class="manual-input" type="number" inputmode="decimal" step="0.1"
+                        min="0" max="10" value="3" disabled>
+                </div>
+
+                <div class="slider-section-header">Logística</div>
+
+                <label for="distancia">
+                    Distancia (km): <output id="distanciaValor" for="distancia">300</output>
+                </label>
+                <input type="range" id="distancia" min="0" max="800" value="300" aria-describedby="slidersHelp">
+
+                <label for="distanciaVenta">
+                    Distancia venta (km): <output id="distanciaVentaValor" for="distanciaVenta">300</output>
+                </label>
+                <input type="range" id="distanciaVenta" min="0" max="800" value="300" aria-describedby="slidersHelp">
+
+                <div class="simulador-actions">
+                    <button id="btnResetSimulador" class="btn-secondary" type="button">Reset</button>
+                </div>
+            </form>
+
+        </section>
+
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="./public/js/app-simulador.js"></script>
 
-    <script src="vender.js"></script>
 </body>
 
 </html>

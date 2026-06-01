@@ -1,2 +1,0 @@
-# Add Python dependencies here, e.g.:
-# requests>=2.0

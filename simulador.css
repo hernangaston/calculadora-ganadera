@@ -411,6 +411,38 @@ input[type="range"] {
     .graficos canvas {
         height: 280px !important;
     }
+
+    /* Sliders más grandes para toque táctil */
+    input[type="range"] {
+        height: 36px;
+        cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Cards visuales en mobile (ya tienen estilos, refuerzo por si hereda override) */
+    .resultado-principal,
+    .resultado-costos,
+    .resultado-pesos {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .logistica-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ===== DESKTOP / PANTALLAS GRANDES ===== */
@@ -581,11 +613,6 @@ details.rosgan-section > summary .api-updated {
     text-decoration: underline;
 }
 
-/* Botón volver (nav.js) insertado en el grid — ocupa toda la fila */
-.simulador-layout > div {
-    grid-column: 1 / -1;
-}
-
 .rosgan-set-badge {
     display: inline-block;
     font-size: 0.68rem;
@@ -738,82 +765,6 @@ details.rosgan-section > summary .api-updated {
 .resultados span,
 .resultados output {
     font-variant-numeric: tabular-nums;
-}
-
-/* ===== MOBILE NAV BAR ===== */
-
-.mobile-nav-bar {
-    display: none;
-}
-
-@media (max-width: 700px) {
-
-    /* Ocultar botón volver insertado por nav.js */
-    .simulador-layout > div .btn-back {
-        display: none;
-    }
-
-    .mobile-nav-bar {
-        display: block;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 12px 16px;
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(8px);
-        border-top: 1px solid var(--card-border);
-        z-index: 100;
-    }
-
-    .mobile-nav-bar a {
-        display: block;
-        text-align: center;
-        padding: 12px;
-        background: var(--verde);
-        color: white;
-        font-weight: 700;
-        font-size: 1rem;
-        border-radius: 10px;
-        text-decoration: none;
-    }
-
-    /* compensar el espacio del nav fijo */
-    .simulador-layout {
-        padding-bottom: 80px;
-    }
-
-    /* Sliders más grandes para toque táctil */
-    input[type="range"] {
-        height: 36px;
-        cursor: pointer;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-        width: 28px;
-        height: 28px;
-    }
-
-    input[type="range"]::-moz-range-thumb {
-        width: 28px;
-        height: 28px;
-    }
-
-    /* Cards visuales en mobile (ya tienen estilos, refuerzo por si hereda override) */
-    .resultado-principal,
-    .resultado-costos,
-    .resultado-pesos {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: var(--card-radius);
-        box-shadow: var(--card-shadow);
-        padding: 16px;
-        margin-bottom: 12px;
-    }
-
-    .logistica-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* ===== LOGÍSTICA — texto largo de camiones ===== */
