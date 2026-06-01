@@ -1,3 +1,14 @@
+/* ===== CSS VARIABLES ===== */
+:root {
+  --card-bg: rgba(255,255,255,0.85);
+  --card-border: rgba(0,0,0,0.08);
+  --card-radius: 14px;
+  --card-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  --verde: #2E7D32;
+  --rojo: #C62828;
+  --marron: #6D4C41;
+}
+
 /* ===== LAYOUT GENERAL ===== */
 
 .simulador-layout {
@@ -46,6 +57,15 @@
     font-size: 0.85rem;
     line-height: 1.35;
     color: #8D6E63;
+}
+
+.simulador-warning:not(:empty) {
+    background: #FFF8E1;
+    border: 1px solid #F9A825;
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #5D4037;
+    font-size: 0.9rem;
 }
 
 .simulador-warning strong {
@@ -309,33 +329,25 @@ input[type="range"]:disabled {
 /* ===== COLUMNAS ===== */
 
 .resultados {
-
     position: sticky;
     top: 20px;
-
 }
 
 .graficos {
-
     min-height: 500px;
-
 }
 
 /* ===== SLIDERS ===== */
 
 .variables label {
-
     display: block;
     margin-top: 18px;
     font-weight: 600;
-
 }
 
 input[type="range"] {
-
     width: 100%;
     margin-bottom: 15px;
-
 }
 
 @media (max-width: 700px) {
@@ -352,84 +364,33 @@ input[type="range"] {
 }
 
 
-/* ===== RESULTADOS ===== */
-
-.resultados p {
-
-    margin: 6px 0;
-    font-size: 15px;
-
-}
-
-.resultados h2 {
-
-    margin-top: 25px;
-
-}
-
-
 /* ===== AREA DE GRAFICOS ===== */
 
 .placeholder-grafico {
-
     height: 420px;
-
     border: 2px dashed #ccc;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: #888;
     font-size: 14px;
+}
 
+/* El canvas puede colapsar en altura si no se define */
+.graficos canvas {
+    width: 100%;
+    height: 480px;
 }
 
 
 /* ===== RESPONSIVE ===== */
 
-@media (max-width:700px) {
+@media (max-width: 700px) {
 
     .simulador-layout {
-
         grid-template-columns: 1fr;
         gap: 15px;
-
     }
-
-    /* orden mobile */
-
-    .variables {
-
-        order: 1;
-
-    }
-
-    .resultados {
-
-        order: 2;
-
-        position: static;
-
-    }
-
-    .graficos {
-
-        display: none;
-
-    }
-
-}
-
-/* ===== MOBILE ===== */
-
-@media screen and (max-width: 700px) {
-
-    .simulador-layout {
-        grid-template-columns: 1fr;
-    }
-
-    /* orden en celular */
 
     .variables {
         order: 1;
@@ -442,8 +403,14 @@ input[type="range"] {
 
     .graficos {
         order: 3;
+        /* sobreescribir display:none para mostrar en mobile */
+        display: block;
+        min-height: unset;
     }
 
+    .graficos canvas {
+        height: 280px !important;
+    }
 }
 
 /* ===== DESKTOP / PANTALLAS GRANDES ===== */
@@ -475,16 +442,11 @@ input[type="range"] {
     }
 }
 
-/* El canvas puede colapsar en altura si no se define */
-.graficos canvas {
-    width: 100%;
-    height: 480px;
-}
 
 /* ===== ROSGAN ===== */
 
 .rosgan-section {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     padding: 14px;
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.85);
@@ -507,6 +469,18 @@ input[type="range"] {
     margin-top: 0;
 }
 
+details.rosgan-section > summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    user-select: none;
+}
+
+details.rosgan-section > summary .api-updated {
+    display: inline;
+    font-size: 0.8rem;
+}
+
 .rosgan-hidden {
     display: none;
 }
@@ -518,6 +492,7 @@ input[type="range"] {
     padding: 8px 0 6px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
     margin-bottom: 8px;
+    margin-top: 10px;
 }
 
 .rosgan-total-label {
@@ -621,4 +596,218 @@ input[type="range"] {
     margin-left: 6px;
     font-weight: 700;
     vertical-align: middle;
+}
+
+/* ===== SLIDER SECTION HEADERS ===== */
+
+.slider-section-header {
+    margin: 24px 0 8px;
+    padding-bottom: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--marron);
+    border-bottom: 2px solid rgba(109,76,65,0.15);
+}
+
+.slider-section-header:first-child {
+    margin-top: 8px;
+}
+
+/* ===== RESULTADO CARDS ===== */
+
+.resultado-principal {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+#estadoRentabilidad:not(:empty) {
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.06);
+    margin-bottom: 10px;
+}
+
+.resultado-margen-cabeza {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--verde);
+    margin: 4px 0 0;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+
+.resultado-label-small {
+    font-size: 0.78rem;
+    color: #777;
+    margin: 0 0 10px;
+}
+
+.resultado-margen-total {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--verde);
+    margin: 4px 0 0;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+
+.resultado-costos {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.resultado-pesos {
+    background: rgba(46, 125, 50, 0.04);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.resultado-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: baseline;
+    padding: 3px 0;
+}
+
+.resultado-row span {
+    color: #555;
+    font-size: 0.88rem;
+}
+
+.resultado-row strong {
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.resultado-total-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+    padding-top: 6px;
+}
+
+.resultado-total-row strong {
+    font-weight: 900;
+}
+
+/* ===== LOGISTICA ===== */
+
+.logistica-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.logistica-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 12px;
+}
+
+.logistica-card h3 {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--marron);
+}
+
+/* ===== TABULAR NUMS ===== */
+
+.resultados span,
+.resultados output {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== MOBILE NAV BAR ===== */
+
+.mobile-nav-bar {
+    display: none;
+}
+
+@media (max-width: 700px) {
+
+    /* Ocultar botón volver insertado por nav.js */
+    .simulador-layout > div .btn-back {
+        display: none;
+    }
+
+    .mobile-nav-bar {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid var(--card-border);
+        z-index: 100;
+    }
+
+    .mobile-nav-bar a {
+        display: block;
+        text-align: center;
+        padding: 12px;
+        background: var(--verde);
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+    /* compensar el espacio del nav fijo */
+    .simulador-layout {
+        padding-bottom: 80px;
+    }
+
+    /* Sliders más grandes para toque táctil */
+    input[type="range"] {
+        height: 36px;
+        cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Cards visuales en mobile (ya tienen estilos, refuerzo por si hereda override) */
+    .resultado-principal,
+    .resultado-costos,
+    .resultado-pesos {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        padding: 16px;
+        margin-bottom: 12px;
+    }
 }

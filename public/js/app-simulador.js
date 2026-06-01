@@ -236,7 +236,7 @@ function renderCurvaMargen(ui) {
   let mejorPrecio     = 0;
   let menorDiferencia = Infinity;
 
-  for (let precio = min; precio <= max; precio += 50) {
+  for (let precio = min; precio <= max; precio += 500) {
     const res = calcularResultado({ ...state.inputs, precioCompra: precio });
     precios.push(precio);
     margenes.push(res.margen);
@@ -288,8 +288,21 @@ function renderCurvaMargen(ui) {
         precioActualPlugin: { xValue: precioCompra },
       },
       scales: {
-        x: { title: { display: true, text: "Precio compra ($/kg)" } },
-        y: { title: { display: true, text: "Margen ($)" } },
+        x: {
+          ticks: {
+            maxTicksLimit: 8,
+            callback: (val) => `$${Math.round(val / 1000)}k`,
+          },
+          title: { display: true, text: "Precio compra ($/kg)" },
+        },
+        y: {
+          ticks: {
+            callback: (val) => val >= 1000000
+              ? `$${(val / 1000000).toFixed(1)}M`
+              : val >= 1000 ? `$${(val / 1000).toFixed(0)}k` : `$${val}`,
+          },
+          title: { display: true, text: "Margen ($)" },
+        },
       },
     },
   });

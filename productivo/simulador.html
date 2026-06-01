@@ -6,6 +6,11 @@
     <meta charset="UTF-8">
     <title>Simulador de Invernada</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>">
+    <meta name="description" content="Simulador de invernada ganadera: calculá márgenes, costos y logística de tu operación.">
+    <meta property="og:title" content="Simulador de Invernada">
+    <meta property="og:description" content="Calculá márgenes, costos y logística de tu invernada.">
+    <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="simulador.css">
@@ -21,15 +26,21 @@
     </header>
     <main class="simulador-layout">
 
-        <!-- IZQUIERDA -->
+        <!-- IZQUIERDA: Resultados -->
         <section class="resultados">
 
-            <!-- ROSGAN -->
-            <section id="rosganSection" class="rosgan-section">
-                <div class="rosgan-header">
-                    <h2>Índice ROSGAN</h2>
-                    <span id="rosganFecha" class="api-updated">-</span>
-                </div>
+            <!-- Card resultado principal -->
+            <div class="resultado-principal">
+                <p id="estadoRentabilidad"></p>
+                <div class="resultado-margen-cabeza">$<span id="margenCabeza">0</span> <span class="usd-equiv" id="margenCabezaUsd"></span></div>
+                <div class="resultado-label-small">por cabeza</div>
+                <div class="resultado-margen-total">$<span id="margenTotal">0</span> <span class="usd-equiv" id="margenTotalUsd"></span></div>
+                <div class="resultado-label-small">margen total</div>
+            </div>
+
+            <!-- ROSGAN colapsable -->
+            <details id="rosganSection" class="rosgan-section">
+                <summary>Índice ROSGAN · <span id="rosganFecha">-</span></summary>
                 <p id="rosganStatus" class="market-status">Cargando…</p>
                 <div id="rosganBody" class="rosgan-hidden">
                     <div class="rosgan-total">
@@ -41,36 +52,43 @@
                         Fuente: <a href="https://www.rosgan.com.ar/indices" target="_blank" rel="noopener">ROSGAN – Mercado Ganadero BCR</a>
                     </p>
                 </div>
-            </section>
+            </details>
 
-            <h2>Resultados</h2>
+            <!-- Card desglose costos -->
+            <div class="resultado-costos">
+                <div class="resultado-row"><span>Costo producción</span><strong>$<span id="costoProduccion">0</span></strong></div>
+                <div class="resultado-row"><span>Comisión compra</span><strong>$<span id="comisionCompraTotal">0</span></strong></div>
+                <div class="resultado-row"><span>Comisión venta</span><strong>$<span id="comisionVentaTotal">0</span></strong></div>
+                <div class="resultado-row resultado-total-row"><span>Costo total</span><strong>$<span id="costoTotal">0</span></strong></div>
+            </div>
 
-            <p>Peso entrada corral: <span id="pesoDespuesRecria">0</span> kg</p>
-            <p>Peso final: <span id="pesoFinal">0</span> kg</p>
-            <p>Kg producidos: <span id="kgProducidos">0</span> kg</p>
-            <p>Costo producción: $<span id="costoProduccion">0</span></p>
-            <p>Comisión compra: $<span id="comisionCompraTotal">0</span></p>
-            <p>Comisión venta: $<span id="comisionVentaTotal">0</span></p>
-            <p>Costo total: $<span id="costoTotal">0</span></p>
-            <p>Margen por cabeza: $<span id="margenCabeza">0</span> <span class="usd-equiv" id="margenCabezaUsd"></span></p>
-            <p>Margen total: $<span id="margenTotal">0</span> <span class="usd-equiv" id="margenTotalUsd"></span></p>
+            <!-- Card pesos -->
+            <div class="resultado-pesos">
+                <div class="resultado-row"><span>Entrada corral</span><strong><span id="pesoDespuesRecria">0</span> kg</strong></div>
+                <div class="resultado-row"><span>Peso final</span><strong><span id="pesoFinal">0</span> kg</strong></div>
+                <div class="resultado-row"><span>Kg producidos</span><strong><span id="kgProducidos">0</span> kg</strong></div>
+            </div>
 
-            <h2>Logística</h2>
-
-            <h3>Flete compra</h3>
-            <p>Camiones: <span id="camiones">0</span></p>
-            <p>Costo flete: $<span id="costoFlete">0</span></p>
-            <p>Seguro: $<span id="seguroFlete">0</span></p>
-
-            <h3>Flete venta</h3>
-            <p>Camiones: <span id="camionesVenta">0</span></p>
-            <p>Costo flete: $<span id="costoFleteVenta">0</span></p>
-            <p>Seguro: $<span id="seguroFleteVenta">0</span></p>
+            <!-- Logística -->
+            <div class="logistica-grid">
+                <div class="logistica-card">
+                    <h3>Flete compra</h3>
+                    <div class="resultado-row"><span>Camiones</span><strong><span id="camiones">0</span></strong></div>
+                    <div class="resultado-row"><span>Costo</span><strong>$<span id="costoFlete">0</span></strong></div>
+                    <div class="resultado-row"><span>Seguro</span><strong>$<span id="seguroFlete">0</span></strong></div>
+                </div>
+                <div class="logistica-card">
+                    <h3>Flete venta</h3>
+                    <div class="resultado-row"><span>Camiones</span><strong><span id="camionesVenta">0</span></strong></div>
+                    <div class="resultado-row"><span>Costo</span><strong>$<span id="costoFleteVenta">0</span></strong></div>
+                    <div class="resultado-row"><span>Seguro</span><strong>$<span id="seguroFleteVenta">0</span></strong></div>
+                </div>
+            </div>
 
         </section>
 
 
-        <!-- CENTRO -->
+        <!-- CENTRO: Gráficos -->
         <section class="graficos">
 
             <h2>Visualización</h2>
@@ -100,12 +118,11 @@
                 </div>
             </section>
             <canvas id="graficoMargen"></canvas>
-            <p id="estadoRentabilidad"></p>
             <p>Precio máximo rentable: $<span id="precioEquilibrio">0</span></p>
         </section>
 
 
-        <!-- DERECHA -->
+        <!-- DERECHA: Variables -->
         <section class="variables">
 
             <h2>Variables</h2>
@@ -115,6 +132,8 @@
                     Tip: podés usar flechas del teclado para ajustar fino cada slider.
                 </p>
                 <p id="diasWarning" class="simulador-warning" role="status" aria-live="polite"></p>
+
+                <div class="slider-section-header">Compra</div>
 
                 <label for="animales">
                     Animales: <output id="animalesValor" for="animales">150</output>
@@ -154,7 +173,8 @@
                         min="0" max="10" value="3" disabled>
                 </div>
 
-                <!-- RECRÍA A CAMPO -->
+                <div class="slider-section-header">Recría a campo</div>
+
                 <label for="recria">
                     Días recría (campo): <output id="recriaValor" for="recria">120</output>
                 </label>
@@ -186,7 +206,8 @@
                         min="0" value="150" disabled>
                 </div>
 
-                <!-- TERMINACIÓN EN CORRAL -->
+                <div class="slider-section-header">Terminación en corral</div>
+
                 <label for="corral">
                     Días corral: <output id="corralValor" for="corral">60</output>
                 </label>
@@ -218,6 +239,8 @@
                         min="0" value="600" disabled>
                 </div>
 
+                <div class="slider-section-header">Venta</div>
+
                 <label for="precioVenta">
                     Precio venta ($/kg): <output id="precioVentaValor" for="precioVenta">3200</output>
                     <span id="precioVentaBadge" class="rosgan-set-badge" hidden>↑ ROSGAN</span>
@@ -245,6 +268,8 @@
                         min="0" max="10" value="3" disabled>
                 </div>
 
+                <div class="slider-section-header">Logística</div>
+
                 <label for="distancia">
                     Distancia (km): <output id="distanciaValor" for="distancia">300</output>
                 </label>
@@ -263,9 +288,19 @@
         </section>
 
     </main>
+
+    <div class="mobile-nav-bar">
+        <a href="../index.html" id="mobileNavBack">← Volver al inicio</a>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../nav.js"></script>
     <script type="module" src="../public/js/app-simulador.js"></script>
+    <script>
+        if (window.location.pathname.includes('/calculadora-ganadera/')) {
+            document.getElementById('mobileNavBack').href = '/calculadora-ganadera/';
+        }
+    </script>
 
 </body>
 
