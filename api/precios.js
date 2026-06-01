@@ -1,31 +1,22 @@
-const { fetchJson, normalize } = require("./_shared");
+const { getDolares, getGanadoMock } = require("../lib/cattle-api");
 
 module.exports = async function handler(req, res) {
   try {
-    const [oficial, blue, mep] = await Promise.all([
-      fetchJson("https://dolarapi.com/v1/dolares/oficial"),
-      fetchJson("https://dolarapi.com/v1/dolares/blue"),
-      fetchJson("https://dolarapi.com/v1/dolares/bolsa"),
+    const [dolar, ganado] = await Promise.all([
+      getDolares(),
+      Promise.resolve(getGanadoMock()),
     ]);
-
     res.json({
       ok: true,
-      dolar: {
-        oficial: normalize(oficial),
-        blue: normalize(blue),
-        mep: normalize(mep),
-      },
+      dolar,
       ganado: {
-        fuente: "mock",
-        unidad: "USD/kg",
-        precioUsdKg: 2.55,
-        fecha: new Date().toISOString(),
+        fuente:      ganado.fuente,
+        unidad:      ganado.unidad,
+        precioUsdKg: ganado.precioUsdKg,
+        fecha:       ganado.fecha,
       },
     });
   } catch (err) {
-    res.status(502).json({
-      ok: false,
-      error: "No se pudieron obtener precios",
-    });
+    res.status(502).json({ ok: false, error: "No se pudieron obtener precios" });
   }
 };

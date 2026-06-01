@@ -16,36 +16,53 @@ This is a multi-page vanilla JS + Express app — a suite of agricultural decisi
 
 **Server** (`server.js`): Serves all files as static assets. Mounts `routes/api.js` at `/api`. Exposes `/health`.
 
-**API routes** (`routes/api.js`): Three endpoints:
-- `GET /api/dolar` — fetches oficial/blue/mep rates from `dolarapi.com/v1/dolares/*` in parallel.
-- `GET /api/ganado` — returns a **mock** cattle price (2.55 USD/kg). Intended to integrate ROSGAN/MAG in the future.
-- `GET /api/precios` — combines both above into one response.
+### API — dual-target setup
 
-**Tools (HTML pages)**:
+The API runs in two different environments and both consume the same core module:
+
+**`lib/cattle-api.js`** — single source of truth for all API logic (CommonJS):
+- `getDolares()` — fetches oficial/blue/mep from `dolarapi.com/v1/dolares/*` in parallel and normalizes.
+- `getGanadoMock()` — returns mock cattle price (2.55 USD/kg). Prepared to integrate ROSGAN/MAG.
+- `getRosgan()` — fetches ROSGAN index with 1-hour in-memory cache. Falls back to prior year.
+- `DOLAR_FALLBACK`, `normalizeDolar()`, `fetchJson()`, `masReciente()` — shared helpers.
+
+**Local (`npm start`)** → `routes/api.js` (Express Router) — thin wrappers that call `lib/cattle-api.js`:
+- `GET /api/dolar` — oficial/blue/mep exchange rates.
+- `GET /api/ganado` — mock cattle price.
+- `GET /api/precios` — combines dólar + ganado in one response.
+- `GET /api/rosgan` — ROSGAN index (categories, razas, PIRI, PIRC).
+
+**Production (Vercel)** → `api/dolar.js`, `api/ganado.js`, `api/precios.js`, `api/rosgan.js` — serverless function handlers, also thin wrappers over `lib/cattle-api.js`. Routed via `vercel.json` rewrites.
+
+> When changing API logic (endpoints, shapes, data sources), edit **`lib/cattle-api.js`** only.
+> The route files and handlers are intentionally minimal.
+
+### Tools (HTML pages)
+
 | Page | JS | Description |
 |------|----|-------------|
 | `vender.html` | `vender.js` | Sell-now vs. wait decision + balance forrajero |
-| `productivo/simulador.html` | `productivo/simulador.js` | Recría + corral simulator (legacy, inline logic) |
+| `productivo/simulador.html` | `public/js/app-simulador.js` | Recría + corral simulator (modular) |
 | `productivo.html` | `productivo.js` | Planificador de invernada |
 | `carga.html` | `carga.js` | Calculadora de carga animal |
 | `costo.html` | `costo.js` | Costo de producción |
 | `logistica.html` | `logistica.js` | Costo de flete |
 | `opti-flete.html` | `opti-flete.js` | Optimizador de flete |
 
-**Refactored simulator** (`public/js/`): A newer, modular version of the simulador splits concerns across three ES modules (loaded via `type="module"`):
-- `api.js` — `getPrecios()` / `getDolar()` hitting the Express API
-- `calculator.js` — pure functions: `compute()` (margin/cost math), `calcularFlete()` (truck sizing), `formatoAR()`
-- `ui.js` — `wireManualOverride()` (slider ↔ manual-input toggle), `setDolarUI()`, `setLoading()`
-- `app-simulador.js` — orchestration: loads market data, wires all inputs, calls `compute()`, renders Chart.js margin curve
+### Simulator modules (`public/js/`)
 
-The `productivo/simulador.js` is the older monolithic version of the same logic — it duplicates calculator and UI code inline.
+ES modules loaded natively by the browser (`type="module"`):
 
-**Manual override pattern**: Throughout the simulador, sliders have an optional "manual" input that overrides them. The UI widget (`.manual-override[data-field="X"]`) holds a checkbox `.manual-check`, a hidden number input `#X_manual`, and the range `#X`. `wireManualOverride()` (or its inline equivalent in the legacy file) manages the enable/disable state between them and syncs constraints.
+- `app-simulador.js` — orchestration: loads market data, wires all inputs, calls `calcularResultado()`, renders Chart.js margin curve.
+- `api.js` — `getPrecios()` / `getRosgan()` hitting the Express API.
+- `calculator.js` — `formatoAR()` (currency formatting).
+- `ui.js` — `wireManualOverride()` (slider ↔ manual-input toggle), `setLoading()`.
+- `core/feedlot.js` — pure calculation functions: `calcularResultado()`, `calcularFlete()`. No DOM, no fetch. Shared with `test/manual.js`.
 
-**Dollar mode**: The simulador lets users select which exchange rate to use (oficial/blue/mep/manual) via radio buttons named `dolar_mode`. `getDolarVentaFromMode()` resolves the rate from the cached API response.
+**Manual override pattern**: sliders have an optional "manual" input that overrides them. The UI widget (`.manual-override[data-field="X"]`) holds a checkbox `.manual-check`, a hidden number input `#X_manual`, and the range `#X`. `wireManualOverride()` manages the enable/disable state and syncs constraints.
 
-**Chart.js**: The margin-vs-purchase-price curve uses a custom `precioActualPlugin` that draws a dashed vertical line at the current price. The same plugin is duplicated in both the legacy and refactored simulador files.
+**Chart.js**: the margin-vs-purchase-price curve uses a custom `precioActualPlugin` (dashed vertical line at current price) and a linear x-axis with `{x, y}` data points. Defined in `app-simulador.js`.
 
-**Currency formatting**: All ARS amounts use `formatoAR(n, decimales)` which calls `toLocaleString("es-AR")`.
+**Currency formatting**: all ARS amounts use `formatoAR(n, decimales)` → `toLocaleString("es-AR")`.
 
-**No bundler**: ES modules in `public/js/` are loaded natively by the browser with `<script type="module">`. Older pages use plain `<script>` tags with globals.
+**No bundler**: ES modules in `public/js/` are loaded natively. Older pages use plain `<script>` tags with globals.
