@@ -23,14 +23,18 @@
 
 ```
 server.js                   Servidor Express local. Monta routes/api.js en /api, sirve estáticos.
-routes/api.js               Express Router — wrappers finos sobre lib/cattle-api.js (4 rutas).
+routes/api.js               Express Router — 4 líneas: router.get("/X", handler) → lib/http-handlers.js.
 lib/cattle-api.js           ★ ÚNICA fuente de verdad de la lógica de API (CommonJS). Exporta:
                               getDolares(), getRosgan() [caché 1h], getGanadoMock(),
                               DOLAR_FALLBACK, fetchJson(), normalizeDolar(), masReciente().
-api/dolar.js                Handler serverless Vercel — wrapper sobre getDolares().
-api/ganado.js               Handler serverless Vercel — wrapper sobre getGanadoMock().
-api/precios.js              Handler serverless Vercel — combina getDolares() + getGanadoMock().
-api/rosgan.js               Handler serverless Vercel — wrapper sobre getRosgan().
+lib/http-handlers.js        Handlers HTTP compartidos (CommonJS). Exporta: dolarHandler,
+                              ganadoHandler, preciosHandler, rosganHandler. Usado por
+                              routes/api.js (Express) y api/*.js (Vercel) — única fuente
+                              de la lógica de respuesta HTTP.
+api/dolar.js                Handler serverless Vercel — re-exporta dolarHandler.
+api/ganado.js               Handler serverless Vercel — re-exporta ganadoHandler.
+api/precios.js              Handler serverless Vercel — re-exporta preciosHandler.
+api/rosgan.js               Handler serverless Vercel — re-exporta rosganHandler.
 vercel.json                 Rewrites /api/* → handlers serverless. outputDirectory: ".".
 
 productivo/simulador.html   ★ Herramienta principal. Layout 3 columnas (resultados | gráfico | sliders).
@@ -61,7 +65,8 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 
 ## 4. Decisiones tomadas
 
-- **lib/cattle-api.js es la única fuente de verdad de API.** Toda lógica de fetch, normalización y caché vive ahí. `routes/api.js` y `api/*.js` son wrappers HTTP finos. No duplicar lógica en ellos.
+- **lib/cattle-api.js es la única fuente de verdad de lógica de negocio.** Toda lógica de fetch, normalización y caché vive ahí. No duplicar lógica en otros archivos.
+- **lib/http-handlers.js es la única fuente de verdad de los handlers HTTP.** Contiene los 4 handlers (`dolarHandler`, `ganadoHandler`, `preciosHandler`, `rosganHandler`). `routes/api.js` y `api/*.js` son re-exports de una línea — no tienen lógica propia.
 - **Dual-target sin cambiar el modelo de deploy:** el mismo código sirve en Express local y en Vercel serverless. No colapsar a un solo entrypoint.
 - **Sin bundler.** ES modules cargados nativamente en el browser. Los archivos `public/js/core/*` tienen `package.json` con `{ "type": "module" }` para usarlos también desde Node.
 - **Caché de ROSGAN en memoria** (module-level, TTL 1h) en `lib/cattle-api.js`. El índice cambia una vez por mes — no se justifica Redis ni storage externo.
