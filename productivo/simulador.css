@@ -711,7 +711,7 @@ details.rosgan-section > summary .api-updated {
 
 .logistica-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
     margin-bottom: 12px;
 }
@@ -820,10 +820,11 @@ details.rosgan-section > summary .api-updated {
 
 .logistica-card .resultado-row strong {
     text-align: right;
-    word-break: break-word;
-    hyphens: none;
-    max-width: 60%;
-    display: inline-block;
-    line-height: 1.3;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.logistica-card .resultado-row strong span {
+    white-space: nowrap;
 }
