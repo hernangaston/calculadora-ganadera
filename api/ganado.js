@@ -1,5 +1,1 @@
-const { getGanadoMock } = require("../lib/cattle-api");
-
-module.exports = async function handler(req, res) {
-  res.json(getGanadoMock());
-};
+module.exports = require("../lib/http-handlers").ganadoHandler;
