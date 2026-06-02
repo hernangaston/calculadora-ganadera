@@ -26,6 +26,8 @@ const state = {
 
 let chartMargen = null;
 
+const escenarios = [null, null, null]; // 0=A, 1=B, 2=C
+
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 function $(id) {
   return document.getElementById(id);
@@ -312,6 +314,90 @@ function renderCurvaMargen(ui) {
   });
 }
 
+// ── Comparador de escenarios ──────────────────────────────────────────────────
+function guardarEscenario(idx) {
+  const res = calcularResultado(state.inputs);
+  escenarios[idx] = {
+    label: ["A", "B", "C"][idx],
+    inputs: { ...state.inputs },
+    resultados: {
+      margenCabeza:        res.margenCabeza,
+      margen:              res.margen,
+      costoTotal:          res.costoTotal,
+      costoProduccion:     res.costoProduccion,
+      comisionCompraTotal: res.comisionCompraTotal,
+      comisionVentaTotal:  res.comisionVentaTotal,
+      pesoFinal:           res.pesoFinal,
+      kgProducidos:        res.kgProducidos,
+      diasTotales:         res.diasTotales,
+    },
+  };
+  renderComparador();
+}
+
+function limpiarEscenario(idx) {
+  escenarios[idx] = null;
+  renderComparador();
+}
+
+function renderComparador() {
+  const vacio = document.getElementById("comparadorVacio");
+  const body  = document.getElementById("comparadorBody");
+  if (!vacio || !body) return;
+
+  const hayDatos = escenarios.some(e => e !== null);
+  vacio.style.display = hayDatos ? "none" : "";
+
+  if (!hayDatos) {
+    body.innerHTML = "";
+    return;
+  }
+
+  const filas = [
+    { label: "Margen/cabeza",   key: "margenCabeza",        fmt: v => `$${formatoAR(v)}`,   mayor: true },
+    { label: "Margen total",    key: "margen",              fmt: v => `$${formatoAR(v)}`,   mayor: true },
+    { label: "Costo total",     key: "costoTotal",          fmt: v => `$${formatoAR(v)}`,   mayor: false },
+    { label: "Costo producción",key: "costoProduccion",     fmt: v => `$${formatoAR(v)}`,   mayor: false },
+    { label: "Com. compra",     key: "comisionCompraTotal", fmt: v => `$${formatoAR(v)}`,   mayor: false },
+    { label: "Com. venta",      key: "comisionVentaTotal",  fmt: v => `$${formatoAR(v)}`,   mayor: false },
+    { label: "Peso final (kg)", key: "pesoFinal",           fmt: v => formatoAR(v, 1),      mayor: true },
+    { label: "Kg producidos",   key: "kgProducidos",        fmt: v => formatoAR(v, 1),      mayor: true },
+    { label: "Días totales",    key: "diasTotales",         fmt: v => formatoAR(v),         mayor: false },
+  ];
+
+  const headerCells = escenarios.map((e, i) => {
+    if (!e) return `<th>${["A","B","C"][i]}</th>`;
+    return `<th>${e.label} <button class="btn-limpiar-escenario" data-idx="${i}" title="Eliminar escenario ${e.label}">✕</button></th>`;
+  }).join("");
+
+  const filaRows = filas.map(({ label, key, fmt, mayor }) => {
+    const vals = escenarios.map(e => e ? e.resultados[key] : null);
+    const activos = vals.filter(v => v !== null);
+    const best = activos.length ? (mayor ? Math.max(...activos) : Math.min(...activos)) : null;
+    const worst = activos.length > 1 ? (mayor ? Math.min(...activos) : Math.max(...activos)) : null;
+
+    const celdas = vals.map(v => {
+      if (v === null) return `<td>—</td>`;
+      let cls = "";
+      if (best !== null && v === best)  cls = "mejor";
+      if (worst !== null && v === worst) cls = "peor";
+      return `<td class="${cls}">${fmt(v)}</td>`;
+    }).join("");
+
+    return `<tr><td>${label}</td>${celdas}</tr>`;
+  }).join("");
+
+  body.innerHTML = `
+    <table class="comparador-tabla">
+      <thead><tr><th>Variable</th>${headerCells}</tr></thead>
+      <tbody>${filaRows}</tbody>
+    </table>`;
+
+  body.querySelectorAll(".btn-limpiar-escenario").forEach(btn => {
+    btn.addEventListener("click", () => limpiarEscenario(Number(btn.dataset.idx)));
+  });
+}
+
 // ── Ciclo central de actualización ────────────────────────────────────────────
 function actualizar(ui, overrides) {
   leerInputs(overrides);
@@ -486,6 +572,10 @@ function main() {
   document.querySelectorAll('input[type="range"]').forEach((el) =>
     el.addEventListener("input", () => actualizar(ui, overrides))
   );
+
+  document.querySelectorAll(".btn-escenario").forEach(btn => {
+    btn.addEventListener("click", () => guardarEscenario(Number(btn.dataset.idx)));
+  });
 
   $("btnResetSimulador")?.addEventListener("click", () => {
     $("simuladorForm")?.reset();

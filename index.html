@@ -123,6 +123,22 @@
             </section>
             <canvas id="graficoMargen"></canvas>
             <p>Precio máximo rentable: $<span id="precioEquilibrio">0</span></p>
+
+            <!-- COMPARADOR DE ESCENARIOS -->
+            <section class="comparador" id="comparador">
+              <div class="comparador-header">
+                <h2>Comparar escenarios</h2>
+                <div class="comparador-botones">
+                  <button class="btn-escenario" data-idx="0">Guardar como A</button>
+                  <button class="btn-escenario" data-idx="1">Guardar como B</button>
+                  <button class="btn-escenario" data-idx="2">Guardar como C</button>
+                </div>
+              </div>
+              <p class="comparador-vacio" id="comparadorVacio">
+                Guardá hasta 3 escenarios para compararlos lado a lado.
+              </p>
+              <div id="comparadorBody"></div>
+            </section>
         </section>
 
 

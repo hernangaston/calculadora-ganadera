@@ -81,10 +81,27 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 **Simulador de Invernada** (`index.html`) — única pantalla:
 
 - **Columna izquierda (resultados):** card principal con badge de rentabilidad + margen/cabeza (2rem) + margen total (1.4rem) · ROSGAN colapsable `<details>` con fecha en el summary · card de costos (label/valor en dos columnas) · card de pesos (fondo verde suave) · dos cards de logística apiladas (Flete compra / Flete venta), cada una con filas Jaula doble / Jaula simple / Chasis / Costo / Seguro.
-- **Columna central:** panel de tipos de cambio (Blue/Oficial/MEP) + canvas Chart.js (curva margen vs precio compra, eje X en $Xk, línea vertical "Precio actual").
+- **Columna central:** panel de tipos de cambio (Blue/Oficial/MEP) + canvas Chart.js (curva margen vs precio compra, eje X en $Xk, línea vertical "Precio actual") + comparador de escenarios (ver abajo).
 - **Columna derecha (sliders):** form con headers de sección uppercase (`COMPRA`, `RECRÍA A CAMPO`, `TERMINACIÓN EN CORRAL`, `VENTA`, `LOGÍSTICA`). Varios sliders tienen override manual (checkbox + input).
 - **Mobile:** sliders primero, resultados después, gráfico al final (280px). Sliders táctiles height 36px.
 - **Favicon:** emoji 🐄 inline SVG. OG tags presentes.
+
+### Comparador de escenarios
+
+Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin localStorage, sin backend.
+
+**Estado:** `const escenarios = [null, null, null]` (módulo-level en `app-simulador.js`). Índices 0=A, 1=B, 2=C.
+
+**Funciones en `app-simulador.js`:**
+- `guardarEscenario(idx)` — snapshot de `state.inputs` + resultado de `calcularResultado()` → `escenarios[idx]`, llama `renderComparador()`.
+- `limpiarEscenario(idx)` — `escenarios[idx] = null`, llama `renderComparador()`.
+- `renderComparador()` — reconstruye la tabla en `#comparadorBody`. Resalta en verde la celda mejor y en rojo la peor por fila (solo entre escenarios con datos). Idempotente — se puede llamar en cualquier momento.
+
+**HTML (`index.html`):** `section.comparador#comparador` con `.comparador-header` (h2 + 3 `button.btn-escenario[data-idx]`), `p.comparador-vacio#comparadorVacio`, `div#comparadorBody`.
+
+**CSS (`simulador.css`):** clases `.comparador`, `.comparador-header`, `.comparador-botones`, `.btn-escenario`, `.comparador-vacio`, `.comparador-tabla`, `.mejor` (verde), `.peor` (rojo), `.btn-limpiar-escenario`. Responsive ≤700px.
+
+**Campos comparados:** margenCabeza, margen, costoTotal, costoProduccion, comisionCompraTotal, comisionVentaTotal, pesoFinal, kgProducidos, diasTotales.
 
 ---
 

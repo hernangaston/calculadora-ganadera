@@ -779,3 +779,130 @@ details.rosgan-section > summary .api-updated {
 .logistica-card .resultado-row strong span {
     white-space: nowrap;
 }
+
+/* ===== COMPARADOR DE ESCENARIOS ===== */
+.comparador {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid var(--card-border);
+}
+
+.comparador-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.comparador-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.comparador-botones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-escenario {
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 2px solid var(--verde);
+  color: var(--verde);
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-escenario:hover {
+  background: var(--verde);
+  color: white;
+}
+
+.comparador-vacio {
+  font-size: 0.88rem;
+  color: var(--gris-texto, #555);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.comparador-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.comparador-tabla th {
+  text-align: right;
+  padding: 8px 12px;
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: var(--marron);
+  border-bottom: 2px solid var(--card-border);
+  white-space: nowrap;
+}
+
+.comparador-tabla th:first-child {
+  text-align: left;
+}
+
+.comparador-tabla td {
+  text-align: right;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--card-border);
+  font-variant-numeric: tabular-nums;
+}
+
+.comparador-tabla td:first-child {
+  text-align: left;
+  color: #555;
+  font-size: 0.82rem;
+}
+
+.comparador-tabla .mejor {
+  color: var(--verde);
+  font-weight: 800;
+}
+
+.comparador-tabla .peor {
+  color: var(--rojo);
+  font-weight: 700;
+}
+
+.btn-limpiar-escenario {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 0.8rem;
+  margin-left: 6px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.btn-limpiar-escenario:hover {
+  color: var(--rojo);
+}
+
+@media (max-width: 700px) {
+  .comparador-botones {
+    width: 100%;
+  }
+  .btn-escenario {
+    flex: 1;
+    text-align: center;
+  }
+  .comparador-tabla {
+    font-size: 0.78rem;
+  }
+  .comparador-tabla th,
+  .comparador-tabla td {
+    padding: 6px 8px;
+  }
+}
