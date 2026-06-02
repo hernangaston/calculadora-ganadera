@@ -255,10 +255,23 @@
         align-items: flex-start;
     }
     .api-summary-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
     }
     .api-updated {
         white-space: normal;
+    }
+    .api-summary-item {
+        padding: 8px;
+    }
+    .api-k {
+        font-size: 0.72rem;
+    }
+    .api-v {
+        font-size: 0.9rem;
+    }
+    .api-meta {
+        font-size: 0.7rem;
     }
 }
 
@@ -904,5 +917,19 @@ details.rosgan-section > summary .api-updated {
   .comparador-tabla th,
   .comparador-tabla td {
     padding: 6px 8px;
+  }
+}
+
+@media (max-width: 700px) {
+  .simulador-header {
+    margin: 8px auto 0;
+    padding: 0 16px;
+  }
+  .simulador-header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+  .simulador-subtitle {
+    font-size: 0.85rem;
   }
 }

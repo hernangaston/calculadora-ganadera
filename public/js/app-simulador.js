@@ -71,7 +71,13 @@ function formatFecha(value) {
   if (!value) return "-";
   try {
     const d = new Date(value);
-    return Number.isNaN(d.getTime()) ? "-" : d.toLocaleString("es-AR");
+    if (Number.isNaN(d.getTime())) return "-";
+    const ahora = new Date();
+    const esHoy = d.toDateString() === ahora.toDateString();
+    if (esHoy) {
+      return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+    }
+    return d.toLocaleDateString("es-AR", { day: "numeric", month: "numeric" });
   } catch {
     return "-";
   }
@@ -340,6 +346,13 @@ function limpiarEscenario(idx) {
   renderComparador();
 }
 
+function formatoCompacto(n) {
+  if (window.innerWidth > 700) return `$${formatoAR(n)}`;
+  if (Math.abs(n) >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (Math.abs(n) >= 1_000)    return `$${(n / 1_000).toFixed(0)}k`;
+  return `$${formatoAR(n)}`;
+}
+
 function renderComparador() {
   const vacio = document.getElementById("comparadorVacio");
   const body  = document.getElementById("comparadorBody");
@@ -354,12 +367,12 @@ function renderComparador() {
   }
 
   const filas = [
-    { label: "Margen/cabeza",   key: "margenCabeza",        fmt: v => `$${formatoAR(v)}`,   mayor: true },
-    { label: "Margen total",    key: "margen",              fmt: v => `$${formatoAR(v)}`,   mayor: true },
-    { label: "Costo total",     key: "costoTotal",          fmt: v => `$${formatoAR(v)}`,   mayor: false },
-    { label: "Costo producción",key: "costoProduccion",     fmt: v => `$${formatoAR(v)}`,   mayor: false },
-    { label: "Com. compra",     key: "comisionCompraTotal", fmt: v => `$${formatoAR(v)}`,   mayor: false },
-    { label: "Com. venta",      key: "comisionVentaTotal",  fmt: v => `$${formatoAR(v)}`,   mayor: false },
+    { label: "Margen/cabeza",   key: "margenCabeza",        fmt: v => formatoCompacto(v),   mayor: true },
+    { label: "Margen total",    key: "margen",              fmt: v => formatoCompacto(v),   mayor: true },
+    { label: "Costo total",     key: "costoTotal",          fmt: v => formatoCompacto(v),   mayor: false },
+    { label: "Costo producción",key: "costoProduccion",     fmt: v => formatoCompacto(v),   mayor: false },
+    { label: "Com. compra",     key: "comisionCompraTotal", fmt: v => formatoCompacto(v),   mayor: false },
+    { label: "Com. venta",      key: "comisionVentaTotal",  fmt: v => formatoCompacto(v),   mayor: false },
     { label: "Peso final (kg)", key: "pesoFinal",           fmt: v => formatoAR(v, 1),      mayor: true },
     { label: "Kg producidos",   key: "kgProducidos",        fmt: v => formatoAR(v, 1),      mayor: true },
     { label: "Días totales",    key: "diasTotales",         fmt: v => formatoAR(v),         mayor: false },
