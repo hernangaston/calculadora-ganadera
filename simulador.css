@@ -29,20 +29,46 @@
 /* ===== HEADER ===== */
 .simulador-header {
     max-width: 1200px;
-    margin: 20px auto 0;
-    padding: 0 30px;
+    margin: 0 auto;
+    padding: 0;
 }
 
-.simulador-header h1 {
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin-bottom: 6px;
+.simulador-brand {
+    background: #1B4332;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 30px;
 }
 
-.simulador-subtitle {
-    color: #555;
-    font-size: 0.95rem;
-    line-height: 1.4;
+.brand-logo {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.brand-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.brand-subtitulo {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6EE7B7;
+}
+
+.brand-titulo {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ECFDF5;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
 }
 
 .simulador-help {
@@ -462,7 +488,11 @@ input[type="range"] {
 @media (min-width: 1200px) {
     .simulador-header {
         max-width: 1600px;
-        padding: 0 40px;
+        padding: 0;
+    }
+
+    .simulador-brand {
+        padding: 18px 40px;
     }
 
     .simulador-layout {
@@ -476,7 +506,11 @@ input[type="range"] {
 @media (min-width: 1600px) {
     .simulador-header {
         max-width: 1900px;
-        padding: 0 56px;
+        padding: 0;
+    }
+
+    .simulador-brand {
+        padding: 20px 56px;
     }
 
     .simulador-layout {
@@ -921,15 +955,15 @@ details.rosgan-section > summary .api-updated {
 }
 
 @media (max-width: 700px) {
-  .simulador-header {
-    margin: 8px auto 0;
-    padding: 0 16px;
+  .simulador-brand {
+    padding: 14px 16px;
+    gap: 14px;
   }
-  .simulador-header h1 {
-    font-size: 1.3rem;
-    margin-bottom: 4px;
+  .brand-logo svg {
+    width: 52px;
+    height: 52px;
   }
-  .simulador-subtitle {
-    font-size: 0.85rem;
+  .brand-titulo {
+    font-size: 20px;
   }
 }
