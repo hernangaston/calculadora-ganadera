@@ -64,6 +64,12 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Caché de ROSGAN en memoria** (module-level, TTL 1h) en `lib/cattle-api.js`. El índice cambia una vez por mes — no se justifica Redis ni storage externo.
 - **Eje X del gráfico:** tipo `linear` con datos `{x, y}` (no category). Usar `stepSize: 1000` + `maxTicksLimit: 8` + callback `$${(val/1000).toFixed(0)}k`. No volver a array paralelo labels/data.
 - **calcularFlete()** retorna `{ jaulaDoble, jaulaSimple, chasis, costoFlete, seguroFlete, descripcion }`. Los tres campos numéricos se muestran en filas separadas en el HTML.
+- **Tarifas de flete vigentes (Pepa, Knubel y Ferrero SRL — 02/06/2026):**
+  - Corte de arranque: `km < 200` (antes era `<= 300`)
+  - Jaula doble: arranque $130.000 + $3.900/km. Seguro fijo: $90.000/viaje.
+  - Jaula simple: arranque $115.000 + $3.200/km. Seguro fijo: $80.000/viaje.
+  - Chasis: arranque $98.000 + $2.800/km. Seguro fijo: $70.000/viaje.
+  - Seguro: fijo por cantidad de camiones (`doble*90000 + simple*80000 + chasis*70000`), ya no es porcentual sobre el costo.
 - **Layout desktop:** 3 columnas fijas (`360px | minmax(520px,1fr) | 380px` en ≥1200px). No romper con cambios de CSS que afecten `.simulador-layout`.
 - **Mobile:** variables primero (order:1), resultados segundo (order:2), gráfico tercero (order:3, visible). Sin nav bar — el simulador es la única pantalla.
 - **ROSGAN auto-set:** al cargar, `precioCompra` se setea al PIRI y `precioVenta` al precio Braford/Brangus de Novillos 1-2 años. Los sliders expanden su `max` si el valor ROSGAN lo excede.
