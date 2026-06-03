@@ -7,8 +7,9 @@ function sanitizarPositivo(val) {
   return Math.max(0, sanitizar(val));
 }
 
+// Tarifas Pepa, Knubel y Ferrero SRL — vigencia 02/06/2026
 function fleteCamion(arranque, tarifa, km) {
-  return km <= 300 ? arranque + tarifa * km : tarifa * km;
+  return km < 200 ? arranque + tarifa * km : tarifa * km;
 }
 
 export function calcularFlete({ animales, distancia } = {}) {
@@ -26,9 +27,9 @@ export function calcularFlete({ animales, distancia } = {}) {
   const chasis = resto > 0 ? Math.ceil(resto / 20) : 0;
 
   const costoFlete =
-    doble  * fleteCamion(250000, 3300, distancia) +
-    simple * fleteCamion(160000, 2900, distancia) +
-    chasis * fleteCamion( 90000, 2100, distancia);
+    doble  * fleteCamion(130000, 3900, distancia) +
+    simple * fleteCamion(115000, 3200, distancia) +
+    chasis * fleteCamion( 98000, 2800, distancia);
 
   return {
     descripcion: `${doble}D / ${simple}S / ${chasis}Ch`,
@@ -36,7 +37,7 @@ export function calcularFlete({ animales, distancia } = {}) {
     jaulaSimple: simple,
     chasis: chasis,
     costoFlete,
-    seguroFlete: costoFlete * 0.05,
+    seguroFlete: doble * 90000 + simple * 80000 + chasis * 70000,
   };
 }
 
