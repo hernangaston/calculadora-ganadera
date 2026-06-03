@@ -51,6 +51,8 @@ public/js/ui.js             wireManualOverride() (slider ↔ input manual), setL
 public/js/calculator.js     formatoAR(n, decimales) — formato ARS con toLocaleString("es-AR").
 
 test/manual.js              Tests manuales de calcularResultado() — correr con node test/manual.js.
+                            26 tests, 0 fallos (verificado 03/06/2026). Usar adpvCampo/adpvCorral,
+                            no adpv (parámetro obsoleto ignorado silenciosamente).
 ```
 
 ---
