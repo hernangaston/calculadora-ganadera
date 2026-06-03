@@ -84,6 +84,10 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Columna central:** panel de tipos de cambio (Blue/Oficial/MEP) + canvas Chart.js (curva margen vs precio compra, eje X en $Xk, línea vertical "Precio actual") + comparador de escenarios (ver abajo).
 - **Columna derecha (sliders):** form con headers de sección uppercase (`COMPRA`, `RECRÍA A CAMPO`, `TERMINACIÓN EN CORRAL`, `VENTA`, `LOGÍSTICA`). Varios sliders tienen override manual (checkbox + input).
 - **Mobile:** sliders primero, resultados después, gráfico al final (280px). Sliders táctiles height 36px.
+- **Mobile — tipos de cambio:** en mobile (≤480px) el grid de Blue/Oficial/MEP es de 3 columnas (`1fr 1fr 1fr`) en lugar de 1 columna. Fuentes reducidas (`.api-k` 0.72rem, `.api-v` 0.9rem, `.api-meta` 0.7rem).
+- **Mobile — header:** en ≤700px, `h1` reduce a 1.3rem y `.simulador-subtitle` a 0.85rem. Margins compactos.
+- **Fechas cortas:** `formatFecha()` en `app-simulador.js` retorna solo `HH:MM` si la fecha es hoy, o `DD/MM` si es otro día — ya no usa `toLocaleString` que ocupa demasiado espacio.
+- **Comparador — montos compactos:** los valores monetarios del comparador usan `formatoCompacto(n)` — en mobile (≤700px) muestra `$XXXk` o `$X.XM` en lugar del número completo; en desktop muestra el valor completo.
 - **Favicon:** emoji 🐄 inline SVG. OG tags presentes.
 
 ### Comparador de escenarios
