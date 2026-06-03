@@ -40,7 +40,8 @@ async function main() {
     const r = calcularResultado({
       animales: 100,
       pesoCompra: 300,
-      adpv: 0.8,
+      adpvCampo: 0.8,
+      adpvCorral: 0.8,
       recria: 60,
       corral: 120,
       precioCompra: 2500,
@@ -61,7 +62,8 @@ async function main() {
     const r = calcularResultado({
       animales: 80,
       pesoCompra: 350,
-      adpv: 0.6,
+      adpvCampo: 0.6,
+      adpvCorral: 0.6,
       recria: 30,
       corral: 90,
       precioCompra: 4000,
@@ -96,7 +98,8 @@ async function main() {
     const r = calcularResultado({
       animales,
       pesoCompra,
-      adpv,
+      adpvCampo: adpv,
+      adpvCorral: adpv,
       recria: 0,
       corral: diasTotales,
       precioCompra,
