@@ -65,7 +65,7 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Sin bundler.** ES modules cargados nativamente en el browser. Los archivos `public/js/core/*` tienen `package.json` con `{ "type": "module" }` para usarlos también desde Node.
 - **Caché de ROSGAN en memoria** (module-level, TTL 1h) en `lib/cattle-api.js`. El índice cambia una vez por mes — no se justifica Redis ni storage externo.
 - **Eje X del gráfico:** tipo `linear` con datos `{x, y}` (no category). Usar `stepSize: 1000` + `maxTicksLimit: 8` + callback `$${(val/1000).toFixed(0)}k`. No volver a array paralelo labels/data.
-- **calcularFlete()** retorna `{ jaulaDoble, jaulaSimple, chasis, costoFlete, seguroFlete, descripcion }`. Los tres campos numéricos se muestran en filas separadas en el HTML.
+- **calcularFlete()** retorna `{ jaulaDoble, jaulaSimple, chasis, costoFlete, seguroFlete, descripcion }` — **siempre**, incluso cuando `distancia === 0` (early return completo con todos los campos en 0). Los tres campos numéricos se muestran en filas separadas en el HTML.
 - **Tarifas de flete vigentes (Pepa, Knubel y Ferrero SRL — 02/06/2026):**
   - Corte de arranque: `km < 200` (antes era `<= 300`)
   - Jaula doble: arranque $130.000 + $3.900/km. Seguro fijo: $90.000/viaje.
@@ -75,7 +75,13 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Layout desktop:** 3 columnas fijas (`360px | minmax(520px,1fr) | 380px` en ≥1200px). No romper con cambios de CSS que afecten `.simulador-layout`.
 - **Mobile:** variables primero (order:1), resultados segundo (order:2), gráfico tercero (order:3, visible). Sin nav bar — el simulador es la única pantalla.
 - **ROSGAN auto-set:** al cargar, `precioCompra` se setea al PIRI y `precioVenta` al precio Braford/Brangus de Novillos 1-2 años. Los sliders expanden su `max` si el valor ROSGAN lo excede.
-- **`getGanado()`** — precio real desde ROSGAN + dólar oficial. Categoría: `Novillos 1 a 2 años`, raza: `Braford y Brangus` (fallback al precio general de la categoría si la raza es 0). `precioUsdKg = precioArsKg / dolar.oficial.venta`. Si falla cualquier fuente, retorna `getGanadoMock()` y loguea el error. `getGanadoMock()` se mantiene solo como fallback — no eliminar.
+- **`getGanado(precomputedDolar = null)`** — acepta dólar pre-fetcheado para evitar doble fetch en `preciosHandler`. Si se pasa, no llama a `getDolares()` internamente. Categoría: `Novillos 1 a 2 años`, raza: `Braford y Brangus` (fallback al precio general de la categoría si la raza es 0). `precioUsdKg = precioArsKg / dolar.oficial.venta`. Si falla cualquier fuente, retorna `getGanadoMock()` y loguea el error. `getGanadoMock()` se mantiene solo como fallback — no eliminar.
+- **`preciosHandler`** llama `getDolares()` una sola vez y pasa el resultado a `getGanado(dolar)` — evita 3 fetches redundantes a dolarapi.com por request.
+- **`getRosgan()`** busca el tipo `"Cría"` o `"Cria"` (ambas formas) para compatibilidad con la API ROSGAN.
+- **`wireManualOverride()`** en `ui.js` nunca retorna `null` — si los elementos DOM están ausentes retorna un objeto neutro `{ getValue:()=>0, setAutoValue:()=>{}, ... }`. No rompe `leerInputs()` ni ningún caller.
+- **`precioEquilibrio`** en el gráfico se calcula por interpolación lineal entre los dos puntos que cruzan margen=0. Fallback a argmin si la curva no cruza cero en el rango.
+- **`loadRosgan()`** catch block llama `actualizar(ui, overrides)` para que la UI no quede en estado cero si falla la carga de ROSGAN.
+- **`marketStatus`** (`#marketStatus`) existe en el HTML (dentro de `.api-summary-head`) y está referenciado en `buildUIRefs()` — muestra "Cargando datos de mercado…" durante la carga del dólar.
 - **Shapes de respuesta de API fijos** (no romper clientes existentes):
   - `/dolar`: `{ ok, dolar:{ oficial, blue, mep } }`
   - `/ganado`: `{ ok, fuente, mercado, categoria, raza, unidad, precioArsKg, precioUsdKg, dolarOficial, fecha, anio, mes }`
@@ -122,7 +128,7 @@ Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin loc
 
 1. **Tests automatizados** — `test/manual.js` requiere correrlo a mano con `node`. No hay CI ni runner automático.
 2. **Linter / formatter** — no hay ESLint ni Prettier configurado.
-3. **Caché de dólar** — `getRosgan()` tiene caché pero `getDolares()` no. Si el volumen lo justifica, agregar TTL corto (5-10 min) en `lib/cattle-api.js`.
+3. **Caché de dólar** — `getRosgan()` tiene caché pero `getDolares()` no. `preciosHandler` ya evita el doble fetch, pero si el volumen lo justifica agregar TTL corto (5-10 min) en `lib/cattle-api.js`.
 
 ---
 
