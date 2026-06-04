@@ -17,7 +17,7 @@ export function calcularFlete({ animales, distancia } = {}) {
   distancia = sanitizarPositivo(distancia);
 
   if (distancia === 0) {
-    return { descripcion: "", costoFlete: 0, seguroFlete: 0 };
+    return { descripcion: "", jaulaDoble: 0, jaulaSimple: 0, chasis: 0, costoFlete: 0, seguroFlete: 0 };
   }
 
   const doble = Math.floor(animales / 50);

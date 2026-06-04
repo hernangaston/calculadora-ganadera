@@ -143,8 +143,8 @@ function renderFlete(fleteCompra, fleteVenta, ui) {
   if (ui.jaulaDoble)       ui.jaulaDoble.textContent       = fleteCompra.jaulaDoble  ?? 0;
   if (ui.jaulaSimple)      ui.jaulaSimple.textContent      = fleteCompra.jaulaSimple ?? 0;
   if (ui.chasisCompra)     ui.chasisCompra.textContent     = fleteCompra.chasis      ?? 0;
-  ui.costoFlete.textContent  = formatoAR(fleteCompra.costoFlete);
-  ui.seguroFlete.textContent = formatoAR(fleteCompra.seguroFlete);
+  if (ui.costoFlete)  ui.costoFlete.textContent  = formatoAR(fleteCompra.costoFlete);
+  if (ui.seguroFlete) ui.seguroFlete.textContent = formatoAR(fleteCompra.seguroFlete);
 
   if (ui.jaulaDobleVenta)  ui.jaulaDobleVenta.textContent  = fleteVenta.jaulaDoble  ?? 0;
   if (ui.jaulaSimpleVenta) ui.jaulaSimpleVenta.textContent = fleteVenta.jaulaSimple ?? 0;
@@ -245,16 +245,20 @@ function renderCurvaMargen(ui) {
   const max = precioCompra * 1.3;
 
   const puntos = [];
-  let mejorPrecio     = 0;
-  let menorDiferencia = Infinity;
 
   for (let precio = min; precio <= max; precio += 500) {
     const res = calcularResultado({ ...state.inputs, precioCompra: precio });
     puntos.push({ x: precio, y: res.margen });
+  }
 
-    if (Math.abs(res.margen) < menorDiferencia) {
-      menorDiferencia = Math.abs(res.margen);
-      mejorPrecio = precio;
+  // Interpolación lineal en el cruce de cero; argmin como fallback si no hay cruce
+  let mejorPrecio = puntos.reduce((best, p) =>
+    Math.abs(p.y) < Math.abs(best.y) ? p : best, puntos[0]).x;
+  for (let i = 1; i < puntos.length; i++) {
+    const p0 = puntos[i - 1], p1 = puntos[i];
+    if ((p0.y >= 0) !== (p1.y >= 0)) {
+      mejorPrecio = p0.x + (0 - p0.y) * (p1.x - p0.x) / (p1.y - p0.y);
+      break;
     }
   }
 
@@ -509,6 +513,7 @@ async function loadRosgan(ui, overrides) {
     actualizar(ui, overrides);
   } catch {
     if (ui.rosganStatus) ui.rosganStatus.textContent = "No se pudo cargar ROSGAN.";
+    actualizar(ui, overrides);
   }
 }
 
@@ -552,6 +557,7 @@ function buildUIRefs() {
     seguroFleteVenta:     $("seguroFleteVenta"),
     estadoRentabilidad:   $("estadoRentabilidad"),
     precioEquilibrio:     $("precioEquilibrio"),
+    marketStatus:            $("marketStatus"),
     precioCompraHint:        $("precioCompraHint"),
     apiUltimaActualizacion:  $("apiUltimaActualizacion"),
     apiDolarBlue:            $("apiDolarBlue"),

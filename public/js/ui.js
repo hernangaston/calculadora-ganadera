@@ -1,13 +1,20 @@
 import { formatoAR } from "./calculator.js";
 
+const NULL_OVERRIDE = {
+  getValue: () => 0,
+  setAutoValue: () => {},
+  setManualEnabled: () => {},
+  isManual: () => false,
+};
+
 export function wireManualOverride({ fieldId, onChange }) {
   const wrap = document.querySelector(`.manual-override[data-field="${fieldId}"]`);
-  if (!wrap) return null;
+  if (!wrap) return NULL_OVERRIDE;
 
   const check = wrap.querySelector(".manual-check");
   const manual = document.getElementById(`${fieldId}_manual`);
   const slider = document.getElementById(fieldId);
-  if (!check || !manual || !slider) return null;
+  if (!check || !manual || !slider) return NULL_OVERRIDE;
 
   // copiar constraints
   if (slider.min !== "") manual.min = slider.min;
