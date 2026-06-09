@@ -13,6 +13,7 @@
 
 - **Backend:** Node.js 24, Express 4.18 (solo para desarrollo local)
 - **Frontend:** Vanilla JS (ES modules nativos), HTML5, CSS3 — sin bundler, sin framework
+- **Analytics:** `@vercel/analytics` v2.0.1 — script tag `/_vercel/insights/script.js` en `index.html` (equivalente a `inject()`, funciona sin bundler)
 - **Gráficos:** Chart.js vía CDN (`<script src="https://cdn.jsdelivr.net/npm/chart.js">`)
 - **APIs externas:** `dolarapi.com` (tipos de cambio), `rosgan.com.ar/api/precios-fede` (índice ganadero)
 - **Deploy:** Vercel serverless functions para la API; static file serving para el frontend
