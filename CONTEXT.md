@@ -80,6 +80,7 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
   - Jaula simple: arranque $115.000 + $3.200/km. Seguro fijo: $80.000/viaje.
   - Chasis: arranque $98.000 + $2.800/km. Seguro fijo: $70.000/viaje.
   - Seguro: fijo por cantidad de camiones (`doble*90000 + simple*80000 + chasis*70000`), ya no es porcentual sobre el costo.
+- **La discontinuidad de `fleteCamion()` a los 200 km es intencional — NO "corregirla".** A 199 km cuesta más que a 200 km porque el arranque desaparece en `km >= 200`. Confirmado por el usuario (10/06/2026): así funciona la tarifa en la práctica; en viajes largos el arranque se negocia en el momento y no hay forma de automatizar esa negociación. Cualquier code review futura va a marcar esto como bug — no lo es.
 - **Layout desktop:** 3 columnas fijas (`360px | minmax(520px,1fr) | 380px` en ≥1200px). No romper con cambios de CSS que afecten `.simulador-layout`.
 - **Mobile:** variables primero (order:1), resultados segundo (order:2), gráfico tercero (order:3, visible). Sin nav bar — el simulador es la única pantalla.
 - **ROSGAN auto-set:** al cargar, `precioCompra` se setea al PIRI y `precioVenta` al precio Braford/Brangus de Novillos 1-2 años. Los sliders expanden su `max` si el valor ROSGAN lo excede.
@@ -138,7 +139,6 @@ Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin loc
 2. **Linter / formatter** — no hay ESLint ni Prettier configurado.
 3. **`express.static(__dirname)` sirve todo el repo** (incluido `server.js`, `lib/`, `node_modules`) y el deploy estático de Vercel también sube todo. Hoy no hay secretos, pero si algún día se agrega una API key en un archivo, queda pública. Restringir a una carpeta `public/` dedicada cuando se justifique.
 4. **Rewrites no-op en `vercel.json`** — source = destination en los 4. Se dejaron por no arriesgar el routing sin probar deploy; candidatos a eliminar.
-5. **Discontinuidad en `fleteCamion()`** — a 199 km cuesta más que a 200 km (el arranque desaparece en `km >= 200`). Confirmar con la tarifa real de Pepa/Knubel si es intencional.
 
 ---
 
