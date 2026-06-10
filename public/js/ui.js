@@ -1,5 +1,3 @@
-import { formatoAR } from "./calculator.js";
-
 const NULL_OVERRIDE = {
   getValue: () => 0,
   setAutoValue: () => {},
@@ -57,10 +55,5 @@ export function wireManualOverride({ fieldId, onChange }) {
 export function setLoading(el, isLoading, text = "") {
   if (!el) return;
   el.textContent = isLoading ? (text || "Cargando...") : "";
-}
-
-export function setDolarUI({ dolarVenta, mode, ui }) {
-  ui.dolarValor.textContent = formatoAR(dolarVenta);
-  ui.dolarModo.textContent = mode.toUpperCase();
 }
 

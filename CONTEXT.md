@@ -14,7 +14,7 @@
 - **Backend:** Node.js 24, Express 4.18 (solo para desarrollo local)
 - **Frontend:** Vanilla JS (ES modules nativos), HTML5, CSS3 — sin bundler, sin framework
 - **Analytics:** `@vercel/analytics` v2.0.1 — script tag `/_vercel/insights/script.js` en `index.html` (equivalente a `inject()`, funciona sin bundler)
-- **Gráficos:** Chart.js vía CDN (`<script src="https://cdn.jsdelivr.net/npm/chart.js">`)
+- **Gráficos:** Chart.js vía CDN, fijado a v4 (`<script src="https://cdn.jsdelivr.net/npm/chart.js@4">`) — no usar "latest" sin versión
 - **APIs externas:** `dolarapi.com` (tipos de cambio), `rosgan.com.ar/api/precios-fede` (índice ganadero)
 - **Deploy:** Vercel serverless functions para la API; static file serving para el frontend
 
@@ -26,8 +26,9 @@
 server.js                   Servidor Express local. Monta routes/api.js en /api, sirve estáticos.
 routes/api.js               Express Router — 4 líneas: router.get("/X", handler) → lib/http-handlers.js.
 lib/cattle-api.js           ★ ÚNICA fuente de verdad de la lógica de API (CommonJS). Exporta:
-                              getDolares(), getRosgan() [caché 1h], getGanado(),
-                              getGanadoMock() [fallback], DOLAR_FALLBACK, fetchJson(),
+                              getDolares() [caché 60s + dedup + stale-on-error],
+                              getRosgan() [caché 1h + dedup + stale-on-error], getGanado(),
+                              getGanadoMock() [fallback], DOLAR_FALLBACK, fetchJson() [timeout 8s],
                               normalizeDolar(), masReciente().
 lib/http-handlers.js        Handlers HTTP compartidos (CommonJS). Exporta: dolarHandler,
                               ganadoHandler, preciosHandler, rosganHandler. Usado por
@@ -52,7 +53,7 @@ public/js/ui.js             wireManualOverride() (slider ↔ input manual), setL
 public/js/calculator.js     formatoAR(n, decimales) — formato ARS con toLocaleString("es-AR").
 
 test/manual.js              Tests manuales de calcularResultado() — correr con node test/manual.js.
-                            26 tests, 0 fallos (verificado 03/06/2026). Usar adpvCampo/adpvCorral,
+                            26 tests, 0 fallos (verificado 10/06/2026). Usar adpvCampo/adpvCorral,
                             no adpv (parámetro obsoleto ignorado silenciosamente).
 ```
 
@@ -64,8 +65,14 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **lib/http-handlers.js es la única fuente de verdad de los handlers HTTP.** Contiene los 4 handlers (`dolarHandler`, `ganadoHandler`, `preciosHandler`, `rosganHandler`). `routes/api.js` y `api/*.js` son re-exports de una línea — no tienen lógica propia.
 - **Dual-target sin cambiar el modelo de deploy:** el mismo código sirve en Express local y en Vercel serverless. No colapsar a un solo entrypoint.
 - **Sin bundler.** ES modules cargados nativamente en el browser. Los archivos `public/js/core/*` tienen `package.json` con `{ "type": "module" }` para usarlos también desde Node.
-- **Caché de ROSGAN en memoria** (module-level, TTL 1h) en `lib/cattle-api.js`. El índice cambia una vez por mes — no se justifica Redis ni storage externo.
+- **Caché en memoria en `lib/cattle-api.js`** (module-level): ROSGAN TTL 1h (el índice cambia una vez por mes), dólar TTL 60s. Ambas con **dedup de requests concurrentes** (se cachea la promesa in-flight — una carga de página dispara `getRosgan` por dos caminos: `/api/rosgan` y `/api/precios`) y **stale-on-error** (si el upstream falla y hay caché vencida, se sirve el dato viejo en vez de 502). No se justifica Redis ni storage externo.
+- **`fetchJson()` (server) tiene timeout de 8s** vía `AbortSignal.timeout` — un upstream colgado no bloquea la función serverless hasta el timeout de plataforma.
 - **Eje X del gráfico:** tipo `linear` con datos `{x, y}` (no category). Usar `stepSize: 1000` + `maxTicksLimit: 8` + callback `$${(val/1000).toFixed(0)}k`. No volver a array paralelo labels/data.
+- **Curva de margen:** 25 puntos con paso adaptativo `(max-min)/24` (mínimo 1) sobre el rango ±30% del precio de compra — no volver a paso fijo de $500 (daba ~4 puntos). En updates por slider usar `chartMargen.update("none")` (sin animación).
+- **Reset del simulador:** después de `form.reset()` hay que llamar `setManualEnabled(false)` en cada override y ocultar los badges ROSGAN — `form.reset()` desmarca checkboxes sin disparar `change`, y si no se re-sincroniza el slider queda `disabled`.
+- **Escapar HTML de datos externos:** todo string de la API ROSGAN que se inyecte vía `innerHTML` pasa por `escapeHTML()` (`app-simulador.js`).
+- **`renderMarket()` no va dentro de `actualizar()`** — el panel de tipos de cambio no depende de los sliders; se renderiza una vez al resolver `loadMarket()`.
+- **Comparador — empates:** si la mejor y la peor celda de una fila tienen el mismo valor, no se resalta ninguna (guard `best !== worst`).
 - **calcularFlete()** retorna `{ jaulaDoble, jaulaSimple, chasis, costoFlete, seguroFlete, descripcion }` — **siempre**, incluso cuando `distancia === 0` (early return completo con todos los campos en 0). Los tres campos numéricos se muestran en filas separadas en el HTML.
 - **Tarifas de flete vigentes (Pepa, Knubel y Ferrero SRL — 02/06/2026):**
   - Corte de arranque: `km < 200` (antes era `<= 300`)
@@ -129,7 +136,9 @@ Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin loc
 
 1. **Tests automatizados** — `test/manual.js` requiere correrlo a mano con `node`. No hay CI ni runner automático.
 2. **Linter / formatter** — no hay ESLint ni Prettier configurado.
-3. **Caché de dólar** — `getRosgan()` tiene caché pero `getDolares()` no. `preciosHandler` ya evita el doble fetch, pero si el volumen lo justifica agregar TTL corto (5-10 min) en `lib/cattle-api.js`.
+3. **`express.static(__dirname)` sirve todo el repo** (incluido `server.js`, `lib/`, `node_modules`) y el deploy estático de Vercel también sube todo. Hoy no hay secretos, pero si algún día se agrega una API key en un archivo, queda pública. Restringir a una carpeta `public/` dedicada cuando se justifique.
+4. **Rewrites no-op en `vercel.json`** — source = destination en los 4. Se dejaron por no arriesgar el routing sin probar deploy; candidatos a eliminar.
+5. **Discontinuidad en `fleteCamion()`** — a 199 km cuesta más que a 200 km (el arranque desaparece en `km >= 200`). Confirmar con la tarifa real de Pepa/Knubel si es intencional.
 
 ---
 

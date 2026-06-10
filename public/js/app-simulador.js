@@ -243,10 +243,11 @@ function renderCurvaMargen(ui) {
   const { precioCompra } = state.inputs;
   const min = precioCompra * 0.7;
   const max = precioCompra * 1.3;
+  const paso = Math.max((max - min) / 24, 1);
 
   const puntos = [];
 
-  for (let precio = min; precio <= max; precio += 500) {
+  for (let precio = min; precio <= max; precio += paso) {
     const res = calcularResultado({ ...state.inputs, precioCompra: precio });
     puntos.push({ x: precio, y: res.margen });
   }
@@ -270,7 +271,7 @@ function renderCurvaMargen(ui) {
     chartMargen.data.datasets[0].data = puntos;
     chartMargen.data.datasets[1].data = puntos.map(p => ({ x: p.x, y: 0 }));
     chartMargen.options.plugins.precioActualPlugin.xValue = precioCompra;
-    chartMargen.update();
+    chartMargen.update("none"); // sin animación: se llama en cada movimiento de slider
     return;
   }
 
@@ -396,8 +397,10 @@ function renderComparador() {
     const celdas = vals.map(v => {
       if (v === null) return `<td>—</td>`;
       let cls = "";
-      if (best !== null && v === best)  cls = "mejor";
-      if (worst !== null && v === worst) cls = "peor";
+      if (best !== worst) {
+        if (v === best)  cls = "mejor";
+        else if (v === worst) cls = "peor";
+      }
       return `<td class="${cls}">${fmt(v)}</td>`;
     }).join("");
 
@@ -421,8 +424,6 @@ function actualizar(ui, overrides) {
   renderValoresVisibles();
   renderDiasWarning();
 
-  if (state.preciosCache) renderMarket(ui);
-
   const res = calcularResultado(state.inputs);
   renderResultados(res, ui);
   renderFlete(res.fleteCompra, res.fleteVenta, ui);
@@ -437,6 +438,13 @@ function precioStr(n) {
   return `$${formatoAR(n, 2)}`;
 }
 
+// Los títulos/observaciones vienen de una API externa: escapar antes de innerHTML
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+  );
+}
+
 function renderTipo(tipo) {
   if (!tipo) return "";
   const cats = (tipo.categorias || []).filter((c) => c.precio > 0);
@@ -445,14 +453,14 @@ function renderTipo(tipo) {
     const razasHTML = razas.length
       ? `<table class="rosgan-razas">${razas.map((r) =>
           `<tr>
-            <td>${r.titulo}${r.observacion ? `<span class="rosgan-obs">${r.observacion}</span>` : ""}</td>
+            <td>${escapeHTML(r.titulo)}${r.observacion ? `<span class="rosgan-obs">${escapeHTML(r.observacion)}</span>` : ""}</td>
             <td>${precioStr(r.precio)}</td>
           </tr>`
         ).join("")}</table>`
       : "";
     return `<div class="rosgan-cat">
       <div class="rosgan-cat-header">
-        <span>${cat.titulo}</span>
+        <span>${escapeHTML(cat.titulo)}</span>
         <span class="rosgan-cat-price">${precioStr(cat.precio)}</span>
       </div>
       ${razasHTML}
@@ -466,7 +474,7 @@ function renderRosgan(data, ui, overrides) {
   if (ui.rosganFecha) ui.rosganFecha.textContent = `${MESES_ES[mes - 1] ?? mes} ${anio}`;
   if (ui.rosganStatus) ui.rosganStatus.textContent = "";
   if (ui.rosganBody) ui.rosganBody.classList.remove("rosgan-hidden");
-  if (ui.rosganPiri) ui.rosganPiri.textContent = precioStr(piri);
+  if (ui.rosganPiri) ui.rosganPiri.textContent = piri > 0 ? precioStr(piri) : "-";
 
   if (ui.rosganCategorias) {
     const criaHTML = (cria && pirc > 0)
@@ -485,6 +493,8 @@ function renderRosgan(data, ui, overrides) {
     const slider = $("precioCompra");
     if (slider && piri > Number(slider.max)) {
       slider.max = String(Math.ceil(piri * 1.5 / 1000) * 1000);
+      const manual = $("precioCompra_manual");
+      if (manual) manual.max = slider.max;
     }
     overrides.precioCompra.setAutoValue(piri);
     const badge = $("precioCompraBadge");
@@ -498,6 +508,8 @@ function renderRosgan(data, ui, overrides) {
     const slider = $("precioVenta");
     if (slider && precioVentaRosgan > Number(slider.max)) {
       slider.max = String(Math.ceil(precioVentaRosgan * 1.5 / 1000) * 1000);
+      const manual = $("precioVenta_manual");
+      if (manual) manual.max = slider.max;
     }
     overrides.precioVenta.setAutoValue(precioVentaRosgan);
     const badge = $("precioVentaBadge");
@@ -598,6 +610,14 @@ function main() {
 
   $("btnResetSimulador")?.addEventListener("click", () => {
     $("simuladorForm")?.reset();
+    // form.reset() desmarca los checkboxes sin disparar "change":
+    // hay que re-sincronizar el estado disabled de slider/manual.
+    Object.values(overrides).forEach((o) => o.setManualEnabled(false));
+    // Los valores vuelven a los defaults del HTML, ya no vienen de ROSGAN.
+    ["precioCompraBadge", "precioVentaBadge"].forEach((id) => {
+      const badge = $(id);
+      if (badge) badge.hidden = true;
+    });
     if (chartMargen) {
       chartMargen.destroy();
       chartMargen = null;
