@@ -112,7 +112,7 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Mobile — tipos de cambio:** en mobile (≤480px) el grid de Blue/Oficial/MEP es de 3 columnas (`1fr 1fr 1fr`) en lugar de 1 columna. Fuentes reducidas (`.api-k` 0.72rem, `.api-v` 0.9rem, `.api-meta` 0.7rem).
 - **Fechas cortas:** `formatFecha()` en `app-simulador.js` retorna solo `HH:MM` si la fecha es hoy, o `DD/MM` si es otro día.
 - **Comparador — montos compactos:** los valores monetarios del comparador usan `formatoCompacto(n)` — en mobile (≤700px) muestra `$XXXk` o `$X.XM` en lugar del número completo; en desktop muestra el valor completo.
-- **Favicon:** emoji 🐄 inline SVG. OG tags presentes.
+- **Favicon:** toro vectorizado inline como data-URI SVG (mismo path que el logo del header, viewBox="150 280 720 480"). Toro `#A7F3D0` (verde menta) sobre fondo transparente. Versión **toro completo** (no silueta simplificada): el path usa un único color plano sin detalles internos, por lo que a 16px rinde una silueta orgánica legible. OG tags presentes.
 
 ### Comparador de escenarios
 
