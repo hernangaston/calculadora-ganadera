@@ -131,12 +131,24 @@ function renderResultados(res, ui) {
   if (ui.costoCompra) ui.costoCompra.textContent = formatoAR(res.costoCompra);
   ui.costoProduccion.textContent     = formatoAR(res.costoProduccion);
   ui.comisionCompraTotal.textContent = formatoAR(res.comisionCompraTotal);
-  ui.comisionVentaTotal.textContent  = formatoAR(res.comisionVentaTotal);
   ui.costoTotal.textContent          = formatoAR(res.costoTotal);
   ui.margenCabeza.textContent        = formatoAR(res.margenCabeza);
   ui.margenTotal.textContent         = formatoAR(res.margen);
   if (ui.margenCabezaUsd) ui.margenCabezaUsd.textContent = formatUSD(res.margenCabeza);
   if (ui.margenTotalUsd)  ui.margenTotalUsd.textContent  = formatUSD(res.margen);
+
+  // Desglose margen bruto → neto: visible solo si hay comisión de venta
+  const desglose = document.getElementById("margenDesglose");
+  if (desglose) {
+    if (res.comisionVentaTotal > 0) {
+      desglose.style.display = "";
+      const elBruto = document.getElementById("margenBruto");
+      if (elBruto) elBruto.textContent = formatoAR(res.margen + res.comisionVentaTotal);
+      if (ui.comisionVentaTotal) ui.comisionVentaTotal.textContent = formatoAR(res.comisionVentaTotal);
+    } else {
+      desglose.style.display = "none";
+    }
+  }
 }
 
 // ── Render: flete ─────────────────────────────────────────────────────────────

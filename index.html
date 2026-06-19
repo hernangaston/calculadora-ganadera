@@ -43,6 +43,11 @@
                 <p id="estadoRentabilidad"></p>
                 <div class="resultado-margen-cabeza">$<span id="margenCabeza">0</span> <span class="usd-equiv" id="margenCabezaUsd"></span></div>
                 <div class="resultado-label-small">por cabeza</div>
+                <!-- Desglose margen total: visible solo cuando comisión venta > 0 -->
+                <div id="margenDesglose" style="display:none">
+                    <div class="resultado-row"><span>Margen (antes com. venta)</span><strong>$<span id="margenBruto">0</span></strong></div>
+                    <div class="resultado-row resultado-descuento-row"><span>Com. venta</span><strong>−$<span id="comisionVentaTotal">0</span></strong></div>
+                </div>
                 <div class="resultado-margen-total">$<span id="margenTotal">0</span> <span class="usd-equiv" id="margenTotalUsd"></span></div>
                 <div class="resultado-label-small">margen total</div>
             </div>
@@ -69,7 +74,6 @@
                 <div class="resultado-row"><span>Costo producción</span><strong>$<span id="costoProduccion">0</span></strong></div>
                 <div class="resultado-row"><span>Comisión compra</span><strong>$<span id="comisionCompraTotal">0</span></strong></div>
                 <div class="resultado-row resultado-total-row"><span>Costo total</span><strong>$<span id="costoTotal">0</span></strong></div>
-                <div class="resultado-row resultado-descuento-row"><span>Com. venta <small>(−ingreso)</small></span><strong>$<span id="comisionVentaTotal">0</span></strong></div>
             </div>
 
             <!-- Card pesos -->
