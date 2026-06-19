@@ -73,7 +73,7 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Escapar HTML de datos externos:** todo string de la API ROSGAN que se inyecte vía `innerHTML` pasa por `escapeHTML()` (`app-simulador.js`).
 - **`renderMarket()` no va dentro de `actualizar()`** — el panel de tipos de cambio no depende de los sliders; se renderiza una vez al resolver `loadMarket()`.
 - **Comparador — empates:** si la mejor y la peor celda de una fila tienen el mismo valor, no se resalta ninguna (guard `best !== worst`).
-- **calcularFlete()** retorna `{ jaulaDoble, jaulaSimple, chasis, costoFlete, seguroFlete, descripcion }` — **siempre**, incluso cuando `distancia === 0` (early return completo con todos los campos en 0). Los tres campos numéricos se muestran en filas separadas en el HTML.
+- **calcularFlete()** retorna `{ jaulaDoble, jaulaSimple, chasis, costoFlete, seguroFlete, descripcion, arranque, tarifaDoble, tarifaSimple, tarifaChasis }` — **siempre**, incluso cuando `distancia === 0` (early return completo con todos los campos en 0/constantes). Las tarifas están extraídas al objeto `TARIFAS` en `feedlot.js` (single source of truth). `arranque` es 0 cuando `distancia >= 200` (intencional — el arranque desaparece en viajes largos). Las cards de logística muestran: Jaula doble/simple/Chasis con la tarifa/km entre paréntesis (ej. "2 ($3.900,00/Km.)"), Costo, Arranque (visible aunque sea 0), Seguro.
 - **Tarifas de flete vigentes (Pepa, Knubel y Ferrero SRL — 02/06/2026):**
   - Corte de arranque: `km < 200` (antes era `<= 300`)
   - Jaula doble: arranque $130.000 + $3.900/km. Seguro fijo: $90.000/viaje.
@@ -143,6 +143,7 @@ Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin loc
 - Visible SOLO cuando `escenarios.every(e => e !== null)` (los 3 cargados). Se oculta si se limpia cualquiera.
 - Al hacer click: setea `#printFecha` con `new Date().toLocaleDateString("es-AR")` y llama `window.print()`. Sin dependencias externas.
 - `@media print` en `simulador.css`: oculta `.simulador-header`, `.resultados`, `.variables`, todo en `.graficos` salvo `.comparador`; oculta `.comparador-botones`, `#btnExportarPdf`, `.btn-limpiar-escenario`; muestra `.solo-print`; fuerza `print-color-adjust: exact` en `.mejor`/`.peor` (verde/rojo); `@page { size: A4; margin: 1.5cm }`.
+- `.solo-print#printHeader` muestra solo "Margen Ganadero" + fecha — sin repetir "Comparar escenarios", que ya aparece en el `<h2>` de la sección.
 
 **Bloque de diferencias (`renderDiferencias()`):** se renderiza en `#comparadorDiferencias` siempre que haya ≥2 escenarios. Genera 2–3 líneas de prosa: mejor margen/cabeza (y ventaja sobre el peor), mejor margen total si difiere, y rango de inputs clave que difieran (días totales, precio compra, precio venta). Visible en pantalla y en print.
 
