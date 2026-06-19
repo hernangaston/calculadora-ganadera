@@ -83,7 +83,7 @@ async function main() {
     // Sin flete (distancia=0), mismo $/kg compra y venta.
     // El animal gana peso, así que igual hay margen positivo.
     // Para forzar equilibrio real: precio venta = costoCompra / (pesoFinal * animales)
-    // Se verifica que margenCabeza ≈ 0 cuando precioVenta ≈ 2622
+    // Se verifica que margenCabeza ≈ 0 cuando precioVenta ≈ 2419
     const animales = 50;
     const pesoCompra = 300;
     const adpv = 0.8;
