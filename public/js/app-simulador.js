@@ -140,17 +140,23 @@ function renderResultados(res, ui) {
 }
 
 // ── Render: flete ─────────────────────────────────────────────────────────────
-function renderFlete(fleteCompra, fleteVenta, ui) {
-  if (ui.jaulaDoble)       ui.jaulaDoble.textContent       = fleteCompra.jaulaDoble  ?? 0;
-  if (ui.jaulaSimple)      ui.jaulaSimple.textContent      = fleteCompra.jaulaSimple ?? 0;
-  if (ui.chasisCompra)     ui.chasisCompra.textContent     = fleteCompra.chasis      ?? 0;
-  if (ui.costoFlete)  ui.costoFlete.textContent  = formatoAR(fleteCompra.costoFlete);
-  if (ui.seguroFlete) ui.seguroFlete.textContent = formatoAR(fleteCompra.seguroFlete);
+function textoTarifa(n, tarifa) {
+  return `${n} ($${formatoAR(tarifa, 2)}/Km.)`;
+}
 
-  if (ui.jaulaDobleVenta)  ui.jaulaDobleVenta.textContent  = fleteVenta.jaulaDoble  ?? 0;
-  if (ui.jaulaSimpleVenta) ui.jaulaSimpleVenta.textContent = fleteVenta.jaulaSimple ?? 0;
-  if (ui.chasisVenta)      ui.chasisVenta.textContent      = fleteVenta.chasis      ?? 0;
+function renderFlete(fleteCompra, fleteVenta, ui) {
+  if (ui.jaulaDoble)   ui.jaulaDoble.textContent   = textoTarifa(fleteCompra.jaulaDoble  ?? 0, fleteCompra.tarifaDoble);
+  if (ui.jaulaSimple)  ui.jaulaSimple.textContent  = textoTarifa(fleteCompra.jaulaSimple ?? 0, fleteCompra.tarifaSimple);
+  if (ui.chasisCompra) ui.chasisCompra.textContent = textoTarifa(fleteCompra.chasis      ?? 0, fleteCompra.tarifaChasis);
+  if (ui.costoFlete)       ui.costoFlete.textContent       = formatoAR(fleteCompra.costoFlete);
+  if (ui.arranqueCompra)   ui.arranqueCompra.textContent   = formatoAR(fleteCompra.arranque);
+  if (ui.seguroFlete)      ui.seguroFlete.textContent      = formatoAR(fleteCompra.seguroFlete);
+
+  if (ui.jaulaDobleVenta)  ui.jaulaDobleVenta.textContent  = textoTarifa(fleteVenta.jaulaDoble  ?? 0, fleteVenta.tarifaDoble);
+  if (ui.jaulaSimpleVenta) ui.jaulaSimpleVenta.textContent = textoTarifa(fleteVenta.jaulaSimple ?? 0, fleteVenta.tarifaSimple);
+  if (ui.chasisVenta)      ui.chasisVenta.textContent      = textoTarifa(fleteVenta.chasis      ?? 0, fleteVenta.tarifaChasis);
   if (ui.costoFleteVenta)  ui.costoFleteVenta.textContent  = formatoAR(fleteVenta.costoFlete);
+  if (ui.arranqueVenta)    ui.arranqueVenta.textContent    = formatoAR(fleteVenta.arranque);
   if (ui.seguroFleteVenta) ui.seguroFleteVenta.textContent = formatoAR(fleteVenta.seguroFlete);
 }
 
@@ -618,11 +624,13 @@ function buildUIRefs() {
     jaulaSimple:          $("jaulaSimple"),
     chasisCompra:         $("chasisCompra"),
     costoFlete:           $("costoFlete"),
+    arranqueCompra:       $("arranqueCompra"),
     seguroFlete:          $("seguroFlete"),
     jaulaDobleVenta:      $("jaulaDobleVenta"),
     jaulaSimpleVenta:     $("jaulaSimpleVenta"),
     chasisVenta:          $("chasisVenta"),
     costoFleteVenta:      $("costoFleteVenta"),
+    arranqueVenta:        $("arranqueVenta"),
     seguroFleteVenta:     $("seguroFleteVenta"),
     estadoRentabilidad:   $("estadoRentabilidad"),
     precioEquilibrio:     $("precioEquilibrio"),
