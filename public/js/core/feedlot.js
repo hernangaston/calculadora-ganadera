@@ -8,6 +8,12 @@ function sanitizarPositivo(val) {
 }
 
 // Tarifas Pepa, Knubel y Ferrero SRL — vigencia 02/06/2026
+const TARIFAS = {
+  doble:  { arranque: 130000, km: 3900, seguro: 90000 },
+  simple: { arranque: 115000, km: 3200, seguro: 80000 },
+  chasis: { arranque:  98000, km: 2800, seguro: 70000 },
+};
+
 function fleteCamion(arranque, tarifa, km) {
   return km < 200 ? arranque + tarifa * km : tarifa * km;
 }
@@ -17,7 +23,11 @@ export function calcularFlete({ animales, distancia } = {}) {
   distancia = sanitizarPositivo(distancia);
 
   if (distancia === 0) {
-    return { descripcion: "", jaulaDoble: 0, jaulaSimple: 0, chasis: 0, costoFlete: 0, seguroFlete: 0 };
+    return {
+      descripcion: "", jaulaDoble: 0, jaulaSimple: 0, chasis: 0,
+      costoFlete: 0, seguroFlete: 0, arranque: 0,
+      tarifaDoble: TARIFAS.doble.km, tarifaSimple: TARIFAS.simple.km, tarifaChasis: TARIFAS.chasis.km,
+    };
   }
 
   const doble = Math.floor(animales / 50);
@@ -26,10 +36,18 @@ export function calcularFlete({ animales, distancia } = {}) {
   resto = resto % 35;
   const chasis = resto > 0 ? Math.ceil(resto / 20) : 0;
 
+  // El arranque solo se aplica cuando distancia < 200 km (intencional — ver CONTEXT.md)
+  const usaArranque = distancia < 200;
+  const arranque = usaArranque
+    ? doble  * TARIFAS.doble.arranque
+    + simple * TARIFAS.simple.arranque
+    + chasis * TARIFAS.chasis.arranque
+    : 0;
+
   const costoFlete =
-    doble  * fleteCamion(130000, 3900, distancia) +
-    simple * fleteCamion(115000, 3200, distancia) +
-    chasis * fleteCamion( 98000, 2800, distancia);
+    doble  * fleteCamion(TARIFAS.doble.arranque,  TARIFAS.doble.km,  distancia) +
+    simple * fleteCamion(TARIFAS.simple.arranque, TARIFAS.simple.km, distancia) +
+    chasis * fleteCamion(TARIFAS.chasis.arranque, TARIFAS.chasis.km, distancia);
 
   return {
     descripcion: `${doble}D / ${simple}S / ${chasis}Ch`,
@@ -37,7 +55,11 @@ export function calcularFlete({ animales, distancia } = {}) {
     jaulaSimple: simple,
     chasis: chasis,
     costoFlete,
-    seguroFlete: doble * 90000 + simple * 80000 + chasis * 70000,
+    seguroFlete: doble * TARIFAS.doble.seguro + simple * TARIFAS.simple.seguro + chasis * TARIFAS.chasis.seguro,
+    arranque,
+    tarifaDoble: TARIFAS.doble.km,
+    tarifaSimple: TARIFAS.simple.km,
+    tarifaChasis: TARIFAS.chasis.km,
   };
 }
 
