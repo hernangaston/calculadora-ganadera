@@ -367,8 +367,13 @@ function renderComparador() {
   const hayDatos = escenarios.some(e => e !== null);
   vacio.style.display = hayDatos ? "none" : "";
 
+  const btnPdf = document.getElementById("btnExportarPdf");
+  if (btnPdf) btnPdf.style.display = escenarios.every(e => e !== null) ? "" : "none";
+
   if (!hayDatos) {
     body.innerHTML = "";
+    const dif = document.getElementById("comparadorDiferencias");
+    if (dif) dif.innerHTML = "";
     return;
   }
 
@@ -417,6 +422,56 @@ function renderComparador() {
   body.querySelectorAll(".btn-limpiar-escenario").forEach(btn => {
     btn.addEventListener("click", () => limpiarEscenario(Number(btn.dataset.idx)));
   });
+
+  renderDiferencias();
+}
+
+function renderDiferencias() {
+  const cont = document.getElementById("comparadorDiferencias");
+  if (!cont) return;
+
+  const activos = escenarios.filter(e => e !== null);
+  if (activos.length < 2) { cont.innerHTML = ""; return; }
+
+  const lineas = [];
+
+  // Mejor margen por cabeza
+  const byMCab = [...activos].sort((a, b) => b.resultados.margenCabeza - a.resultados.margenCabeza);
+  const mejorCab = byMCab[0], peorCab = byMCab[byMCab.length - 1];
+  if (mejorCab.label !== peorCab.label) {
+    const diff = mejorCab.resultados.margenCabeza - peorCab.resultados.margenCabeza;
+    lineas.push(`<strong>${mejorCab.label}</strong> lidera en margen por cabeza ($${formatoAR(mejorCab.resultados.margenCabeza)}), con $${formatoAR(diff)} de ventaja sobre ${peorCab.label}.`);
+  }
+
+  // Mejor margen total (solo si difiere del mejor por cabeza)
+  const byMTotal = [...activos].sort((a, b) => b.resultados.margen - a.resultados.margen);
+  const mejorTotal = byMTotal[0], peorTotal = byMTotal[byMTotal.length - 1];
+  if (mejorTotal.label !== peorTotal.label && mejorTotal.label !== mejorCab.label) {
+    const diff = mejorTotal.resultados.margen - peorTotal.resultados.margen;
+    lineas.push(`En margen total, <strong>${mejorTotal.label}</strong> es el mejor ($${formatoAR(mejorTotal.resultados.margen)} vs. $${formatoAR(peorTotal.resultados.margen)}).`);
+  }
+
+  // Diferencias de inputs clave
+  const inputDiffs = [];
+  const diasVals = activos.map(e => e.resultados.diasTotales);
+  const diasMin = Math.min(...diasVals), diasMax = Math.max(...diasVals);
+  if (diasMax > diasMin) inputDiffs.push(`días totales: ${formatoAR(diasMin)}–${formatoAR(diasMax)}`);
+
+  const pcVals = activos.map(e => e.inputs.precioCompra);
+  const pcMin = Math.min(...pcVals), pcMax = Math.max(...pcVals);
+  if (pcMax > pcMin) inputDiffs.push(`precio compra: $${formatoAR(pcMin)}–$${formatoAR(pcMax)}/kg`);
+
+  const pvVals = activos.map(e => e.inputs.precioVenta);
+  const pvMin = Math.min(...pvVals), pvMax = Math.max(...pvVals);
+  if (pvMax > pvMin) inputDiffs.push(`precio venta: $${formatoAR(pvMin)}–$${formatoAR(pvMax)}/kg`);
+
+  if (inputDiffs.length) {
+    lineas.push(`Diferencias entre escenarios: ${inputDiffs.join("; ")}.`);
+  }
+
+  if (!lineas.length) { cont.innerHTML = ""; return; }
+
+  cont.innerHTML = `<div class="comparador-diferencias-inner">${lineas.map(l => `<p>${l}</p>`).join("")}</div>`;
 }
 
 // ── Ciclo central de actualización ────────────────────────────────────────────
@@ -608,6 +663,12 @@ function main() {
 
   document.querySelectorAll(".btn-escenario").forEach(btn => {
     btn.addEventListener("click", () => guardarEscenario(Number(btn.dataset.idx)));
+  });
+
+  document.getElementById("btnExportarPdf")?.addEventListener("click", () => {
+    const fechaEl = document.getElementById("printFecha");
+    if (fechaEl) fechaEl.textContent = new Date().toLocaleDateString("es-AR");
+    window.print();
   });
 
   $("btnResetSimulador")?.addEventListener("click", () => {

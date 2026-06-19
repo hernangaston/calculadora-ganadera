@@ -980,3 +980,160 @@ details.rosgan-section > summary .api-updated {
     font-size: 20px;
   }
 }
+
+/* ===== BOTÓN PDF ===== */
+
+.btn-pdf {
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 2px solid #1B4332;
+  color: white;
+  background: #1B4332;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-pdf:hover {
+  background: #2E7D32;
+  border-color: #2E7D32;
+}
+
+/* ===== BLOQUE DIFERENCIAS ===== */
+
+.comparador-diferencias-inner {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #F0FDF4;
+  border-radius: 8px;
+  border-left: 4px solid #2E7D32;
+}
+
+.comparador-diferencias-inner p {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.comparador-diferencias-inner p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== SOLO PRINT (oculto en pantalla) ===== */
+
+.solo-print {
+  display: none;
+}
+
+/* ===== @MEDIA PRINT ===== */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  /* Ocultar todo excepto el comparador */
+  .simulador-header,
+  .resultados,
+  .variables {
+    display: none !important;
+  }
+
+  .simulador-layout {
+    display: block !important;
+  }
+
+  .graficos {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ocultar todo en .graficos excepto .comparador */
+  .graficos > *:not(.comparador) {
+    display: none !important;
+  }
+
+  .comparador {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Mostrar encabezado de impresión */
+  .solo-print {
+    display: block !important;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #1B4332;
+  }
+
+  .print-titulo {
+    font-size: 16pt;
+    font-weight: 900;
+    color: #1B4332 !important;
+    margin: 0 0 4px;
+  }
+
+  .print-fecha {
+    font-size: 9pt;
+    color: #555;
+    margin: 0;
+  }
+
+  /* Ocultar botones y elementos interactivos */
+  .comparador-botones,
+  #btnExportarPdf,
+  .btn-limpiar-escenario,
+  .comparador-vacio {
+    display: none !important;
+  }
+
+  /* Título del comparador en print */
+  .comparador-header h2 {
+    font-size: 11pt;
+    color: #1B4332 !important;
+  }
+
+  /* Tabla */
+  .comparador-tabla {
+    font-size: 9.5pt;
+    width: 100%;
+    page-break-inside: avoid;
+  }
+
+  .comparador-tabla th,
+  .comparador-tabla td {
+    padding: 6px 10px;
+  }
+
+  /* Forzar colores de mejor/peor en impresión */
+  .comparador-tabla .mejor,
+  .comparador-tabla .peor {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .comparador-tabla .mejor {
+    background-color: #D1FAE5 !important;
+    color: #065F46 !important;
+  }
+
+  .comparador-tabla .peor {
+    background-color: #FEE2E2 !important;
+    color: #991B1B !important;
+  }
+
+  /* Bloque de diferencias */
+  .comparador-diferencias-inner {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #F0FDF4 !important;
+    page-break-inside: avoid;
+  }
+}

@@ -137,18 +137,25 @@
 
             <!-- COMPARADOR DE ESCENARIOS -->
             <section class="comparador" id="comparador">
+              <!-- Encabezado visible solo en impresión -->
+              <div class="solo-print" id="printHeader">
+                <h1 class="print-titulo">Margen Ganadero — Comparación de escenarios</h1>
+                <p class="print-fecha" id="printFecha"></p>
+              </div>
               <div class="comparador-header">
                 <h2>Comparar escenarios</h2>
                 <div class="comparador-botones">
                   <button class="btn-escenario" data-idx="0">Guardar como A</button>
                   <button class="btn-escenario" data-idx="1">Guardar como B</button>
                   <button class="btn-escenario" data-idx="2">Guardar como C</button>
+                  <button id="btnExportarPdf" class="btn-pdf" style="display:none">Guardar PDF</button>
                 </div>
               </div>
               <p class="comparador-vacio" id="comparadorVacio">
                 Guardá hasta 3 escenarios para compararlos lado a lado.
               </p>
               <div id="comparadorBody"></div>
+              <div id="comparadorDiferencias"></div>
             </section>
         </section>
 
