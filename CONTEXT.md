@@ -128,11 +128,23 @@ Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin loc
 - `limpiarEscenario(idx)` — `escenarios[idx] = null`, llama `renderComparador()`.
 - `renderComparador()` — reconstruye la tabla en `#comparadorBody`. Resalta en verde la celda mejor y en rojo la peor por fila (solo entre escenarios con datos). Idempotente — se puede llamar en cualquier momento.
 
-**HTML (`index.html`):** `section.comparador#comparador` con `.comparador-header` (h2 + 3 `button.btn-escenario[data-idx]`), `p.comparador-vacio#comparadorVacio`, `div#comparadorBody`.
+**HTML (`index.html`):** `section.comparador#comparador` con:
+- `.solo-print#printHeader` — encabezado visible solo en impresión (título + `#printFecha`)
+- `.comparador-header` (h2 + `.comparador-botones` con 3 `button.btn-escenario[data-idx]` + `#btnExportarPdf.btn-pdf`)
+- `p.comparador-vacio#comparadorVacio`
+- `div#comparadorBody` (tabla)
+- `div#comparadorDiferencias` (resumen textual de diferencias)
 
-**CSS (`simulador.css`):** clases `.comparador`, `.comparador-header`, `.comparador-botones`, `.btn-escenario`, `.comparador-vacio`, `.comparador-tabla`, `.mejor` (verde), `.peor` (rojo), `.btn-limpiar-escenario`. Responsive ≤700px.
+**CSS (`simulador.css`):** clases `.comparador`, `.comparador-header`, `.comparador-botones`, `.btn-escenario`, `.comparador-vacio`, `.comparador-tabla`, `.mejor` (verde), `.peor` (rojo), `.btn-limpiar-escenario`. `.btn-pdf` (verde oscuro #1B4332, texto blanco). `.solo-print` (display:none en pantalla). `.comparador-diferencias-inner` (fondo verde suave, borde izquierdo). `@media print` (ver abajo). Responsive ≤700px.
 
 **Campos comparados:** margenCabeza, margen, costoTotal, costoProduccion, comisionCompraTotal, comisionVentaTotal, pesoFinal, kgProducidos, diasTotales.
+
+**Exportación PDF (`#btnExportarPdf`):**
+- Visible SOLO cuando `escenarios.every(e => e !== null)` (los 3 cargados). Se oculta si se limpia cualquiera.
+- Al hacer click: setea `#printFecha` con `new Date().toLocaleDateString("es-AR")` y llama `window.print()`. Sin dependencias externas.
+- `@media print` en `simulador.css`: oculta `.simulador-header`, `.resultados`, `.variables`, todo en `.graficos` salvo `.comparador`; oculta `.comparador-botones`, `#btnExportarPdf`, `.btn-limpiar-escenario`; muestra `.solo-print`; fuerza `print-color-adjust: exact` en `.mejor`/`.peor` (verde/rojo); `@page { size: A4; margin: 1.5cm }`.
+
+**Bloque de diferencias (`renderDiferencias()`):** se renderiza en `#comparadorDiferencias` siempre que haya ≥2 escenarios. Genera 2–3 líneas de prosa: mejor margen/cabeza (y ventaja sobre el peor), mejor margen total si difiere, y rango de inputs clave que difieran (días totales, precio compra, precio venta). Visible en pantalla y en print.
 
 ---
 
