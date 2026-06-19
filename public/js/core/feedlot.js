@@ -101,6 +101,7 @@ export function calcularResultado({
     pesoDespuesRecria,
     pesoFinal,
     kgProducidos,
+    costoCompra,
     costoTotal,
     costoProduccion,
     comisionCompraTotal,

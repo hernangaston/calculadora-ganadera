@@ -128,6 +128,7 @@ function renderResultados(res, ui) {
   ui.pesoDespuesRecria.textContent   = formatoAR(res.pesoDespuesRecria, 1);
   ui.pesoFinal.textContent           = formatoAR(res.pesoFinal, 1);
   ui.kgProducidos.textContent        = formatoAR(res.kgProducidos, 1);
+  if (ui.costoCompra) ui.costoCompra.textContent = formatoAR(res.costoCompra);
   ui.costoProduccion.textContent     = formatoAR(res.costoProduccion);
   ui.comisionCompraTotal.textContent = formatoAR(res.comisionCompraTotal);
   ui.comisionVentaTotal.textContent  = formatoAR(res.comisionVentaTotal);
@@ -549,6 +550,7 @@ function buildUIRefs() {
     pesoDespuesRecria:    $("pesoDespuesRecria"),
     pesoFinal:            $("pesoFinal"),
     kgProducidos:         $("kgProducidos"),
+    costoCompra:          $("costoCompra"),
     costoProduccion:      $("costoProduccion"),
     comisionCompraTotal:  $("comisionCompraTotal"),
     comisionVentaTotal:   $("comisionVentaTotal"),

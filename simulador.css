@@ -781,6 +781,19 @@ details.rosgan-section > summary .api-updated {
     font-weight: 900;
 }
 
+.resultado-descuento-row {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.12);
+    opacity: 0.75;
+    font-style: italic;
+}
+
+.resultado-descuento-row small {
+    font-size: 0.75em;
+    opacity: 0.8;
+}
+
 /* ===== LOGISTICA ===== */
 
 .logistica-grid {
