@@ -14,7 +14,7 @@
 - **Backend:** Node.js 24, Express 4.18 (solo para desarrollo local)
 - **Frontend:** Vanilla JS (ES modules nativos), HTML5, CSS3 — sin bundler, sin framework
 - **Analytics:** `@vercel/analytics` v2.0.1 — script tag `/_vercel/insights/script.js` en `index.html` (equivalente a `inject()`, funciona sin bundler)
-- **Gráficos:** Chart.js vía CDN, fijado a v4 (`<script src="https://cdn.jsdelivr.net/npm/chart.js@4">`) — no usar "latest" sin versión
+- **Gráficos:** Chart.js v4.4.9 vía CDN con SRI (`integrity="sha384-b0GXujLkk9eYYSmcSfoyZbfyElGAQnDyY0skCHSG6w3JgTMFnz11ggrTAr7seu9f"`). Versión exacta pinneada en `public/index.html`. No usar `@4` flotante.
 - **APIs externas:** `dolarapi.com` (tipos de cambio), `rosgan.com.ar/api/precios-fede` (índice ganadero)
 - **Deploy:** Vercel serverless functions para la API; static file serving para el frontend
 
@@ -23,7 +23,9 @@
 ## 3. Arquitectura de archivos
 
 ```
-server.js                   Servidor Express local. Monta routes/api.js en /api, sirve estáticos.
+server.js                   Servidor Express local. Monta routes/api.js en /api, sirve estáticos desde public/.
+                              Middleware de seguridad: X-Content-Type-Options, Referrer-Policy,
+                              X-Frame-Options, Permissions-Policy, CSP (sin 'unsafe-inline' en script-src).
 routes/api.js               Express Router — 4 líneas: router.get("/X", handler) → lib/http-handlers.js.
 lib/cattle-api.js           ★ ÚNICA fuente de verdad de la lógica de API (CommonJS). Exporta:
                               getDolares() [caché 60s + dedup + stale-on-error],
@@ -38,11 +40,12 @@ api/dolar.js                Handler serverless Vercel — re-exporta dolarHandle
 api/ganado.js               Handler serverless Vercel — re-exporta ganadoHandler.
 api/precios.js              Handler serverless Vercel — re-exporta preciosHandler.
 api/rosgan.js               Handler serverless Vercel — re-exporta rosganHandler.
-vercel.json                 Rewrites /api/* → handlers serverless. outputDirectory: ".".
+vercel.json                 Rewrites /api/* → handlers serverless. outputDirectory: "public".
+                              Headers de seguridad (CSP, HSTS, X-Frame-Options, etc.) aplicados a /(.*).
 
-index.html                  ★ Única página. Layout 3 columnas (resultados | gráfico | sliders).
-simulador.css               Estilos del simulador. CSS variables en :root. Responsive mobile-first.
-styles.css                  Estilos globales compartidos. NO tocar desde simulador.css.
+public/index.html           ★ Única página. Layout 3 columnas (resultados | gráfico | sliders).
+public/simulador.css        Estilos del simulador. CSS variables en :root. Responsive mobile-first.
+public/styles.css           Estilos globales compartidos. NO tocar desde simulador.css.
 public/js/app-simulador.js  Orquestación: carga API, conecta sliders, llama a
                               calcularResultado(), renderiza Chart.js.
 public/js/core/feedlot.js   Cálculo puro (sin DOM, sin fetch). Exporta calcularResultado()
@@ -53,7 +56,7 @@ public/js/ui.js             wireManualOverride() (slider ↔ input manual), setL
 public/js/calculator.js     formatoAR(n, decimales) — formato ARS con toLocaleString("es-AR").
 
 test/manual.js              Tests manuales de calcularResultado() — correr con node test/manual.js.
-                            26 tests, 0 fallos (verificado 10/06/2026). Usar adpvCampo/adpvCorral,
+                            26 tests, 0 fallos (verificado 22/06/2026). Usar adpvCampo/adpvCorral,
                             no adpv (parámetro obsoleto ignorado silenciosamente).
 ```
 
@@ -154,12 +157,26 @@ Ubicado en `section.graficos`, debajo del canvas. Todo en memoria JS — sin loc
 
 1. **Tests automatizados** — `test/manual.js` requiere correrlo a mano con `node`. No hay CI ni runner automático.
 2. **Linter / formatter** — no hay ESLint ni Prettier configurado.
-3. **`express.static(__dirname)` sirve todo el repo** (incluido `server.js`, `lib/`, `node_modules`) y el deploy estático de Vercel también sube todo. Hoy no hay secretos, pero si algún día se agrega una API key en un archivo, queda pública. Restringir a una carpeta `public/` dedicada cuando se justifique.
-4. **Rewrites no-op en `vercel.json`** — source = destination en los 4. Se dejaron por no arriesgar el routing sin probar deploy; candidatos a eliminar.
+3. **Rewrites no-op en `vercel.json`** — source = destination en los 4. Se dejaron por no arriesgar el routing sin probar deploy; candidatos a eliminar.
+
+## 7. Seguridad aplicada (22/06/2026)
+
+- **Headers en Express (`server.js`):** middleware manual (sin helmet) que setea en todas las respuestas: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY`, `Permissions-Policy: geolocation=(), microphone=(), camera=()`, `Content-Security-Policy` (ver abajo). Ya existía `app.disable("x-powered-by")`.
+- **Headers en Vercel (`vercel.json`):** sección `"headers"` con `source: "/(.*)"`. Los mismos headers que Express más `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (HSTS — solo tiene sentido en HTTPS, por eso no va en Express local).
+- **CSP vigente:** `default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://dolarapi.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';`
+  - `script-src`: `'self'` (módulos JS propios) + `https://cdn.jsdelivr.net` (Chart.js). **Sin `'unsafe-inline'`** — la app no tiene handlers inline ni `onclick=`.
+  - `connect-src`: `'self'` (APIs internas + Vercel Analytics `/_vercel/insights/`) + `https://dolarapi.com` (fallback directo desde el browser si `/api/*` no responde).
+  - `style-src 'unsafe-inline'`: necesario — Chart.js aplica estilos inline al canvas.
+  - `img-src data:`: necesario — el favicon es un SVG data-URI inline.
+  - ROSGAN se llama desde el servidor (lib/cattle-api.js), no desde el browser → no necesita aparecer en `connect-src`.
+- **SRI en Chart.js:** `<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" integrity="sha384-b0GXujLkk9eYYSmcSfoyZbfyElGAQnDyY0skCHSG6w3JgTMFnz11ggrTAr7seu9f" crossorigin="anonymous">`. Versión pinnada a 4.4.9 (último 4.4.x estable). El hash fue calculado con `curl | openssl dgst -sha384 -binary | openssl base64 -A`.
+- **Exposición de archivos fuente:** `index.html`, `styles.css`, `simulador.css` movidos a `public/`. Express ahora hace `express.static(path.join(__dirname, "public"))` y sirve `public/index.html` en `/`. `vercel.json` usa `outputDirectory: "public"`. Resultado: `server.js`, `lib/`, `routes/`, `test/`, `*.md`, `package.json`, `vercel.json` no son accesibles vía HTTP — no están dentro del static root.
+- **Escaping:** `renderDiferencias()` y las vistas de print usan solo labels hardcodeados ("A"/"B"/"C") y `formatoAR()` de números. No hay strings de API externa en esos innerHTML. ROSGAN ya usaba `escapeHTML()`. Sin cambios adicionales.
+- **npm audit:** 0 vulnerabilidades (verificado 22/06/2026).
 
 ---
 
-## 7. Comando para correr local
+## 8. Comando para correr local
 
 ```bash
 npm start
