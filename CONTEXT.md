@@ -26,20 +26,22 @@
 server.js                   Servidor Express local. Monta routes/api.js en /api, sirve estáticos desde public/.
                               Middleware de seguridad: X-Content-Type-Options, Referrer-Policy,
                               X-Frame-Options, Permissions-Policy, CSP (sin 'unsafe-inline' en script-src).
-routes/api.js               Express Router — 4 líneas: router.get("/X", handler) → lib/http-handlers.js.
+routes/api.js               Express Router — 5 rutas: router.get("/X", handler) → lib/http-handlers.js.
 lib/cattle-api.js           ★ ÚNICA fuente de verdad de la lógica de API (CommonJS). Exporta:
                               getDolares() [caché 60s + dedup + stale-on-error],
                               getRosgan() [caché 1h + dedup + stale-on-error], getGanado(),
                               getGanadoMock() [fallback], DOLAR_FALLBACK, fetchJson() [timeout 8s],
-                              normalizeDolar(), masReciente().
+                              fetchText() [RSS, UA navegador, redirect:follow, timeout 8s],
+                              normalizeDolar(), masReciente(), getNoticias() [caché 2h + dedup + stale-on-error].
 lib/http-handlers.js        Handlers HTTP compartidos (CommonJS). Exporta: dolarHandler,
-                              ganadoHandler, preciosHandler, rosganHandler. Usado por
+                              ganadoHandler, preciosHandler, rosganHandler, noticiasHandler. Usado por
                               routes/api.js (Express) y api/*.js (Vercel) — única fuente
                               de la lógica de respuesta HTTP.
 api/dolar.js                Handler serverless Vercel — re-exporta dolarHandler.
 api/ganado.js               Handler serverless Vercel — re-exporta ganadoHandler.
 api/precios.js              Handler serverless Vercel — re-exporta preciosHandler.
 api/rosgan.js               Handler serverless Vercel — re-exporta rosganHandler.
+api/noticias.js             Handler serverless Vercel — re-exporta noticiasHandler.
 vercel.json                 Rewrites /api/* → handlers serverless. outputDirectory: "public".
                               Headers de seguridad (CSP, HSTS, X-Frame-Options, etc.) aplicados a /(.*).
 
@@ -47,11 +49,12 @@ public/index.html           ★ Única página. Layout 3 columnas (resultados | 
 public/simulador.css        Estilos del simulador. CSS variables en :root. Responsive mobile-first.
 public/styles.css           Estilos globales compartidos. NO tocar desde simulador.css.
 public/js/app-simulador.js  Orquestación: carga API, conecta sliders, llama a
-                              calcularResultado(), renderiza Chart.js.
+                              calcularResultado(), renderiza Chart.js, renderiza panel novedades.
 public/js/core/feedlot.js   Cálculo puro (sin DOM, sin fetch). Exporta calcularResultado()
                               y calcularFlete(). Compartido con test/manual.js.
-public/js/api.js            Fetch del frontend → /api/precios, /api/rosgan, /api/dolar.
-                              Fallback directo a dolarapi.com si /api/* no responde.
+public/js/api.js            Fetch del frontend → /api/precios, /api/rosgan, /api/dolar, /api/noticias.
+                              Fallback directo a dolarapi.com si /api/dolar o /api/precios no responde.
+                              getNoticias() sin fallback: si falla el panel se oculta silenciosamente.
 public/js/ui.js             wireManualOverride() (slider ↔ input manual), setLoading().
 public/js/calculator.js     formatoAR(n, decimales) — formato ARS con toLocaleString("es-AR").
 
@@ -113,7 +116,9 @@ test/manual.js              Tests manuales de calcularResultado() — correr con
 - **Columna izquierda (resultados):** card principal con badge de rentabilidad + margen/cabeza (2rem) + margen total (1.4rem) · ROSGAN colapsable `<details>` con fecha en el summary · card de costos (label/valor en dos columnas) · card de pesos (fondo verde suave) · dos cards de logística apiladas (Flete compra / Flete venta), cada una con filas Jaula doble / Jaula simple / Chasis / Costo / Seguro.
 - **Card de costos** (`.resultado-costos`): filas Costo compra → Costo producción → Comisión compra → **Costo total** (línea separadora sólida). La comisión de venta ya NO aparece aquí — se mueve a la card de margen (ver abajo).
 - **Card de margen** (`.resultado-principal`): margen/cabeza destacado (sin cambios) + desglose condicional del margen total. Si `comisionVentaTotal > 0`, aparece `#margenDesglose` con dos filas: "Margen (antes com. venta)" = `res.margen + res.comisionVentaTotal` y "Com. venta" = `−res.comisionVentaTotal` (clase `.resultado-descuento-row`), seguidas del `#margenTotal` (neto, el mismo valor de siempre). Si comisión venta = 0, el bloque está `display:none` y la card se ve igual que antes. El cálculo de `feedlot.js` no cambia — solo se descompone el margen ya calculado en el front.
-- **Columna central:** panel de tipos de cambio (Blue/Oficial/MEP) + canvas Chart.js (curva margen vs precio compra, eje X en $Xk, línea vertical "Precio actual") + comparador de escenarios (ver abajo).
+- **Columna central:** panel de tipos de cambio (Blue/Oficial/MEP) + **panel Novedades del sector** (ver abajo) + canvas Chart.js (curva margen vs precio compra, eje X en $Xk, línea vertical "Precio actual") + comparador de escenarios (ver abajo).
+- **Panel "Novedades del sector"** (`.novedades-panel`): card verde igual a las demás, ubicada entre Tipos de cambio y el canvas. Carga vía `loadNoticias()` en `main()` (no bloquea simulador). Muestra 3 `<details>` colapsables, uno por categoría (Producción / Economía / Tecnología). Cada summary muestra un pill de categoría + el título. Al abrir: resumen texto plano + "Leer más →" (target _blank rel noopener) + fuente + fecha. Si una categoría no tiene noticias: estado dashed gris "Sin novedades hoy". Todo string externo pasa por `escapeHTML()`. Endpoint: `GET /api/noticias` → `{ ok, fuente:"RSS agro", actualizado, noticias:{ produccion, economia, tecnologia } }`, cada categoría es `{ titulo, link, fuente, fecha, resumen }` o null.
+- **`getNoticias()` (cattle-api.js):** caché 2h + dedup in-flight + stale-on-error. Feeds RSS activos (verificados 24/06/2026): Infocampo ganadería (`/category/ganaderia/feed/`, 200), Bichos de Campo ganadería (`/category/ganaderia/feed/`, 200), Agroverdad ganadería (`/category/ganaderia/feed` sin barra, 301→200). Descartados: ValorCarne (403 Cloudflare), TodoAgro (timeout/down). `fetchText()` manda UA de Chrome y `Accept: application/rss+xml`; `redirect:"follow"`. Feeds en paralelo con `Promise.allSettled` — un feed caído no tumba el panel. Parseo por regex sobre `<item>…</item>` estándar RSS 2.0 (WordPress). Sanitización: strip tags HTML, decode entidades, truncar a 250 chars. Clasificación por keywords en 3 categorías (produccion/economia/tecnologia); prioridad a mayor cantidad de matches; deduplicación por link entre categorías; ventana 72h en pasada 1, fallback sin ventana en pasada 2. `NOTICIAS_FEEDS` es constante editable al tope de `lib/cattle-api.js`.
 - **Columna derecha (sliders):** 5 secciones (`COMPRA`, `RECRÍA A CAMPO`, `TERMINACIÓN EN CORRAL`, `VENTA`, `LOGÍSTICA`), cada una en un `<div class="slider-card">` (misma card que columna izquierda: fondo blanco, radius, sombra). Cada `.slider-section-header` tiene barra vertical menta (`border-left: 3px solid var(--menta)`) y texto en `--verde-oscuro`. Cada label es flex con `output` como pill verde suave (`--verde-suave`, `--verde-oscuro`, border-radius 999px) alineado a la derecha. Varios sliders tienen override manual (ver abajo).
 - **Sliders custom (cross-browser):** `appearance: none` + webkit/moz pseudo-elements. Track 6px, border-radius 999px, fondo `--track-bg`. Thumb 19px (22px en ≤700px), círculo `--verde`, borde blanco, sombra suave. Relleno de progreso: JS setea `--val` en cada elemento (`syncSliderProgress()`, llamado en cada `actualizar()`); CSS usa `linear-gradient(90deg, var(--verde) var(--val), var(--track-bg) var(--val))` en webkit; Firefox usa `::-moz-range-progress` nativo. `:focus-visible` muestra anillo `var(--menta)`.
 - **Override manual:** `.manual-check` visualmente oculto (position:absolute, opacity:0, 1px); `.manual-toggle` se ve como pill/botón con ícono `✎` + texto; activo con clase `is-manual` (fondo y borde verde). `.manual-input` compacto (max-width 140px). NO cambiar ids ni la API de wireManualOverride().

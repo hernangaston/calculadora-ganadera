@@ -1,4 +1,4 @@
-import { getPrecios, getRosgan } from "./api.js";
+import { getPrecios, getRosgan, getNoticias } from "./api.js";
 import { calcularResultado } from "./core/feedlot.js";
 import { formatoAR } from "./calculator.js";
 import { wireManualOverride, setLoading } from "./ui.js";
@@ -612,6 +612,49 @@ async function loadRosgan(ui, overrides) {
   }
 }
 
+// ── Novedades del sector ──────────────────────────────────────────────────────
+
+function renderNoticias(noticias) {
+  const el = document.getElementById("noticiasBody");
+  if (!el) return;
+
+  const cats = [
+    { key: "produccion", label: "Producción" },
+    { key: "economia",   label: "Economía" },
+    { key: "tecnologia", label: "Tecnología" },
+  ];
+
+  el.innerHTML = cats.map(({ key, label }) => {
+    const n = noticias?.[key];
+    if (!n) {
+      return `<details class="novedad-item novedad-empty">
+        <summary><span class="novedades-pill novedades-pill--${escapeHTML(key)}">${escapeHTML(label)}</span> Sin novedades hoy</summary>
+      </details>`;
+    }
+    const fecha = n.fecha ? formatFecha(n.fecha) : "";
+    return `<details class="novedad-item">
+      <summary><span class="novedades-pill novedades-pill--${escapeHTML(key)}">${escapeHTML(label)}</span> ${escapeHTML(n.titulo)}</summary>
+      <div class="novedad-body">
+        <p class="novedad-resumen">${escapeHTML(n.resumen)}</p>
+        <div class="novedad-meta">
+          <a class="novedad-link" href="${escapeHTML(n.link)}" target="_blank" rel="noopener noreferrer">Leer más →</a>
+          <span class="novedad-fuente">${escapeHTML(n.fuente)}</span>
+          ${fecha ? `<span class="novedad-fecha">${escapeHTML(fecha)}</span>` : ""}
+        </div>
+      </div>
+    </details>`;
+  }).join("");
+}
+
+async function loadNoticias() {
+  try {
+    const data = await getNoticias();
+    renderNoticias(data?.noticias);
+  } catch {
+    // si falla el panel simplemente queda en "Cargando…" — no bloquea el simulador
+  }
+}
+
 // ── Carga de mercado ──────────────────────────────────────────────────────────
 async function loadMarket(ui) {
   setLoading(ui.marketStatus, true, "Cargando datos de mercado…");
@@ -721,6 +764,7 @@ function main() {
 
   loadMarket(ui).finally(() => actualizar(ui, overrides));
   loadRosgan(ui, overrides);
+  loadNoticias();
 }
 
 document.addEventListener("DOMContentLoaded", main);

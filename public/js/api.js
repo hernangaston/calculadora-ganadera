@@ -78,3 +78,7 @@ export async function getDolar() {
   }
 }
 
+export async function getNoticias() {
+  return fetchJSON("/api/noticias");
+}
+

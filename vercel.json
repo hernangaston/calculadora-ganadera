@@ -5,7 +5,8 @@
     { "source": "/api/dolar",   "destination": "/api/dolar" },
     { "source": "/api/ganado",  "destination": "/api/ganado" },
     { "source": "/api/precios", "destination": "/api/precios" },
-    { "source": "/api/rosgan",  "destination": "/api/rosgan" }
+    { "source": "/api/rosgan",   "destination": "/api/rosgan" },
+    { "source": "/api/noticias", "destination": "/api/noticias" }
   ],
   "headers": [
     {

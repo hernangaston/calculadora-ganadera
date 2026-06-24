@@ -839,6 +839,144 @@ details.rosgan-section > summary .api-updated {
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
+/* ===== NOVEDADES DEL SECTOR ===== */
+
+.novedades-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 14px 16px 10px;
+  margin-bottom: 16px;
+}
+
+.novedades-titulo {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--verde-oscuro);
+  border-left: 3px solid var(--menta);
+  padding-left: 10px;
+  margin: 0 0 10px;
+}
+
+.novedades-loading {
+  font-size: 0.82rem;
+  color: #888;
+  margin: 0;
+}
+
+.novedad-item {
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.novedad-item:last-child { margin-bottom: 0; }
+
+.novedad-item > summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--verde-suave);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #333;
+  list-style: none;
+  line-height: 1.35;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.novedad-item > summary::-webkit-details-marker { display: none; }
+
+.novedad-item > summary::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 1.2em;
+  color: var(--verde);
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-block;
+  transform: rotate(90deg);
+  transition: transform 0.15s;
+  line-height: 1;
+}
+
+.novedad-item[open] > summary::after {
+  transform: rotate(-90deg);
+}
+
+.novedad-item > summary:hover { background: #DCEDC8; }
+
+.novedad-item.novedad-empty > summary {
+  background: transparent;
+  border: 1px dashed #ccc;
+  color: #999;
+  font-size: 0.8rem;
+  cursor: default;
+}
+
+.novedad-item.novedad-empty > summary::after { display: none; }
+
+.novedad-body {
+  padding: 10px 12px 8px;
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.novedad-resumen {
+  font-size: 0.83rem;
+  color: #444;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+
+.novedad-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.novedad-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--verde);
+  text-decoration: none;
+}
+
+.novedad-link:hover { text-decoration: underline; }
+
+.novedad-fuente,
+.novedad-fecha {
+  font-size: 0.74rem;
+  color: #888;
+}
+
+/* Pills de categoría */
+.novedades-pill {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+
+.novedades-pill--produccion { background: var(--verde-oscuro); color: #fff; }
+.novedades-pill--economia   { background: var(--verde);        color: #fff; }
+.novedades-pill--tecnologia { background: var(--menta);        color: var(--verde-oscuro); }
+
 /* ===== RESULTADO CARDS ===== */
 
 .resultado-principal {
