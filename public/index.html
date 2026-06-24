@@ -177,6 +177,7 @@
                 </p>
                 <p id="diasWarning" class="simulador-warning" role="status" aria-live="polite"></p>
 
+                <div class="slider-card">
                 <div class="slider-section-header">Compra</div>
 
                 <label for="animales">
@@ -216,7 +217,9 @@
                     <input id="comisionCompra_manual" class="manual-input" type="number" inputmode="decimal" step="0.1"
                         min="0" max="10" value="3" disabled>
                 </div>
+                </div>
 
+                <div class="slider-card">
                 <div class="slider-section-header">Recría a campo</div>
 
                 <label for="recria">
@@ -249,7 +252,9 @@
                     <input id="costoCampo_manual" class="manual-input" type="number" inputmode="numeric" step="1"
                         min="0" value="150" disabled>
                 </div>
+                </div>
 
+                <div class="slider-card">
                 <div class="slider-section-header">Terminación en corral</div>
 
                 <label for="corral">
@@ -282,7 +287,9 @@
                     <input id="costoCorral_manual" class="manual-input" type="number" inputmode="numeric" step="1"
                         min="0" value="600" disabled>
                 </div>
+                </div>
 
+                <div class="slider-card">
                 <div class="slider-section-header">Venta</div>
 
                 <label for="precioVenta">
@@ -311,7 +318,9 @@
                     <input id="comisionVenta_manual" class="manual-input" type="number" inputmode="decimal" step="0.1"
                         min="0" max="10" value="3" disabled>
                 </div>
+                </div>
 
+                <div class="slider-card">
                 <div class="slider-section-header">Logística</div>
 
                 <label for="distancia">
@@ -323,6 +332,7 @@
                     Distancia venta (km): <output id="distanciaVentaValor" for="distanciaVenta">300</output>
                 </label>
                 <input type="range" id="distanciaVenta" min="0" max="800" value="300" aria-describedby="slidersHelp">
+                </div>
 
                 <div class="simulador-actions">
                     <button id="btnResetSimulador" class="btn-secondary" type="button">Reset</button>

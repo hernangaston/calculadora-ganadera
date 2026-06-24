@@ -492,11 +492,20 @@ function renderDiferencias() {
   cont.innerHTML = `<div class="comparador-diferencias-inner">${lineas.map(l => `<p>${l}</p>`).join("")}</div>`;
 }
 
+// ── Progreso visual del track (--val para linear-gradient en CSS) ─────────────
+function syncSliderProgress(el) {
+  const min = Number(el.min) || 0;
+  const max = Number(el.max) || 100;
+  const pct = max > min ? ((Number(el.value) - min) / (max - min)) * 100 : 0;
+  el.style.setProperty("--val", pct + "%");
+}
+
 // ── Ciclo central de actualización ────────────────────────────────────────────
 function actualizar(ui, overrides) {
   leerInputs(overrides);
   renderValoresVisibles();
   renderDiasWarning();
+  document.querySelectorAll('input[type="range"]').forEach(syncSliderProgress);
 
   const res = calcularResultado(state.inputs);
   renderResultados(res, ui);

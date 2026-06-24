@@ -5,6 +5,11 @@
   --card-radius: 14px;
   --card-shadow: 0 2px 10px rgba(0,0,0,0.04);
   --verde: #2E7D32;
+  --verde-oscuro: #1B4332;
+  --verde-suave: #E8F5E9;
+  --menta: #6EE7B7;
+  --menta-suave: #A7F3D0;
+  --track-bg: #C8E6C9;
   --rojo: #C62828;
   --marron: #6D4C41;
 }
@@ -312,41 +317,84 @@
     margin-left: 4px;
 }
 
+/* ===== MANUAL OVERRIDE — toggle compacto ===== */
+
 .manual-override {
-    margin: 6px 0 12px;
-    display: grid;
-    grid-template-columns: 1fr 140px;
-    gap: 10px;
-    align-items: center;
+  margin: 2px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+/* Checkbox: accesible pero visualmente oculto */
+.manual-check {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  accent-color: var(--verde);
+}
+
+/* Toggle compacto — icono lápiz + texto pequeño */
 .manual-toggle {
-    font-size: 0.85rem;
-    color: #555;
-    display: inline-flex;
-    gap: 8px;
-    align-items: center;
-    user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  color: var(--verde);
+  cursor: pointer;
+  user-select: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
+.manual-toggle::before {
+  content: "✎";
+  font-size: 0.9em;
+}
+
+.manual-toggle:hover {
+  background: var(--verde-suave);
+  border-color: rgba(46,125,50,0.3);
+}
+
+.manual-override.is-manual .manual-toggle {
+  background: rgba(46, 125, 50, 0.12);
+  border-color: var(--verde);
+  color: var(--verde-oscuro);
+  font-weight: 600;
+}
+
+/* Input numérico: compacto */
 .manual-input {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 0.95rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
+  flex: 1;
+  min-width: 0;
+  max-width: 140px;
+  padding: 6px 10px;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 .manual-input:disabled {
-    opacity: 0.6;
+  opacity: 0.5;
+  background: #f5f5f5;
 }
 
 .manual-override.is-manual .manual-input {
-    border-color: #2E7D32;
+  border-color: var(--verde);
+  background: rgba(232, 245, 233, 0.6);
 }
 
 input[type="range"]:disabled {
-    opacity: 0.55;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
@@ -376,17 +424,120 @@ input[type="range"]:disabled {
     min-height: 500px;
 }
 
-/* ===== SLIDERS ===== */
+/* ===== SLIDER CARDS ===== */
 
-.variables label {
-    display: block;
-    margin-top: 18px;
-    font-weight: 600;
+.slider-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 14px 16px 10px;
+  margin-bottom: 12px;
 }
 
+/* ===== SLIDERS — labels con valor como pill ===== */
+
+.slider-card > label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #444;
+  cursor: default;
+}
+
+.slider-card > label output {
+  margin-left: auto;
+  background: var(--verde-suave);
+  color: var(--verde-oscuro);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ===== RANGE INPUTS — custom cross-browser ===== */
+
 input[type="range"] {
-    width: 100%;
-    margin-bottom: 15px;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+  margin-bottom: 12px;
+  accent-color: var(--verde);
+}
+
+/* Webkit: track con relleno de progreso vía --val (seteado por JS) */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--verde) var(--val, 0%),
+    var(--track-bg) var(--val, 0%)
+  );
+}
+
+/* Webkit: thumb verde con borde blanco */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--verde);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  margin-top: -6px;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--verde-oscuro);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.28);
+}
+
+/* Firefox: track (fondo) */
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track-bg);
+}
+
+/* Firefox: progreso nativo */
+input[type="range"]::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--verde);
+}
+
+/* Firefox: thumb */
+input[type="range"]::-moz-range-thumb {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--verde);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Anillo de focus en menta */
+input[type="range"]:focus-visible {
+  outline: none;
+}
+
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--menta), 0 1px 4px rgba(0,0,0,0.2);
+}
+
+input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--menta), 0 1px 4px rgba(0,0,0,0.2);
 }
 
 @media (max-width: 700px) {
@@ -454,17 +605,17 @@ input[type="range"] {
     /* Sliders más grandes para toque táctil */
     input[type="range"] {
         height: 36px;
-        cursor: pointer;
     }
 
     input[type="range"]::-webkit-slider-thumb {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
+        margin-top: -8px;
     }
 
     input[type="range"]::-moz-range-thumb {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
     }
 
     /* Cards visuales en mobile (ya tienen estilos, refuerzo por si hereda override) */
@@ -661,32 +812,31 @@ details.rosgan-section > summary .api-updated {
 }
 
 .rosgan-set-badge {
-    display: inline-block;
-    font-size: 0.68rem;
-    padding: 1px 7px;
-    border-radius: 999px;
-    background: rgba(46, 125, 50, 0.13);
-    color: #2E7D32;
-    margin-left: 6px;
-    font-weight: 700;
-    vertical-align: middle;
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--menta);
+  color: var(--verde-oscuro);
+  margin-left: 4px;
+  font-weight: 700;
+  vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ===== SLIDER SECTION HEADERS ===== */
 
 .slider-section-header {
-    margin: 24px 0 8px;
-    padding-bottom: 6px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--marron);
-    border-bottom: 2px solid rgba(109,76,65,0.15);
-}
-
-.slider-section-header:first-child {
-    margin-top: 8px;
+  margin: 0 0 10px;
+  padding: 0 0 7px 10px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--verde-oscuro);
+  border-left: 3px solid var(--menta);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
 /* ===== RESULTADO CARDS ===== */
