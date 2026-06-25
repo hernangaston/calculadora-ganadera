@@ -1425,3 +1425,39 @@ details.rosgan-section > summary .api-updated {
     page-break-inside: avoid;
   }
 }
+
+/* ===== FOOTER ===== */
+
+.site-footer {
+  background: var(--verde-oscuro);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 18px 24px;
+  font-size: 0.82rem;
+}
+
+.site-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.site-footer-brand {
+  font-weight: 700;
+  color: var(--menta);
+  letter-spacing: 0.02em;
+}
+
+.site-footer-contact {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+}
+
+.site-footer-contact:hover {
+  color: var(--menta);
+  text-decoration: underline;
+}

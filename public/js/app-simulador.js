@@ -465,7 +465,6 @@ function renderDiferencias() {
   const byMTotal = [...activos].sort((a, b) => b.resultados.margen - a.resultados.margen);
   const mejorTotal = byMTotal[0], peorTotal = byMTotal[byMTotal.length - 1];
   if (mejorTotal.label !== peorTotal.label && mejorTotal.label !== mejorCab.label) {
-    const diff = mejorTotal.resultados.margen - peorTotal.resultados.margen;
     lineas.push(`En margen total, <strong>${mejorTotal.label}</strong> es el mejor ($${formatoAR(mejorTotal.resultados.margen)} vs. $${formatoAR(peorTotal.resultados.margen)}).`);
   }
 
@@ -765,6 +764,11 @@ function main() {
   loadMarket(ui).finally(() => actualizar(ui, overrides));
   loadRosgan(ui, overrides);
   loadNoticias();
+
+  // Armar el enlace de contacto en runtime para no exponer la dirección en el HTML estático
+  const _cu = "contacto", _cd = "margenganadero.com";
+  const _cel = document.getElementById("footerContacto");
+  if (_cel) { _cel.href = "mailto:" + _cu + "@" + _cd; _cel.textContent = _cu + "@" + _cd; }
 }
 
 document.addEventListener("DOMContentLoaded", main);
